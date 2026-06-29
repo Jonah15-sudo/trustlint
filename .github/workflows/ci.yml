@@ -68,7 +68,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - run: uv sync --frozen
+      - run: uv sync --frozen --extra dev
       - name: Build wheel and sdist
         run: uv run python -m build
       - name: Create clean venv and install wheel
