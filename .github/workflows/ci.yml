@@ -42,8 +42,10 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - run: uv sync --frozen --extra dev
-      - name: pip check
-        run: uv run python -m pip check
+      - name: Compile all Python modules
+        run: uv run python -m compileall trustlint scripts -q
+      - name: Check dependency compatibility
+        run: uv pip check
       - name: Run offline-safe tests
         run: uv run pytest -m "not network and not slow" -q --tb=short
       - name: Verify clean install (import check)
