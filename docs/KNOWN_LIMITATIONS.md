@@ -309,7 +309,92 @@ command. It does not:
 
 ---
 
-## 8. References
+## 8. Test Collection Errors (Pre-existing)
+
+Eight test modules fail to collect under `pytest --collect-only`. These errors
+exist on `master` and are **not regressions** introduced by repository-root
+normalization. Master has 14 collection errors; the root normalization fixed
+6 of them. The remaining 8 are pre-existing.
+
+### 8.1 `tests/security/test_outbound_network_policy.py`
+
+**Error:** `ModuleNotFoundError: No module named 'trustlint'`
+
+**Root cause:** The test file imports `from trustlint.security.outbound_network_policy
+import ...`. When pytest collects from `tests/security/`, the subdirectory lacks
+`__init__.py`, causing pytest to manipulate `sys.path` in a way that disrupts
+CWD-based discovery of the `trustlint/` package directory. The system Python's
+editable install `MAPPING` may also point to a stale path.
+
+**Affected legacy path:** `trustlint/tests/security/test_outbound_network_policy.py`
+(now at `tests/security/test_outbound_network_policy.py` after flattening).
+
+**Planned follow-up:** `hardening/test-collection-and-cli-recovery` branch.
+
+### 8.2 `tests/security/test_target_policy.py`
+
+**Error:** `ModuleNotFoundError: No module named 'trustlint'`
+
+**Root cause:** Same as 8.1. The test imports `from trustlint.security.target_policy
+import TargetScanPolicy`.
+
+**Affected legacy path:** `trustlint/tests/security/test_target_policy.py`.
+
+### 8.3 `tests/test_spl_decision_validation.py`
+
+**Error:** `ModuleNotFoundError: No module named 'scripts.run_real_tls_spl_decision_validation'`
+
+**Root cause:** The test imports from `scripts.run_real_tls_spl_decision_validation`,
+a module that **never existed** in any committed branch. The file was likely
+developed locally but never committed.
+
+**Affected legacy path:** `trustlint/tests/test_spl_decision_validation.py`.
+
+### 8.4 `tests/test_spl_tls_analyze.py`
+
+**Error:** `ModuleNotFoundError: No module named 'scripts.spl_tls_analyze'`
+
+**Root cause:** The test imports `from scripts.spl_tls_analyze import ...`. On master,
+`scripts/spl_tls_analyze.py` does not exist in `trustlint/scripts/` (only
+`error_codes.py`, `ocsp_checker.py`, `run_local_tls_validation.py`).
+
+**Affected legacy path:** `trustlint/tests/test_spl_tls_analyze.py`.
+
+### 8.5 `tests/test_cli_golden_acceptance.py`
+
+**Error:** `ModuleNotFoundError: No module named 'scripts.spl_tls_analyze'`
+
+**Root cause:** Same as 8.4.
+
+**Affected legacy path:** `trustlint/tests/test_cli_golden_acceptance.py`.
+
+### 8.6 `tests/test_package_entry.py`
+
+**Error:** `ModuleNotFoundError: No module named 'scripts.spl_tls_analyze'`
+
+**Root cause:** Same as 8.4.
+
+**Affected legacy path:** `trustlint/tests/test_package_entry.py`.
+
+### 8.7 `tests/unit/test_concurrency.py`
+
+**Error:** `ModuleNotFoundError: No module named 'scripts.spl_tls_analyze'`
+
+**Root cause:** Same as 8.4.
+
+**Affected legacy path:** `trustlint/tests/unit/test_concurrency.py`.
+
+### 8.8 `tests/unit/test_input_bounds.py`
+
+**Error:** `ModuleNotFoundError: No module named 'scripts.spl_tls_analyze'`
+
+**Root cause:** Same as 8.4.
+
+**Affected legacy path:** `trustlint/tests/unit/test_input_bounds.py`.
+
+---
+
+## 9. References
 
 - `docs/CLI_USAGE.md` — Limitations of CLI probe
 - `docs/DECISION_SEMANTICS_AUDIT.md` — Ground truth vs policy expectations
