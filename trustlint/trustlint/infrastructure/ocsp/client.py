@@ -49,6 +49,7 @@ OCSPResponseStatus_UNAUTHORIZED = 6
 CERT_STATUS_GOOD = "good"
 CERT_STATUS_REVOKED = "revoked"
 CERT_STATUS_UNKNOWN = "unknown"
+CERT_STATUS_UNVERIFIED = "unverified"
 
 
 # ---------------------------------------------------------------------------
@@ -439,12 +440,24 @@ def _parse_ocsp_response(response_bytes: bytes) -> Dict[str, Any]:
     DER decoding when the library is installed.  Falls back to the built-in
     DER/ASN.1 parser otherwise.
 
+    **IMPORTANT**: This function only DECODES the response.  It does NOT verify:
+    - Response signature against the responder's public key
+    - Responder authorization (CA certificate, delegated responder, OCSP Signing EKU)
+    - Serial number match against the original request
+    - Issuer name/key hash match against the original request
+    - thisUpdate/nextUpdate freshness or clock skew
+
+    When ``cryptography`` is available, ``verified`` is set to ``False`` to indicate
+    that the parsed status is UNVERIFIED and must not independently produce ALLOW
+    or DENY decisions.
+
     Args:
         response_bytes: Raw OCSP response bytes (DER-encoded).
 
     Returns:
         Dict with:
-            - status: "good" | "revoked" | "unknown" | "malformed"
+            - status: "good" | "revoked" | "unknown" | "malformed" | "unverified"
+            - verified: bool (always False — no cryptographic verification performed)
             - response_status: numeric OCSPResponseStatus code
             - revocation_time: bytes or None (GeneralizedTime)
             - cert_status: "good" | "revoked" | "unknown"
@@ -453,6 +466,7 @@ def _parse_ocsp_response(response_bytes: bytes) -> Dict[str, Any]:
     """
     result: Dict[str, Any] = {
         "status": "unknown",
+        "verified": False,
         "response_status": None,
         "revocation_time": None,
         "cert_status": None,
@@ -489,25 +503,23 @@ def _parse_ocsp_response(response_bytes: bytes) -> Dict[str, Any]:
 
             # Extract certificate status from the first response
             if resp.certificate_status is not None:
-                # cryptography returns CertificateStatus enum
-                from cryptography.x509.ocsp import CertificateStatus as _CertStatus
+                from cryptography.x509.ocsp import OCSPCertStatus as _CertStatus
                 if resp.certificate_status == _CertStatus.GOOD:
                     result["cert_status"] = CERT_STATUS_GOOD
-                    result["status"] = CERT_STATUS_GOOD
                 elif resp.certificate_status == _CertStatus.REVOKED:
                     result["cert_status"] = CERT_STATUS_REVOKED
-                    result["status"] = CERT_STATUS_REVOKED
-                    if resp.revocation_time:
-                        result["revocation_time"] = resp.revocation_time
+                    if resp.revocation_time_utc:
+                        result["revocation_time"] = resp.revocation_time_utc
                 else:
                     result["cert_status"] = CERT_STATUS_UNKNOWN
-                    result["status"] = CERT_STATUS_UNKNOWN
             else:
                 result["cert_status"] = CERT_STATUS_GOOD
-                result["status"] = CERT_STATUS_GOOD
 
             # Extract serial number from the response
             result["serial_number"] = resp.serial_number
+
+            # Mark as UNVERIFIED — no signature, authorization, or freshness check
+            result["status"] = CERT_STATUS_UNVERIFIED
 
             return result
 
@@ -515,9 +527,10 @@ def _parse_ocsp_response(response_bytes: bytes) -> Dict[str, Any]:
             logger.warning("cryptography OCSP parse failed, falling back to DER parser: %s", e)
             # Fall through to built-in parser
 
-    # Fallback: built-in DER/ASN.1 parser
+    # Fallback: built-in DER/ASN.1 parser (also unverified)
     result: Dict[str, Any] = {
         "status": "unknown",
+        "verified": False,
         "response_status": None,
         "revocation_time": None,
         "cert_status": None,
@@ -557,8 +570,8 @@ def _parse_ocsp_response(response_bytes: bytes) -> Dict[str, Any]:
         result["this_update"] = single.get("this_update")
         result["next_update"] = single.get("next_update")
 
-        # Map cert_status to top-level status for backward compatibility
-        result["status"] = single["cert_status"]
+        # DER parser does not verify signatures — mark as UNVERIFIED
+        result["status"] = CERT_STATUS_UNVERIFIED
 
     except _DerError as e:
         logger.warning("Malformed OCSP response DER: %s", e)

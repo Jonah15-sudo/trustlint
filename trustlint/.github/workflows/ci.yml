@@ -40,6 +40,8 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - run: uv sync --frozen --extra dev --extra crypto
+      - name: pip check
+        run: uv run python -m pip check
       - name: Run offline-safe tests
         run: uv run pytest -m "not network and not slow" -q --tb=short
       - name: Verify clean install (import check)
