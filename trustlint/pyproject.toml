@@ -27,6 +27,7 @@ classifiers = [
 kafka = ["confluent-kafka>=2.5"]
 dev = ["pytest>=8.0"]
 ca-store = ["certifi>=2024.0.0"]
+crypto = ["cryptography>=42.0"]
 spl-core = [
   "numpy>=1.26",
   "plotly>=5.20",

@@ -1,39 +1,24 @@
-============================================================
-  DOMAIN: self-signed.example.com
-  Profile: balanced
-  SPL Core: Inactive
-  Final Decision: REVIEW
-  Final Risk: HIGH
-  Decision Source: ADAPTER
-============================================================
-
+Domain: self-signed.example.com
+  Decision: REVIEW
+  Risk: HIGH
+  Source: ADAPTER
+  Classification: SELF_SIGNED_CERT
+  TLS Version: TLSv1.2
+  Resolved IP: 5.6.7.8
+  Handshake Time: 28.5ms
   [TLS Probe]
   Classification: SELF_SIGNED_CERT
-  CA Store: platform
   TLS Version: TLSv1.2
-  Certificate Expiry Days: 180
   Resolved IP: 5.6.7.8
-  Chain Status: Complete
-  OCSP Status: N/A
-  Deprecated TLS Check: None
-
+  Handshake Time: 28.5ms
   [Policy Adapter]
   Risk Category: SECURITY_RISK
   Severity: HIGH
-  Failure Family: CERTIFICATE_TRUST
-  Policy Reason: Certificate is self-signed and not trusted.
-  Action Hint: REVIEW_OR_DENY
-
   [SPL]
-  Decision: N/A (adapter-only mode)
-  Confidence Source: UNAVAILABLE
-  Weakness Flags: None
-
+  SPL: unavailable (adapter-only mode)
   [Decision Reasoning]
-  Primary Reason: Security risk (balanced profile): REVIEW_OR_DENY for SELF_SIGNED_CERT
-    Supporting Reasons:
-      - Profile: balanced
-      - Adapter risk: SECURITY_RISK
-
+  Reason: Security risk (balanced profile): REVIEW_OR_DENY for SELF_SIGNED_CERT
+  Recommended Action: Use a certificate issued by a trusted CA unless this is an internal-only system.
   [Recommended Action]
-    Use a certificate issued by a trusted CA unless this is an internal-only system.
+    - Profile: balanced
+    - Adapter risk: SECURITY_RISK

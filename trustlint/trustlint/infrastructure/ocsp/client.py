@@ -9,9 +9,9 @@ This module owns:
 
 All outbound OCSP requests go through SafeHttpClient for SSRF protection.
 
-OCSP response parsing uses a minimal DER/ASN.1 decoder built on Python
-stdlib only (no external dependencies).  The parser understands the
-subset of ASN.1 DER required by RFC 6960 OCSP responses.
+OCSP response parsing prefers the ``cryptography`` library (when installed)
+for standards-compliant DER decoding and optional signature verification.
+Falls back to a minimal DER/ASN.1 decoder built on Python stdlib only.
 """
 
 from __future__ import annotations
@@ -24,6 +24,13 @@ import time
 from typing import Any, Dict, List, Optional, Tuple
 
 logger = logging.getLogger(__name__)
+
+# Try to import cryptography for proper OCSP parsing
+try:
+    from cryptography.x509.ocsp import load_der_ocsp_response, OCSPResponseStatus as _OcspResponseStatus
+    _HAS_CRYPTOGRAPHY = True
+except ImportError:
+    _HAS_CRYPTOGRAPHY = False
 
 # OCSP defaults
 OCSP_TIMEOUT = 5.0
@@ -426,10 +433,11 @@ def _extract_ocsp_urls(cert: Dict[str, Any]) -> list[str]:
 
 
 def _parse_ocsp_response(response_bytes: bytes) -> Dict[str, Any]:
-    """Parse an OCSP response using DER/ASN.1 decoding.
+    """Parse an OCSP response, preferring ``cryptography`` when available.
 
-    Safely parses the OCSP response status, certificate status, and
-    serial number correlation using standards-aware DER decoding.
+    Uses ``cryptography.x509.ocsp.load_der_ocsp_response`` for standards-compliant
+    DER decoding when the library is installed.  Falls back to the built-in
+    DER/ASN.1 parser otherwise.
 
     Args:
         response_bytes: Raw OCSP response bytes (DER-encoded).
@@ -443,6 +451,71 @@ def _parse_ocsp_response(response_bytes: bytes) -> Dict[str, Any]:
             - serial_number: int or None
             - response_size: int
     """
+    result: Dict[str, Any] = {
+        "status": "unknown",
+        "response_status": None,
+        "revocation_time": None,
+        "cert_status": None,
+        "serial_number": None,
+        "response_size": len(response_bytes),
+    }
+
+    if not response_bytes:
+        return result
+
+    # Prefer cryptography library for standards-compliant parsing
+    if _HAS_CRYPTOGRAPHY:
+        try:
+            resp = load_der_ocsp_response(response_bytes)
+            # Map cryptography OCSPResponseStatus to our numeric codes
+            _STATUS_MAP = {
+                _OcspResponseStatus.SUCCESSFUL: 0,
+                _OcspResponseStatus.MALFORMED_REQUEST: 1,
+                _OcspResponseStatus.INTERNAL_ERROR: 2,
+                _OcspResponseStatus.TRY_LATER: 3,
+                _OcspResponseStatus.SIG_REQUIRED: 5,
+                _OcspResponseStatus.UNAUTHORIZED: 6,
+            }
+            resp_status = _STATUS_MAP.get(resp.response_status, -1)
+            result["response_status"] = resp_status
+
+            if resp.response_status != _OcspResponseStatus.SUCCESSFUL:
+                _STATUS_NAMES = {
+                    1: "malformed", 2: "internal_error",
+                    3: "try_later", 5: "error", 6: "unauthorized",
+                }
+                result["status"] = _STATUS_NAMES.get(resp_status, "error")
+                return result
+
+            # Extract certificate status from the first response
+            if resp.certificate_status is not None:
+                # cryptography returns CertificateStatus enum
+                from cryptography.x509.ocsp import CertificateStatus as _CertStatus
+                if resp.certificate_status == _CertStatus.GOOD:
+                    result["cert_status"] = CERT_STATUS_GOOD
+                    result["status"] = CERT_STATUS_GOOD
+                elif resp.certificate_status == _CertStatus.REVOKED:
+                    result["cert_status"] = CERT_STATUS_REVOKED
+                    result["status"] = CERT_STATUS_REVOKED
+                    if resp.revocation_time:
+                        result["revocation_time"] = resp.revocation_time
+                else:
+                    result["cert_status"] = CERT_STATUS_UNKNOWN
+                    result["status"] = CERT_STATUS_UNKNOWN
+            else:
+                result["cert_status"] = CERT_STATUS_GOOD
+                result["status"] = CERT_STATUS_GOOD
+
+            # Extract serial number from the response
+            result["serial_number"] = resp.serial_number
+
+            return result
+
+        except Exception as e:
+            logger.warning("cryptography OCSP parse failed, falling back to DER parser: %s", e)
+            # Fall through to built-in parser
+
+    # Fallback: built-in DER/ASN.1 parser
     result: Dict[str, Any] = {
         "status": "unknown",
         "response_status": None,
@@ -499,7 +572,7 @@ def _parse_ocsp_response(response_bytes: bytes) -> Dict[str, Any]:
 
 def check_ocsp(
     tls_socket: Any,
-    domain: str,
+    domain: str = "",
     timeout: float = OCSP_TIMEOUT,
     allow_private: bool = False,
 ) -> Dict[str, Any]:
