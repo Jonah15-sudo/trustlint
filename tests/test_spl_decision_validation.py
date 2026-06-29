@@ -27,25 +27,29 @@ if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
 # Import runner internals
-from scripts.run_real_tls_spl_decision_validation import (
-    _decision_to_risk_label,
-    _resolve_classification,
-    _probe_result_to_evidence,
-    _compute_policy_conformance,
-    _load_decision_expectations,
-    _load_train_expectations,
-    _make_pipeline,
-    _run_pipeline_eval,
-    _train_pipeline,
-    _train_pipeline_with_labels,
-    CLASSIFICATION_TO_POLICY,
-    CLASSIFICATION_IS_SECURITY,
-    CLASSIFICATION_IS_AVAILABILITY,
-    CLASSIFICATION_IS_AMBIGUOUS,
-    POLICY_LABELS,
-    DEPRECATED_TLS_CLASSIFICATION,
-    REPORT_DIR,
-)
+try:
+    from scripts.run_real_tls_spl_decision_validation import (
+        _decision_to_risk_label,
+        _resolve_classification,
+        _probe_result_to_evidence,
+        _compute_policy_conformance,
+        _load_decision_expectations,
+        _load_train_expectations,
+        _make_pipeline,
+        _run_pipeline_eval,
+        _train_pipeline,
+        _train_pipeline_with_labels,
+        CLASSIFICATION_TO_POLICY,
+        CLASSIFICATION_IS_SECURITY,
+        CLASSIFICATION_IS_AVAILABILITY,
+        CLASSIFICATION_IS_AMBIGUOUS,
+        POLICY_LABELS,
+        DEPRECATED_TLS_CLASSIFICATION,
+        REPORT_DIR,
+    )
+    _HAS_VALIDATION_RUNNER = True
+except ImportError:
+    _HAS_VALIDATION_RUNNER = False
 
 from spl_v7.schema import EvidenceArtifact
 
