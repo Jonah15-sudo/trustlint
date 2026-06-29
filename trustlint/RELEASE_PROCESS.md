@@ -45,15 +45,23 @@ Move items from `[Unreleased]` into the new version section. Update the comparis
 
 ## 3. Generate SBOM (Software Bill of Materials)
 
-If your build process requires an SBOM:
+The SBOM (`sbom.json`) is a CycloneDX-format bill of materials. It MUST be
+regenerated for every release to reflect the actual dependency set.
 
 ```bash
 # Install cyclonedx-bom if not present
 pip install cyclonedx-bom
 
-# Generate SBOM
-cyclonedx-py environment --output-file sbom.json --output-format json
+# Generate SBOM from the current environment
+cyclonedx-py environment --force --output-file sbom.json --output-format json
 ```
+
+**Provenance requirements:**
+- The SBOM must include a `metadata` section with the generation command,
+  tool version, and timestamp.
+- The committed `sbom.json` is a reference copy; the release artifact SBOM
+  should be generated from the exact build environment used for the wheel.
+- Attach the release-specific SBOM to the GitHub Release as an artifact.
 
 Store the SBOM artifact alongside the release or attach it to the GitHub Release.
 

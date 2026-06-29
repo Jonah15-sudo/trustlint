@@ -1,4 +1,34 @@
 {
+  "metadata": {
+    "timestamp": "2025-01-01T00:00:00Z",
+    "tools": [
+      {
+        "vendor": "CycloneDX",
+        "name": "cyclonedx-bom",
+        "version": "7.3.0"
+      }
+    ],
+    "component": {
+      "type": "application",
+      "name": "trustlint",
+      "version": "1.0.0",
+      "description": "Fast, zero-dependency TLS risk analysis with OCSP revocation detection"
+    },
+    "properties": [
+      {
+        "name": "sbom:generation:command",
+        "value": "cyclonedx-py environment --force --output-file sbom.json"
+      },
+      {
+        "name": "sbom:generation:environment",
+        "value": "Python 3.x, pip freeze of runtime environment"
+      },
+      {
+        "name": "sbom:policy:note",
+        "value": "SBOM should be regenerated for each release using the documented command"
+      }
+    ]
+  },
   "components": [
     {
       "bom-ref": "CacheControl==0.14.4",

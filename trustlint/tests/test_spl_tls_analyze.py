@@ -17,21 +17,25 @@ PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
-from scripts.spl_tls_analyze import (
-    parse_args,
-    resolve_targets,
-    compute_exit_code,
-    compute_summary,
-    format_structured_text,
-    format_json_output,
-    format_markdown_output,
-    format_batch_summary,
-    analyze_domain,
-    _get_recommended_action,
-    _build_evidence_artifact,
-    _RECOMMENDED_ACTIONS,
-    DEPRECATED_TLS_VERSIONS,
-)
+try:
+    from scripts.spl_tls_analyze import (
+        parse_args,
+        resolve_targets,
+        compute_exit_code,
+        compute_summary,
+        format_structured_text,
+        format_json_output,
+        format_markdown_output,
+        format_batch_summary,
+        analyze_domain,
+        _get_recommended_action,
+        _build_evidence_artifact,
+        _RECOMMENDED_ACTIONS,
+        DEPRECATED_TLS_VERSIONS,
+    )
+    _HAS_SPL_TLS_ANALYZE = True
+except ImportError:
+    _HAS_SPL_TLS_ANALYZE = False
 
 
 def _make_mock_probe(

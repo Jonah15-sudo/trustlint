@@ -42,6 +42,8 @@ trustlint = "scripts.spl_tls_analyze:main"
 packages = [
   "trustlint",
   "trustlint.security",
+  "trustlint.infrastructure",
+  "trustlint.infrastructure.ocsp",
   "decision_orchestrator",
   "scripts",
   "spl_v7",

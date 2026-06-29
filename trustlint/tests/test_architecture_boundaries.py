@@ -227,7 +227,7 @@ class TestNoCircularImports:
         # This test actually imports the modules to check for circular imports
         # If there's a circular import, this will fail with ImportError
         imported = set()
-        for module_name in CORE_MODULES:
+        for module_name in self.CORE_MODULES:
             try:
                 __import__(module_name)
                 imported.add(module_name)

@@ -20,14 +20,18 @@ PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
-from scripts.spl_tls_analyze import (
-    analyze_domain,
-    format_structured_text,
-    format_json_output,
-    format_markdown_output,
-    format_batch_summary,
-    compute_summary,
-)
+try:
+    from scripts.spl_tls_analyze import (
+        analyze_domain,
+        format_structured_text,
+        format_json_output,
+        format_markdown_output,
+        format_batch_summary,
+        compute_summary,
+    )
+    _HAS_SPL_TLS_ANALYZE = True
+except ImportError:
+    _HAS_SPL_TLS_ANALYZE = False
 
 SAMPLES_PATH = os.path.join(PROJECT_ROOT, "datasets", "cli_golden_samples.json")
 FIXTURES_DIR = os.path.join(PROJECT_ROOT, "tests", "fixtures", "cli_golden")
