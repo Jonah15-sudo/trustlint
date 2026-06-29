@@ -22,9 +22,8 @@ jobs:
         with:
           python-version: "3.12"
       - run: uv sync --frozen
-      - run: uv run python -m py_compile trustlint/cli.py
-      - run: uv run python -m py_compile trustlint/analyzer.py
-      - run: uv run python -m py_compile trustlint/infrastructure/ocsp/client.py
+      - name: Compile all Python modules
+        run: uv run python -m compileall trustlint scripts -q
 
   test:
     name: Test (Python ${{ matrix.python-version }})
