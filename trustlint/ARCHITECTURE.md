@@ -21,23 +21,22 @@ Application Layer (analyze_domain, analyze, analyze_batch)
 
 ## Module Responsibilities
 
-### Core Package (`trustlint/`)
+### Core Package (`trustlint/trustlint/`)
 - **`__init__.py`**: Public Python API (re-exports from implementation).
+- **`analyzer.py`**: Orchestration, public analysis API, result aggregation.
 - **`security/`**: SSRF protection, safe HTTP client, target scanning policy.
 
-### CLI (`scripts/spl_tls_analyze.py`)
-- Argument parsing, logging setup, output formatting.
-- Thin orchestrator calling application-layer functions.
-- Concurrency management via ThreadPoolExecutor.
+### Infrastructure Layer (`trustlint/trustlint/infrastructure/`)
+- **`tls_probe.py`**: DNS resolution, target policy enforcement, TLS context creation, handshake and certificate gathering, calling OCSP through the package-owned module.
+- **`error_codes.py`**: Structured error code definitions (E1001-E9999).
+- **`ocsp/`**: OCSP checking infrastructure.
+  - **`client.py`**: OCSP URL extraction, request construction, response parsing, OCSP-specific timeout/error handling, OCSP-specific safe logging.
 
-### Application Layer
-- **`analyze_domain()`**: Single-domain analysis pipeline.
-- **`analyze()`**: Public API for single-domain analysis.
-- **`analyze_batch()`**: Public API for batch analysis.
-
-### Infrastructure Layer
-- **`scripts/run_local_tls_validation.py`**: TLS handshake probing, DNS resolution.
-- **`scripts/ocsp_checker.py`**: OCSP certificate revocation checking.
+### CLI (`scripts/`)
+- **`spl_tls_analyze.py`**: Argument parsing, logging setup, output formatting.
+- **`run_local_tls_validation.py`**: Thin backward-compatible wrapper → `trustlint.infrastructure.tls_probe`.
+- **`ocsp_checker.py`**: Thin backward-compatible wrapper → `trustlint.infrastructure.ocsp`.
+- **`error_codes.py`**: Thin backward-compatible wrapper → `trustlint.infrastructure.error_codes`.
 
 ### Domain Layer
 - **`decision_orchestrator/`**: Combines adapter + SPL outputs into final decisions.
@@ -93,11 +92,21 @@ Structured Report (JSON/Markdown/Console)
 - **Dashboard Hardening**: Security headers, auth, CORS, XSS prevention.
 - **Kafka Separation**: Development config is localhost-only; production requires encryption + auth.
 
+## OCSP Module Architecture
+
+The OCSP module (`trustlint.infrastructure.ocsp`) owns all OCSP-related functionality:
+
+- **`client.py`**: OCSP URL extraction from certificates, OCSP request construction, response parsing, timeout/error handling, safe logging.
+- **`__init__.py`**: Public API exports.
+
+All outbound OCSP requests go through `SafeHttpClient` for SSRF protection. The OCSP URL is validated via `OutboundNetworkPolicy` before any request is made.
+
 ## Testing Strategy
 
 - **Unit tests** (`tests/unit/`): No network, no external dependencies.
 - **Security tests** (`tests/security/`): SSRF, target policy, dashboard hardening.
+- **Architecture tests** (`tests/test_architecture_boundaries.py`): AST-based boundary enforcement.
 - **Integration tests** (`tests/`): End-to-end pipeline with mocked probes.
 - **Network tests** (`@pytest.mark.network`): Opt-in, require internet access.
 
-Run offline tests: `pytest -m "not network"`
+Run offline tests: `pytest -m "not network and not slow"`
