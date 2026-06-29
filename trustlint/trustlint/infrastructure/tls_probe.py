@@ -14,7 +14,7 @@ import warnings
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Tuple
 
-from infrastructure.ocsp import check_ocsp
+from trustlint.infrastructure.ocsp import check_ocsp
 
 logger = logging.getLogger(__name__)
 

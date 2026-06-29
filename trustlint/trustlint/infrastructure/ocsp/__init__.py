@@ -1,25 +1,21 @@
 """OCSP checking infrastructure.
 
 OCSP (Online Certificate Status Protocol) checking and validation.
+The real implementation is in trustlint.infrastructure.ocsp.client.
 """
 
-# Placeholder for OCSP functionality
-# This file exists to maintain directory structure
-# Implementation can be added later as needed
+from trustlint.infrastructure.ocsp.client import (
+    check_ocsp,
+    _extract_ocsp_urls,
+    _parse_ocsp_response,
+    OCSP_TIMEOUT,
+    OCSP_MAX_RESPONSE_BYTES,
+)
 
-from typing import Any, Dict
-
-
-def check_ocsp(tls_socket: Any, domain: str) -> Dict[str, Any]:
-    """Check OCSP status.
-
-    This is a placeholder implementation. In a full implementation,
-    this would perform actual OCSP validation.
-    """
-    return {
-        "ocsp_performed": False,
-        "ocsp_stapled": False,
-        "ocsp_status": None,
-        "ocsp_error": None,
-        "ocsp_responder_url": None,
-    }
+__all__ = [
+    "check_ocsp",
+    "_extract_ocsp_urls",
+    "_parse_ocsp_response",
+    "OCSP_TIMEOUT",
+    "OCSP_MAX_RESPONSE_BYTES",
+]
