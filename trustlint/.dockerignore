@@ -1,0 +1,70 @@
+# TrustLint .dockerignore
+# Generated: 2026-06-09
+
+# Virtual environments
+.venv/
+.venv-test/
+venv/
+env/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Git
+.git/
+.gitignore
+
+# Documentation (not needed in image)
+*.md
+!README.md
+docs/
+examples/
+
+# Reports and outputs
+reports/
+results/
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+*.egg
+
+# Docker
+Dockerfile
+docker-compose*.yml
+.dockerignore
+
+# Development files
+Makefile
+requirements.txt
+configs/
+datasets/
+tests/
+scripts/
+
+# Research modules (not needed for production CLI)
+orthogonal_engine/
+frontend/
+ui/
+
+# OS files
+.DS_Store
+Thumbs.db

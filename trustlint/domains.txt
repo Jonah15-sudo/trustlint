@@ -1,0 +1,10 @@
+google.com
+github.com
+microsoft.com
+cloudflare.com
+badssl.com
+stackoverflow.com
+openai.com
+amazon.com
+apple.com
+mozilla.org

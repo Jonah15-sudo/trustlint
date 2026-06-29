@@ -1,0 +1,75 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific - generated reports and results
+reports/
+results/
+experiments/*/runs/
+
+# Keep specific datasets
+datasets/*.txt
+!datasets/dogfood_domains.txt
+!datasets/vps_dry_run_domains.txt
+
+# Keep specific JSON fixtures
+*.json
+!tests/fixtures/**/*.json
+!datasets/*.json
+!sbom.json
+
+# Docker
+docker-compose.override.yml
+
+# Environment files
+.env
+.env.*
+
+# Lock files (if using pip-tools)
+requirements*.txt
+!requirements.txt
+!requirements-lock.txt

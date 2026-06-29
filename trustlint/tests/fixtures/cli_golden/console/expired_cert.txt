@@ -1,0 +1,43 @@
+============================================================
+  DOMAIN: expired.example.com
+  Profile: balanced
+  SPL Core: Inactive
+  Final Decision: REVIEW
+  Final Risk: HIGH
+  Decision Source: ADAPTER
+============================================================
+
+  [TLS Probe]
+  Classification: EXPIRED_CERT
+  CA Store: platform
+  TLS Version: TLSv1.2
+  Certificate Expiry Days: -1
+  Resolved IP: 1.2.3.4
+  Chain Status: Complete
+  OCSP Status: N/A
+  Deprecated TLS Check: None
+  Probe Warnings: Certificate is expired according to the probe.
+
+  [Policy Adapter]
+  Risk Category: SECURITY_RISK
+  Severity: HIGH
+  Failure Family: CERTIFICATE_TRUST
+  Policy Reason: Certificate is expired.
+  Action Hint: RENEW_OR_DENY
+
+  [SPL]
+  Decision: N/A (adapter-only mode)
+  Confidence Source: UNAVAILABLE
+  Weakness Flags: None
+
+  [Decision Reasoning]
+  Primary Reason: Security risk (balanced profile): RENEW_OR_DENY for EXPIRED_CERT
+    Supporting Reasons:
+      - Profile: balanced
+      - Adapter risk: SECURITY_RISK
+
+  [Recommended Action]
+    Renew or replace the certificate immediately.
+
+  [Limitations]
+    - Certificate is expired according to the probe.

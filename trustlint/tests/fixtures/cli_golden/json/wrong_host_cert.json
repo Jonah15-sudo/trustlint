@@ -1,0 +1,76 @@
+{
+  "metadata": {
+    "tool": "trustlint",
+    "profile": "balanced",
+    "spl_active": false,
+    "generated_at": "2026-06-03T18:43:09.394652+00:00Z",
+    "scope": "local-only",
+    "production_ready": false
+  },
+  "ca_store": "platform",
+  "summary": {
+    "total_domains": 1,
+    "allow": 0,
+    "review": 0,
+    "deny": 1,
+    "fallback": 0,
+    "probe_limited": 0,
+    "probe_errors": 0,
+    "highest_risk": "CRITICAL"
+  },
+  "results": [
+    {
+      "domain": "wronghost.example.com",
+      "profile": "balanced",
+      "ca_store": "platform",
+      "spl_active": false,
+      "probe_timestamp": "GENERATED_AT_PLACEHOLDER",
+      "tls_probe": {
+        "classification": "WRONG_HOST_CERT",
+        "raw_classification": "WRONG_HOST_CERT",
+        "tls_version": "TLSv1.2",
+        "expiry_days": 200,
+        "resolved_ip": "9.10.11.12",
+        "cert_is_expired": false,
+        "chain_complete": true,
+        "handshake_time_ms": 30.0,
+        "ocsp_performed": false,
+        "ocsp_stapled": false,
+        "ocsp_status": null,
+        "ocsp_error": null,
+        "ocsp_responder_url": null,
+        "deprecated_tls_check": null,
+        "deprecated_tls_detected": false,
+        "warnings": [],
+        "is_probe_limited": false
+      },
+      "policy_adapter": {
+        "risk_category": "SECURITY_RISK",
+        "severity": "CRITICAL",
+        "failure_family": "CERTIFICATE_TRUST",
+        "reason": "Certificate does not match the requested hostname.",
+        "action_hint": "DENY"
+      },
+      "spl": {
+        "decision": null,
+        "confidence": 0.0,
+        "confidence_source": "UNAVAILABLE",
+        "weakness_flags": []
+      },
+      "final": {
+        "decision": "DENY",
+        "risk": "CRITICAL",
+        "source": "ADAPTER",
+        "fallback_used": false,
+        "primary_reason": "Adapter severity CRITICAL for WRONG_HOST_CERT. DENY",
+        "supporting_reasons": [
+          "Profile: balanced",
+          "Adapter risk: SECURITY_RISK"
+        ],
+        "recommended_action": "Replace certificate with one matching the requested hostname.",
+        "limitations": []
+      },
+      "ofe_observed": false
+    }
+  ]
+}

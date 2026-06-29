@@ -1,0 +1,63 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "trustlint"
+version = "1.0.0"
+description = "Fast, zero-dependency TLS risk analysis with OCSP revocation detection and structured decisions"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = []
+keywords = ["tls", "ssl", "security", "certificate",
+            "ocsp", "risk-analysis", "cli", "devops",
+            "devsecops", "network-security"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "Intended Audience :: System Administrators",
+  "Topic :: Security",
+  "Topic :: Internet :: WWW/HTTP",
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+]
+
+[project.optional-dependencies]
+kafka = ["confluent-kafka>=2.5"]
+dev = ["pytest>=8.0"]
+ca-store = ["certifi>=2024.0.0"]
+spl-core = [
+  "numpy>=1.26",
+  "plotly>=5.20",
+  "networkx>=3.2",
+  "fastapi>=0.111",
+  "uvicorn>=0.30",
+]
+
+[project.scripts]
+trustlint = "scripts.spl_tls_analyze:main"
+
+[tool.setuptools]
+packages = [
+  "trustlint",
+  "trustlint.security",
+  "decision_orchestrator",
+  "scripts",
+  "spl_v7",
+  "tls_policy_adapter",
+  "weakness_mapper",
+  "frontier",
+  "experiments",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "unit: Unit tests (no network, no external dependencies)",
+    "integration: Integration tests (may use mocks)",
+    "network: Tests that require network access (use opt-in)",
+    "security: Security-focused tests",
+    "slow: Tests that take significant time",
+]
+addopts = "-m 'not network and not slow'"

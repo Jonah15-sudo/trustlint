@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPL v3.1 Control Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --col-bg: #06080f;
+            --col-text: #e4e6f0;
+            --col-dim: rgba(180, 184, 210, 0.45);
+            --col-accent: hsl(280, 70%, 65%);
+            --col-gold: hsl(42, 80%, 55%);
+            --col-red: hsl(350, 80%, 55%);
+            --col-green: hsl(140, 60%, 50%);
+            --glass-bg: rgba(10, 12, 28, 0.45);
+            --glass-border: rgba(255, 255, 255, 0.06);
+            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            --glass-inset: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+            --font-display: 'Syne', sans-serif;
+            --font-body: 'Space Grotesk', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--col-bg);
+            color: var(--col-text);
+            min-height: 100vh;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: var(--glass-shadow);
+        }
+
+        h1, h2, h3 {
+            font-family: var(--font-display);
+            color: var(--col-text);
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, var(--col-accent), var(--col-gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--col-text);
+        }
+
+        textarea, input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            color: var(--col-text);
+            font-family: var(--font-body);
+            resize: vertical;
+            margin-bottom: 20px;
+        }
+
+        textarea:focus, input:focus {
+            outline: none;
+            border-color: var(--col-accent);
+            box-shadow: 0 0 0 2px rgba(168, 100, 240, 0.3);
+        }
+
+        button {
+            background: linear-gradient(135deg, var(--col-accent), var(--col-gold));
+            color: var(--col-bg);
+            border: none;
+            padding: 14px 32px;
+            border-radius: 50px;
+            font-family: var(--font-body);
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 24px rgba(168, 100, 240, 0.25);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 40px rgba(168, 100, 240, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(10, 12, 28, 0.3);
+            backdrop-filter: blur(16px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+        }
+
+        .result h2 {
+            margin-top: 0;
+        }
+
+        .result-item {
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .result-label {
+            font-weight: 600;
+            color: var(--col-dim);
+        }
+
+        .result-value {
+            color: var(--col-text);
+        }
+
+        .confidence-bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 4px;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--col-red), var(--col-yellow), var(--col-green));
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .suspended {
+            color: var(--col-gold);
+            font-style: italic;
+        }
+
+        .error {
+            color: var(--col-red);
+            background: rgba(255, 0, 0, 0.1);
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 4px solid var(--col-red);
+        }
+
+        .loading {
+            text-align: center;
+            color: var(--col-dim);
+            font-style: italic;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Sovereign Perception Layer v3.1</h1>
+        <p style="text-align: center; color: var(--col-dim); margin-bottom: 30px;">
+            Enter two contradictory statements to perceive their truth value through the unified architecture.
+        </p>
+
+        <div class="form-group">
+            <label for="text_a">Statement A</label>
+            <textarea id="text_a" rows="3" placeholder="Enter the first statement..."></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="text_b">Statement B</label>
+            <textarea id="text_b" rows="3" placeholder="Enter the second statement..."></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="context">Context (optional)</label>
+            <input type="text" id="context" placeholder="e.g., infrastructure_monitoring, medical, legal">
+        </div>
+
+        <div class="form-group">
+            <label for="n_paths">Number of Paths (for consensus)</label>
+            <input type="number" id="n_paths" value="1" min="1" max="10">
+        </div>
+
+        <button id="perceive_btn">Perceive Contradiction</button>
+
+        <div id="result_container" class="result" style="display: none;">
+            <h2>Perception Result</h2>
+            <div id="result_content"></div>
+        </div>
+
+        <div id="error_container" class="error" style="display: none;"></div>
+    </div>
+
+    <script>
+        document.getElementById('perceive_btn').addEventListener('click', async () => {
+            const text_a = document.getElementById('text_a').value.trim();
+            const text_b = document.getElementById('text_b').value.trim();
+            const context = document.getElementById('context').value.trim() || 'general';
+            const n_paths = parseInt(document.getElementById('n_paths').value) || 1;
+
+            if (!text_a || !text_b) {
+                showError('Please enter both statements');
+                return;
+            }
+
+            // Show loading state
+            const perceiveBtn = document.getElementById('perceive_btn');
+            const originalText = perceiveBtn.innerHTML;
+            perceiveBtn.innerHTML = 'Perceiving...';
+            perceiveBtn.disabled = true;
+            hideError();
+            hideResult();
+
+            try {
+                const response = await fetch('/api/perceive', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        text_a: text_a,
+                        text_b: text_b,
+                        context: context,
+                        n_paths: n_paths
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                displayResult(result);
+            } catch (error) {
+                showError('Failed to perceive contradiction: ' + error.message);
+            } finally {
+                perceiveBtn.innerHTML = originalText;
+                perceiveBtn.disabled = false;
+            }
+        });
+
+        function showError(message) {
+            const errorContainer = document.getElementById('error_container');
+            errorContainer.textContent = message;
+            errorContainer.style.display = 'block';
+        }
+
+        function hideError() {
+            document.getElementById('error_container').style.display = 'none';
+        }
+
+        function hideResult() {
+            document.getElementById('result_container').style.display = 'none';
+        }
+
+        function displayResult(result) {
+            const resultContainer = document.getElementById('result_container');
+            const resultContent = document.getElementById('result_content');
+
+            let html = '';
+            html += `<div class="result-item"><span class="result-label">Decision:</span> <span class="result-value">${result.human_readable}</span></div>`;
+            html += `<div class="result-item"><span class="result-label">Dominant Claim:</span> <span class="result-value">${result.dominant || 'NONE (SUSPENDED)'}</span></div>`;
+            html += `<div class="result-item"><span class="result-label">Confidence:</span> <span class="result-value">${(result.confidence * 100).toFixed(1)}%</span>`;
+            html += `<div class="confidence-bar"><div class="confidence-fill" style="width: ${result.confidence * 100}%;"></div></div></div>`;
+            html += `<div class="result-item"><span class="result-label">Semantic Angle:</span> <span class="result-value">${result.semantic_angle.toFixed(3)}</span></div>`;
+            html += `<div class="result-item"><span class="result-label">Stability:</span> <span class="result-value">${result.stability.toFixed(3)}</span></div>`;
+            html += `<div class="result-item"><span class="result-label">Sovereigns (↑/↓):</span> <span class="result-value">${result.up_sovs} / ${result.dn_sovs}</span></div>`;
+            html += `<div class="result-item"><span class="result-label">SCI:</span> <span class="result-value">${result.sci.toLocaleString()}</span></div>`;
+            html += `<div class="result-item"><span class="result-label">Identity Trace:</span> <span class="result-value">${result.identity_trace.toLocaleString()}</span></div>`;
+            html += `<div class="result-item"><span class="result-label">Bayesian Prior A:</span> <span class="result-value">${(result.bayesian_prior_a * 100).toFixed(1)}%</span></div>`;
+            html += `<div class="result-item"><span class="result-label">Negation Detected:</span> <span class="result-value">${result.negation_detected ? 'Yes' : 'No'}</span></div>`;
+            html += `<div class="result-item"><span class="result-label">Consensus Paths:</span> <span class="result-value">${result.consensus_paths}</span></div>`;
+            html += `<div class="result-item"><span class="result-label">Success Rate:</span> <span class="result-value">${(result.success_rate * 100).toFixed(1)}%</span></div>`;
+
+            resultContent.innerHTML = html;
+            resultContainer.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

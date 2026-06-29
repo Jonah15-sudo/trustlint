@@ -1,0 +1,1926 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SPL v7 — Evidence Intelligence Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+:root{
+  --bg-deep:#05080f;
+  --bg-primary:#070b14;
+  --bg-secondary:#0d1321;
+  --bg-tertiary:#111827;
+  --bg-card:rgba(13,19,33,0.6);
+  --bg-glass:rgba(5,8,15,0.75);
+  --border-glass:rgba(0,212,255,0.08);
+  --border-glass-hover:rgba(0,212,255,0.25);
+  --accent-cyan:#00d4ff;
+  --accent-blue:#2563eb;
+  --accent-violet:#7c3aed;
+  --accent-teal:#0d9488;
+  --accent-amber:#f59e0b;
+  --accent-emerald:#10b981;
+  --accent-rose:#f43f5e;
+  --accent-cyan-dim:rgba(0,212,255,0.12);
+  --accent-cyan-glow:rgba(0,212,255,0.25);
+  --accent-violet-glow:rgba(124,58,237,0.2);
+  --text-primary:#f0f4f8;
+  --text-secondary:#94a3b8;
+  --text-muted:#64748b;
+  --text-dim:#475569;
+  --gradient-1:linear-gradient(135deg,#00d4ff,#7c3aed);
+  --gradient-2:linear-gradient(135deg,#0d9488,#00d4ff);
+  --gradient-3:linear-gradient(135deg,#7c3aed,#f59e0b);
+  --gradient-hero:radial-gradient(ellipse at 30% 50%,rgba(0,212,255,0.08),transparent 60%),radial-gradient(ellipse at 70% 50%,rgba(124,58,237,0.06),transparent 60%);
+  --shadow-cyan:0 0 30px rgba(0,212,255,0.15);
+  --shadow-violet:0 0 30px rgba(124,58,237,0.12);
+  --font-heading:'Chakra Petch',sans-serif;
+  --font-body:'Sora',sans-serif;
+  --font-mono:'JetBrains Mono',monospace;
+  --nav-height:64px;
+  --section-gap:120px;
+}
+
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg-primary);
+  color:var(--text-primary);
+  font-family:var(--font-body);
+  font-weight:300;
+  line-height:1.7;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+
+::selection{background:var(--accent-cyan);color:var(--bg-deep)}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg-deep)}
+::-webkit-scrollbar-thumb{background:var(--accent-cyan-dim);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:rgba(0,212,255,0.25)}
+
+/* === UTILITY === */
+.container{max-width:1200px;margin:0 auto;padding:0 24px}
+.section{padding:100px 0;position:relative}
+.section-label{
+  font-family:var(--font-mono);
+  font-size:12px;
+  font-weight:500;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  color:var(--accent-cyan);
+  display:inline-block;
+  margin-bottom:12px;
+  position:relative;
+}
+.section-label::before{
+  content:'';
+  display:inline-block;
+  width:24px;height:1px;
+  background:var(--accent-cyan);
+  margin-right:12px;
+  vertical-align:middle;
+  opacity:0.5;
+}
+.section-title{
+  font-family:var(--font-heading);
+  font-size:clamp(32px,4vw,56px);
+  font-weight:600;
+  letter-spacing:-0.02em;
+  line-height:1.15;
+  margin-bottom:20px;
+}
+.section-subtitle{
+  font-size:clamp(15px,1.1vw,18px);
+  color:var(--text-secondary);
+  max-width:620px;
+  line-height:1.7;
+}
+.section-header{text-align:center;margin-bottom:64px}
+.section-header .section-subtitle{margin:0 auto}
+.section-divider{
+  height:1px;
+  background:linear-gradient(90deg,transparent,var(--accent-cyan-dim),transparent);
+  margin:0;
+  border:none;
+}
+
+/* === NOISE OVERLAY === */
+.noise-overlay{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  pointer-events:none;z-index:9999;
+  opacity:0.025;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+  background-repeat:repeat;
+  background-size:256px 256px;
+}
+
+/* === NAV === */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:1000;
+  height:var(--nav-height);
+  padding:0 32px;
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(5,8,15,0.6);
+  backdrop-filter:blur(20px) saturate(1.5);
+  -webkit-backdrop-filter:blur(20px) saturate(1.5);
+  border-bottom:1px solid var(--border-glass);
+  transition:background 0.4s,box-shadow 0.4s;
+}
+nav.scrolled{
+  background:rgba(5,8,15,0.85);
+  box-shadow:0 1px 30px rgba(0,0,0,0.4);
+}
+.nav-logo{
+  display:flex;align-items:center;gap:10px;
+  font-family:var(--font-heading);
+  font-weight:700;
+  font-size:18px;
+  letter-spacing:1px;
+  color:var(--text-primary);
+  text-decoration:none;
+}
+.nav-logo .logo-icon{
+  width:28px;height:28px;
+  border-radius:6px;
+  background:var(--gradient-1);
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;color:var(--bg-deep);
+}
+.nav-logo .logo-badge{
+  font-size:9px;font-weight:500;
+  color:var(--accent-cyan);
+  background:var(--accent-cyan-dim);
+  padding:1px 6px;border-radius:3px;
+  letter-spacing:0.5px;
+  font-family:var(--font-mono);
+  margin-left:4px;
+  border:1px solid rgba(0,212,255,0.15);
+}
+.nav-links{display:flex;gap:4px;list-style:none}
+.nav-links a{
+  font-family:var(--font-heading);
+  font-size:12px;font-weight:500;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  color:var(--text-secondary);
+  text-decoration:none;
+  padding:6px 16px;
+  border-radius:6px;
+  transition:all 0.25s;
+  position:relative;
+}
+.nav-links a:hover{color:var(--accent-cyan);background:var(--accent-cyan-dim)}
+.nav-actions{display:flex;align-items:center;gap:12px}
+.nav-status{
+  display:flex;align-items:center;gap:6px;
+  font-family:var(--font-mono);
+  font-size:10px;
+  color:var(--accent-emerald);
+  background:rgba(16,185,129,0.08);
+  padding:4px 10px;border-radius:12px;
+  border:1px solid rgba(16,185,129,0.15);
+}
+.nav-status .dot{
+  width:5px;height:5px;border-radius:50%;
+  background:var(--accent-emerald);
+  animation:pulse-dot 2s ease-in-out infinite;
+}
+@keyframes pulse-dot{
+  0%,100%{opacity:1;transform:scale(1)}
+  50%{opacity:0.5;transform:scale(0.8)}
+}
+
+/* === HERO === */
+#hero{
+  min-height:100vh;
+  display:flex;align-items:center;position:relative;
+  overflow:hidden;
+  padding-top:var(--nav-height);
+  background:var(--bg-deep);
+}
+#hero::before{
+  content:'';position:absolute;inset:0;
+  background:var(--gradient-hero);
+  pointer-events:none;
+  z-index:1;
+}
+#hero-canvas{
+  position:absolute;inset:0;
+  z-index:0;
+}
+.hero-content{
+  position:relative;z-index:2;
+  max-width:740px;
+  padding:80px 0;
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--font-mono);
+  font-size:11px;font-weight:500;
+  letter-spacing:2px;
+  color:var(--accent-cyan);
+  background:var(--accent-cyan-dim);
+  padding:6px 16px;
+  border-radius:20px;
+  border:1px solid rgba(0,212,255,0.15);
+  margin-bottom:28px;
+}
+.hero-badge .badge-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--accent-cyan);
+  animation:pulse-dot 2s ease-in-out infinite;
+}
+.hero-content h1{
+  font-family:var(--font-heading);
+  font-size:clamp(42px,5.5vw,76px);
+  font-weight:700;
+  letter-spacing:-0.03em;
+  line-height:1.05;
+  margin-bottom:24px;
+  background:var(--gradient-1);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.hero-content .hero-desc{
+  font-size:clamp(15px,1.15vw,19px);
+  color:var(--text-secondary);
+  max-width:560px;
+  line-height:1.8;
+  margin-bottom:40px;
+}
+.hero-ctas{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:48px}
+.btn{
+  display:inline-flex;align-items:center;gap:10px;
+  font-family:var(--font-heading);
+  font-size:13px;font-weight:600;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  text-decoration:none;
+  padding:14px 32px;
+  border-radius:8px;
+  transition:all 0.35s cubic-bezier(0.16,1,0.3,1);
+  position:relative;overflow:hidden;
+  cursor:pointer;border:none;
+}
+.btn-primary{
+  background:var(--gradient-1);
+  color:var(--bg-deep);
+  box-shadow:0 0 30px rgba(0,212,255,0.2);
+}
+.btn-primary:hover{
+  transform:translateY(-2px);
+  box-shadow:0 0 50px rgba(0,212,255,0.35);
+}
+.btn-secondary{
+  background:transparent;
+  color:var(--accent-cyan);
+  border:1px solid rgba(0,212,255,0.25);
+}
+.btn-secondary:hover{
+  background:var(--accent-cyan-dim);
+  border-color:var(--accent-cyan);
+  transform:translateY(-2px);
+}
+.btn .btn-arrow{transition:transform 0.3s}
+.btn:hover .btn-arrow{transform:translateX(4px)}
+
+.hero-metrics{
+  display:flex;gap:24px;flex-wrap:wrap;
+  padding:20px 0;
+}
+.metric-chip{
+  display:flex;align-items:center;gap:8px;
+  font-family:var(--font-mono);
+  font-size:11px;
+  color:var(--text-muted);
+  background:var(--bg-card);
+  border:1px solid var(--border-glass);
+  padding:8px 16px;
+  border-radius:8px;
+  backdrop-filter:blur(8px);
+  transition:all 0.3s;
+}
+.metric-chip:hover{border-color:var(--border-glass-hover);background:rgba(13,19,33,0.8)}
+.metric-chip .metric-val{
+  color:var(--accent-cyan);
+  font-weight:600;
+  font-size:13px;
+}
+.metric-chip .metric-trend{
+  color:var(--accent-emerald);
+  font-size:10px;
+}
+.metric-chip .status-live{
+  display:flex;align-items:center;gap:4px;
+  color:var(--accent-emerald);
+}
+.metric-chip .status-live .dot{width:4px;height:4px;background:var(--accent-emerald);border-radius:50%;animation:pulse-dot 1.5s ease-in-out infinite}
+
+/* === SCROLL REVEAL === */
+.reveal{opacity:0;transform:translateY(40px);transition:all 0.8s cubic-bezier(0.16,1,0.3,1)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-left{opacity:0;transform:translateX(-40px);transition:all 0.8s cubic-bezier(0.16,1,0.3,1)}
+.reveal-left.visible{opacity:1;transform:translateX(0)}
+.reveal-right{opacity:0;transform:translateX(40px);transition:all 0.8s cubic-bezier(0.16,1,0.3,1)}
+.reveal-right.visible{opacity:1;transform:translateX(0)}
+.reveal-scale{opacity:0;transform:scale(0.95);transition:all 0.8s cubic-bezier(0.16,1,0.3,1)}
+.reveal-scale.visible{opacity:1;transform:scale(1)}
+.reveal-stagger>*{opacity:0;transform:translateY(24px);transition:all 0.6s cubic-bezier(0.16,1,0.3,1)}
+.reveal-stagger.visible>*{opacity:1;transform:translateY(0)}
+.reveal-stagger.visible>*:nth-child(1){transition-delay:0s}
+.reveal-stagger.visible>*:nth-child(2){transition-delay:0.08s}
+.reveal-stagger.visible>*:nth-child(3){transition-delay:0.16s}
+.reveal-stagger.visible>*:nth-child(4){transition-delay:0.24s}
+.reveal-stagger.visible>*:nth-child(5){transition-delay:0.32s}
+.reveal-stagger.visible>*:nth-child(6){transition-delay:0.4s}
+.reveal-stagger.visible>*:nth-child(7){transition-delay:0.48s}
+.reveal-stagger.visible>*:nth-child(8){transition-delay:0.56s}
+
+/* === OVERVIEW === */
+#overview{background:var(--bg-primary)}
+.overview-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:20px;
+}
+.overview-card{
+  background:var(--bg-card);
+  border:1px solid var(--border-glass);
+  border-radius:16px;
+  padding:32px 28px;
+  backdrop-filter:blur(12px);
+  transition:all 0.4s cubic-bezier(0.16,1,0.3,1);
+  position:relative;overflow:hidden;
+}
+.overview-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;
+  height:1px;
+  background:linear-gradient(90deg,transparent,var(--accent-cyan),transparent);
+  opacity:0;
+  transition:opacity 0.4s;
+}
+.overview-card:hover::before{opacity:1}
+.overview-card:hover{
+  transform:translateY(-4px);
+  border-color:var(--border-glass-hover);
+  box-shadow:0 12px 40px rgba(0,0,0,0.3),var(--shadow-cyan);
+}
+.overview-card .card-icon{
+  width:44px;height:44px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;
+  margin-bottom:20px;
+  position:relative;
+}
+.overview-card .card-icon.cyan{background:rgba(0,212,255,0.1);color:var(--accent-cyan)}
+.overview-card .card-icon.violet{background:rgba(124,58,237,0.1);color:var(--accent-violet)}
+.overview-card .card-icon.teal{background:rgba(13,148,136,0.1);color:var(--accent-teal)}
+.overview-card .card-icon.amber{background:rgba(245,158,11,0.1);color:var(--accent-amber)}
+.overview-card h3{
+  font-family:var(--font-heading);
+  font-size:16px;font-weight:600;
+  letter-spacing:0.5px;
+  margin-bottom:10px;
+}
+.overview-card p{
+  font-size:13px;color:var(--text-secondary);
+  line-height:1.7;
+}
+.overview-card .card-tag{
+  display:inline-block;
+  font-family:var(--font-mono);
+  font-size:9px;font-weight:500;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  color:var(--accent-cyan);
+  background:var(--accent-cyan-dim);
+  padding:2px 8px;border-radius:4px;
+  margin-top:14px;
+}
+
+/* === PIPELINE === */
+#pipeline{background:var(--bg-secondary)}
+.pipeline-steps{display:flex;flex-direction:column;gap:0;position:relative;max-width:900px;margin:0 auto}
+.pipeline-step{
+  display:flex;gap:28px;position:relative;
+  padding:28px 0;
+}
+.pipeline-step:not(:last-child)::after{
+  content:'';position:absolute;
+  left:23px;top:60px;bottom:-20px;
+  width:1px;
+  background:linear-gradient(180deg,var(--accent-cyan),var(--accent-violet));
+  opacity:0.2;
+}
+.pipeline-step-num{
+  width:48px;height:48px;min-width:48px;
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-heading);
+  font-size:16px;font-weight:700;
+  border:1px solid var(--border-glass);
+  background:var(--bg-card);
+  color:var(--text-muted);
+  position:relative;
+  transition:all 0.4s;
+}
+.pipeline-step.active .pipeline-step-num,
+.pipeline-step:hover .pipeline-step-num{
+  border-color:var(--accent-cyan);
+  color:var(--accent-cyan);
+  background:var(--accent-cyan-dim);
+  box-shadow:0 0 20px rgba(0,212,255,0.15);
+}
+.pipeline-step-content{flex:1;padding-top:4px}
+.pipeline-step-content h3{
+  font-family:var(--font-heading);
+  font-size:18px;font-weight:600;
+  letter-spacing:0.3px;
+  margin-bottom:6px;
+}
+.pipeline-step-content p{
+  font-size:14px;color:var(--text-secondary);
+  line-height:1.7;
+  max-width:520px;
+}
+.pipeline-step-content .step-tags{
+  display:flex;gap:8px;margin-top:8px;
+}
+.pipeline-step-content .step-tags span{
+  font-family:var(--font-mono);
+  font-size:9px;
+  font-weight:500;
+  letter-spacing:0.5px;
+  padding:2px 8px;
+  border-radius:4px;
+  background:var(--accent-cyan-dim);
+  color:var(--accent-cyan);
+  text-transform:uppercase;
+}
+
+/* === CAPABILITIES === */
+#capabilities{background:var(--bg-primary)}
+.cap-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+  gap:20px;
+}
+.cap-card{
+  background:var(--bg-card);
+  border:1px solid var(--border-glass);
+  border-radius:16px;
+  padding:36px 30px;
+  backdrop-filter:blur(12px);
+  transition:all 0.4s cubic-bezier(0.16,1,0.3,1);
+  position:relative;overflow:hidden;
+  perspective:800px;
+}
+.cap-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;bottom:0;
+  border-radius:16px;
+  padding:1px;
+  background:linear-gradient(135deg,var(--accent-cyan),transparent 40%,transparent 60%,var(--accent-violet));
+  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;
+  mask-composite:exclude;
+  opacity:0;
+  transition:opacity 0.4s;
+  pointer-events:none;
+}
+.cap-card:hover::before{opacity:1}
+.cap-card:hover{
+  transform:translateY(-6px) rotateX(2deg);
+  border-color:rgba(0,212,255,0.15);
+  box-shadow:0 20px 60px rgba(0,0,0,0.3);
+}
+.cap-card .cap-icon{
+  width:40px;height:40px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;
+  margin-bottom:18px;
+  position:relative;
+}
+.cap-card .cap-icon.cyan{background:rgba(0,212,255,0.1);color:var(--accent-cyan)}
+.cap-card .cap-icon.violet{background:rgba(124,58,237,0.1);color:var(--accent-violet)}
+.cap-card .cap-icon.teal{background:rgba(13,148,136,0.1);color:var(--accent-teal)}
+.cap-card .cap-icon.amber{background:rgba(245,158,11,0.1);color:var(--accent-amber)}
+.cap-card .cap-icon.emerald{background:rgba(16,185,129,0.1);color:var(--accent-emerald)}
+.cap-card .cap-icon.rose{background:rgba(244,63,94,0.1);color:var(--accent-rose)}
+.cap-card h3{
+  font-family:var(--font-heading);
+  font-size:17px;font-weight:600;
+  letter-spacing:0.3px;
+  margin-bottom:8px;
+}
+.cap-card p{
+  font-size:13px;color:var(--text-secondary);
+  line-height:1.7;
+}
+.cap-card .cap-status{
+  display:inline-flex;align-items:center;gap:5px;
+  font-family:var(--font-mono);
+  font-size:9px;font-weight:500;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  padding:3px 10px;
+  border-radius:12px;
+  margin-top:14px;
+}
+.cap-card .cap-status.ready{color:var(--accent-emerald);background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.15)}
+.cap-card .cap-status.live{color:var(--accent-cyan);background:var(--accent-cyan-dim);border:1px solid rgba(0,212,255,0.15)}
+.cap-card .cap-status.beta{color:var(--accent-amber);background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.15)}
+.cap-card .cap-status .dot{width:4px;height:4px;border-radius:50%;display:inline-block}
+.cap-card .cap-status.ready .dot{background:var(--accent-emerald)}
+.cap-card .cap-status.live .dot{background:var(--accent-cyan);animation:pulse-dot 2s ease-in-out infinite}
+.cap-card .cap-status.beta .dot{background:var(--accent-amber)}
+
+/* === TRUST === */
+#trust{background:var(--bg-secondary);position:relative;overflow:hidden}
+#trust::before{
+  content:'';position:absolute;top:-50%;right:-20%;
+  width:600px;height:600px;
+  background:radial-gradient(circle,rgba(0,212,255,0.04),transparent 70%);
+  pointer-events:none;
+}
+.trust-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:24px;
+}
+.trust-card{
+  background:var(--bg-card);
+  border:1px solid var(--border-glass);
+  border-radius:16px;
+  padding:32px 28px;
+  backdrop-filter:blur(12px);
+  transition:all 0.4s;
+}
+.trust-card:hover{border-color:var(--border-glass-hover)}
+.trust-card h3{
+  font-family:var(--font-heading);
+  font-size:15px;font-weight:600;
+  letter-spacing:0.3px;
+  margin-bottom:16px;
+  display:flex;align-items:center;gap:8px;
+}
+.trust-card .trust-bar{height:6px;background:rgba(255,255,255,0.04);border-radius:3px;overflow:hidden;margin-bottom:8px}
+.trust-card .trust-bar-fill{height:100%;border-radius:3px;transition:width 1.5s cubic-bezier(0.16,1,0.3,1);width:0%}
+.trust-card .trust-bar-fill.fill-cyan{background:linear-gradient(90deg,var(--accent-cyan),rgba(0,212,255,0.4))}
+.trust-card .trust-bar-fill.fill-violet{background:linear-gradient(90deg,var(--accent-violet),rgba(124,58,237,0.4))}
+.trust-card .trust-bar-fill.fill-teal{background:linear-gradient(90deg,var(--accent-teal),rgba(13,148,136,0.4))}
+.trust-card .trust-bar-fill.fill-amber{background:linear-gradient(90deg,var(--accent-amber),rgba(245,158,11,0.4))}
+.trust-card .trust-bar-fill.fill-emerald{background:linear-gradient(90deg,var(--accent-emerald),rgba(16,185,129,0.4))}
+.trust-card .trust-meta{
+  display:flex;justify-content:space-between;
+  font-family:var(--font-mono);
+  font-size:10px;color:var(--text-muted);
+}
+.trust-card .trust-meta .trust-pct{color:var(--text-secondary);font-weight:600}
+
+/* === SHIELD === */
+.trust-shield{
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:48px;
+  position:relative;
+}
+.trust-shield-inner{
+  width:200px;height:200px;
+  position:relative;
+  display:flex;align-items:center;justify-content:center;
+}
+.trust-shield-ring{
+  position:absolute;inset:0;
+  border-radius:50%;
+  border:1px solid rgba(0,212,255,0.1);
+}
+.trust-shield-ring:nth-child(1){inset:10px;animation:spin 20s linear infinite}
+.trust-shield-ring:nth-child(2){inset:25px;animation:spin 30s linear infinite reverse;border-color:rgba(124,58,237,0.12)}
+.trust-shield-ring:nth-child(3){inset:40px;animation:spin 25s linear infinite;border-color:rgba(0,212,255,0.08)}
+.trust-shield-center{
+  width:60px;height:60px;
+  border-radius:50%;
+  background:var(--gradient-1);
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;
+  box-shadow:0 0 40px rgba(0,212,255,0.2);
+  position:relative;
+  z-index:2;
+}
+.trust-shield-center::after{
+  content:'';position:absolute;
+  width:80px;height:80px;border-radius:50%;
+  border:1px solid rgba(0,212,255,0.15);
+  animation:ping 3s ease-in-out infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes ping{
+  0%,100%{transform:scale(1);opacity:1}
+  50%{transform:scale(1.2);opacity:0.3}
+}
+
+/* === DASHBOARD === */
+#dashboard{background:var(--bg-primary)}
+.dashboard-mock{
+  background:linear-gradient(135deg,rgba(5,8,15,0.9),rgba(13,19,33,0.8));
+  border:1px solid var(--border-glass);
+  border-radius:20px;
+  overflow:hidden;
+  backdrop-filter:blur(16px);
+  box-shadow:0 20px 60px rgba(0,0,0,0.4);
+}
+.dashboard-header{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:16px 24px;
+  border-bottom:1px solid var(--border-glass);
+}
+.dashboard-header-left{
+  display:flex;align-items:center;gap:12px;
+}
+.dashboard-header-left .db-dots{display:flex;gap:6px}
+.dashboard-header-left .db-dot{
+  width:8px;height:8px;border-radius:50%;
+}
+.dashboard-header-left .db-dot:nth-child(1){background:var(--accent-rose)}
+.dashboard-header-left .db-dot:nth-child(2){background:var(--accent-amber)}
+.dashboard-header-left .db-dot:nth-child(3){background:var(--accent-emerald)}
+.dashboard-header-left .db-title{
+  font-family:var(--font-mono);
+  font-size:11px;color:var(--text-muted);
+  letter-spacing:0.5px;
+  margin-left:8px;
+}
+.dashboard-header-right{
+  display:flex;align-items:center;gap:12px;
+  font-family:var(--font-mono);
+  font-size:10px;color:var(--text-muted);
+}
+.dashboard-header-right .db-status{
+  display:flex;align-items:center;gap:5px;
+  color:var(--accent-emerald);
+}
+.dashboard-header-right .db-status .dot{width:5px;height:5px;border-radius:50%;background:var(--accent-emerald);animation:pulse-dot 2s ease-in-out infinite}
+.dashboard-body{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:0;
+}
+@media(max-width:900px){.dashboard-body{grid-template-columns:1fr}}
+.dashboard-panel{
+  padding:24px;
+  border-right:1px solid var(--border-glass);
+}
+.dashboard-panel:last-child{border-right:none}
+.dashboard-panel .panel-label{
+  font-family:var(--font-mono);
+  font-size:10px;font-weight:500;
+  letter-spacing:1.5px;
+  text-transform:uppercase;
+  color:var(--text-muted);
+  margin-bottom:16px;
+}
+.dashboard-chart{
+  height:120px;
+  display:flex;align-items:flex-end;gap:4px;
+  margin-bottom:12px;
+}
+.dashboard-chart .bar{
+  flex:1;
+  border-radius:2px 2px 0 0;
+  background:linear-gradient(180deg,var(--accent-cyan),rgba(0,212,255,0.1));
+  height:0%;
+  transition:height 1.5s cubic-bezier(0.16,1,0.3,1);
+  min-height:2px;
+  position:relative;
+}
+.dashboard-chart .bar:nth-child(odd){background:linear-gradient(180deg,var(--accent-violet),rgba(124,58,237,0.1))}
+.dashboard-metrics-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:8px;
+}
+.dashboard-metric{
+  background:rgba(255,255,255,0.02);
+  border:1px solid var(--border-glass);
+  border-radius:8px;
+  padding:12px;
+}
+.dashboard-metric .dm-label{
+  font-family:var(--font-mono);
+  font-size:9px;font-weight:500;
+  letter-spacing:0.5px;
+  color:var(--text-muted);
+  text-transform:uppercase;
+  margin-bottom:4px;
+}
+.dashboard-metric .dm-value{
+  font-family:var(--font-heading);
+  font-size:18px;font-weight:600;
+  color:var(--text-primary);
+}
+.dashboard-metric .dm-value.cyan{color:var(--accent-cyan)}
+.dashboard-metric .dm-value.emerald{color:var(--accent-emerald)}
+.dashboard-metric .dm-value.amber{color:var(--accent-amber)}
+.dashboard-metric .dm-sub{
+  font-family:var(--font-mono);
+  font-size:9px;color:var(--text-muted);
+  margin-top:2px;
+}
+.dashboard-list{
+  display:flex;flex-direction:column;gap:4px;
+}
+.dashboard-list-item{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:8px 0;
+  border-bottom:1px solid rgba(255,255,255,0.03);
+  font-family:var(--font-mono);
+  font-size:11px;
+}
+.dashboard-list-item .dli-label{color:var(--text-secondary)}
+.dashboard-list-item .dli-value{color:var(--text-primary);font-weight:500}
+.dashboard-list-item .dli-status{
+  width:6px;height:6px;border-radius:50%;
+}
+.dashboard-list-item .dli-status.passed{background:var(--accent-emerald)}
+.dashboard-list-item .dli-status.warning{background:var(--accent-amber)}
+.dashboard-list-item .dli-status.failed{background:var(--accent-rose)}
+.dashboard-list-item .dli-status.streaming{background:var(--accent-cyan);animation:pulse-dot 1.5s ease-in-out infinite}
+
+/* === USE CASES === */
+#usecases{background:var(--bg-secondary)}
+.usecase-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:20px;
+}
+.usecase-card{
+  background:var(--bg-card);
+  border:1px solid var(--border-glass);
+  border-radius:16px;
+  padding:28px 24px;
+  backdrop-filter:blur(12px);
+  transition:all 0.4s;
+  cursor:pointer;
+}
+.usecase-card:hover{
+  transform:translateY(-4px);
+  border-color:var(--border-glass-hover);
+  box-shadow:0 12px 40px rgba(0,0,0,0.2);
+}
+.usecase-card .uc-icon{
+  font-size:24px;margin-bottom:16px;
+}
+.usecase-card h3{
+  font-family:var(--font-heading);
+  font-size:15px;font-weight:600;
+  letter-spacing:0.3px;
+  margin-bottom:8px;
+}
+.usecase-card p{
+  font-size:13px;color:var(--text-secondary);
+  line-height:1.7;
+}
+.usecase-card .uc-tag{
+  display:inline-block;
+  font-family:var(--font-mono);
+  font-size:9px;font-weight:500;
+  letter-spacing:0.5px;
+  text-transform:uppercase;
+  padding:2px 8px;border-radius:4px;
+  margin-top:12px;
+  color:var(--accent-violet);
+  background:rgba(124,58,237,0.08);
+}
+
+/* === ARCHITECTURE === */
+#architecture{background:var(--bg-primary)}
+.arch-diagram{
+  display:flex;flex-direction:column;gap:0;
+  position:relative;
+  max-width:900px;margin:0 auto;
+}
+.arch-row{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:12px;
+  padding:16px 0;
+  position:relative;
+}
+.arch-row:not(:last-child)::after{
+  content:'';
+  position:absolute;bottom:-2px;
+  left:10%;right:10%;
+  height:1px;
+  background:linear-gradient(90deg,transparent,var(--accent-cyan-dim),transparent);
+}
+.arch-label{
+  font-family:var(--font-mono);
+  font-size:9px;font-weight:500;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  color:var(--text-muted);
+  text-align:center;
+  grid-column:1/-1;
+  margin-bottom:4px;
+}
+.arch-node{
+  background:var(--bg-card);
+  border:1px solid var(--border-glass);
+  border-radius:10px;
+  padding:16px 12px;
+  text-align:center;
+  transition:all 0.3s;
+  position:relative;
+}
+.arch-node:hover{border-color:var(--border-glass-hover);transform:translateY(-2px)}
+.arch-node .arch-node-icon{font-size:20px;margin-bottom:6px}
+.arch-node .arch-node-name{
+  font-family:var(--font-heading);
+  font-size:11px;font-weight:600;
+  letter-spacing:0.3px;
+}
+.arch-node .arch-node-desc{
+  font-family:var(--font-mono);
+  font-size:8px;color:var(--text-muted);
+  margin-top:2px;
+}
+.arch-flow-arrows{
+  display:flex;justify-content:center;gap:20px;
+  padding:4px 0;
+  font-size:10px;color:var(--accent-cyan);
+  opacity:0.3;
+  font-family:var(--font-mono);
+  letter-spacing:4px;
+}
+
+/* === CTA === */
+#cta{
+  background:var(--bg-deep);
+  position:relative;overflow:hidden;
+  text-align:center;
+  padding:140px 0;
+}
+#cta::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at center,rgba(0,212,255,0.06),transparent 60%);
+  pointer-events:none;
+}
+#cta::after{
+  content:'';position:absolute;
+  top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--accent-cyan),transparent);
+  opacity:0.3;
+}
+.cta-content{position:relative;z-index:2}
+.cta-content h2{
+  font-family:var(--font-heading);
+  font-size:clamp(32px,4vw,52px);
+  font-weight:700;
+  letter-spacing:-0.02em;
+  line-height:1.1;
+  margin-bottom:20px;
+}
+.cta-content p{
+  font-size:16px;color:var(--text-secondary);
+  max-width:520px;margin:0 auto 36px;
+  line-height:1.8;
+}
+.cta-content .btn-primary{
+  font-size:14px;padding:18px 44px;
+}
+.cta-glow{
+  position:absolute;bottom:-200px;left:50%;transform:translateX(-50%);
+  width:600px;height:600px;
+  background:radial-gradient(circle,rgba(0,212,255,0.04),transparent 60%);
+  pointer-events:none;
+}
+
+/* === FOOTER === */
+footer{
+  background:var(--bg-deep);
+  border-top:1px solid var(--border-glass);
+  padding:40px 0;
+}
+.footer-inner{
+  display:flex;justify-content:space-between;align-items:center;
+  flex-wrap:wrap;gap:16px;
+}
+.footer-inner .footer-left{
+  font-family:var(--font-heading);
+  font-size:12px;
+  color:var(--text-muted);
+  letter-spacing:0.5px;
+}
+.footer-inner .footer-left span{color:var(--accent-cyan)}
+.footer-inner .footer-right{
+  display:flex;gap:16px;
+  font-family:var(--font-mono);
+  font-size:10px;color:var(--text-dim);
+}
+.footer-inner .footer-right a{color:var(--text-muted);text-decoration:none;transition:color 0.3s}
+.footer-inner .footer-right a:hover{color:var(--accent-cyan)}
+
+/* === RESPONSIVE === */
+@media(max-width:768px){
+  .nav-links{display:none}
+  .nav-status .label{display:none}
+  #hero .hero-content{padding:40px 0}
+  .hero-metrics{gap:12px}
+  .hero-content h1{font-size:clamp(28px,8vw,42px)}
+  .overview-grid{grid-template-columns:1fr}
+  .cap-grid{grid-template-columns:1fr}
+  .trust-grid{grid-template-columns:1fr}
+  .usecase-grid{grid-template-columns:1fr}
+  .dashboard-body{grid-template-columns:1fr}
+  .dashboard-panel{border-right:none;border-bottom:1px solid var(--border-glass)}
+  .section{padding:60px 0}
+  .arch-row{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:480px){
+  nav{padding:0 16px}
+  .container{padding:0 16px}
+  .hero-ctas{flex-direction:column}
+  .btn{width:100%;justify-content:center}
+  .arch-row{grid-template-columns:1fr}
+}
+
+/* === AMBIENT BG === */
+.ambient-grid{
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(0,212,255,0.02) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,212,255,0.02) 1px,transparent 1px);
+  background-size:60px 60px;
+  pointer-events:none;
+  z-index:0;
+}
+
+/* === SECTION TRANSITIONS === */
+.section-transition{
+  position:relative;
+}
+.section-transition::after{
+  content:'';position:absolute;
+  bottom:-1px;left:0;right:0;height:80px;
+  background:linear-gradient(180deg,transparent,var(--bg-primary));
+  pointer-events:none;
+  z-index:1;
+}
+
+/* === COUNTER === */
+.counter-value{display:inline-block}
+
+/* === GLOW LINE === */
+.glow-line{
+  width:60px;height:2px;
+  background:var(--gradient-1);
+  border-radius:1px;
+  margin:16px 0 20px;
+  box-shadow:0 0 12px rgba(0,212,255,0.3);
+}
+
+/* === PIPELINE FLOW ANIMATION === */
+@keyframes flow-pulse{
+  0%,100%{opacity:0.2}
+  50%{opacity:0.6}
+}
+.pipeline-step.active::after{animation:flow-pulse 2s ease-in-out infinite}
+</style>
+</head>
+<body>
+
+<div class="noise-overlay"></div>
+
+<!-- === NAV === -->
+<nav id="navbar">
+  <a href="#" class="nav-logo">
+    <span class="logo-icon">S</span>
+    SPL <span class="logo-badge">v7</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#pipeline">Pipeline</a></li>
+    <li><a href="#trust">Trust</a></li>
+    <li><a href="#dashboard">Dashboard</a></li>
+    <li><a href="#usecases">Use Cases</a></li>
+  </ul>
+  <div class="nav-actions">
+    <div class="nav-status">
+      <span class="dot"></span>
+      <span class="label">All Systems Live</span>
+    </div>
+  </div>
+</nav>
+
+<!-- === HERO === -->
+<section id="hero">
+  <div id="hero-canvas"></div>
+  <div class="container hero-content">
+    <div class="hero-badge reveal">
+      <span class="badge-dot"></span>
+      SPL v7 — Evidence Intelligence Platform
+    </div>
+    <h1 class="reveal" style="transition-delay:0.1s">Turn raw evidence into trusted decisions.</h1>
+    <p class="hero-desc reveal" style="transition-delay:0.2s">
+      SPL v7 processes evidence through safe feature extraction, online causal learning, and confidence checks — converting raw collector data into trusted, verifiable decisions at production scale.
+    </p>
+    <div class="hero-ctas reveal" style="transition-delay:0.3s">
+      <a href="#pipeline" class="btn btn-primary">
+        Explore the Pipeline
+        <span class="btn-arrow">→</span>
+      </a>
+      <a href="#dashboard" class="btn btn-secondary">
+        View the Graph
+        <span class="btn-arrow">→</span>
+      </a>
+    </div>
+    <div class="hero-metrics reveal" style="transition-delay:0.4s">
+      <div class="metric-chip">
+        <span>Confidence</span>
+        <span class="metric-val">98.6%</span>
+        <span class="metric-trend">▲ 2.3%</span>
+      </div>
+      <div class="metric-chip">
+        <span>Graph Stability</span>
+        <span class="metric-val">0.92</span>
+        <span class="metric-trend" style="color:var(--accent-cyan)">▲ 0.04</span>
+      </div>
+      <div class="metric-chip">
+        <span>Signal Corroboration</span>
+        <span class="metric-val">94.1%</span>
+        <span class="metric-trend">▲ 1.7%</span>
+      </div>
+      <div class="metric-chip">
+        <span class="status-live">
+          <span class="dot"></span> Streaming
+        </span>
+        <span class="metric-val">1.2M ev/s</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- === OVERVIEW === -->
+<section id="overview" class="section">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-label">Overview</span>
+      <h2 class="section-title">A structured pipeline for evidence intelligence</h2>
+      <p class="section-subtitle">
+        From raw collector data to trusted decisions — SPL v7 orchestrates safe extraction, online causal learning, and rigorous confidence gating at production scale.
+      </p>
+    </div>
+    <div class="overview-grid reveal-stagger">
+      <div class="overview-card">
+        <div class="card-icon cyan">⚡</div>
+        <h3>Safe DSL Compiler</h3>
+        <p>Extract features from raw evidence using a sandboxed domain-specific language with guaranteed termination and memory bounds.</p>
+        <span class="card-tag">Sandboxed</span>
+      </div>
+      <div class="overview-card">
+        <div class="card-icon violet">🕸️</div>
+        <h3>Online Causal Learner</h3>
+        <p>Learn causal graph structure incrementally from streaming evidence — no batch windows, no stale state, real-time adaptation.</p>
+        <span class="card-tag">Incremental</span>
+      </div>
+      <div class="overview-card">
+        <div class="card-icon teal">🛡️</div>
+        <h3>Trust &amp; Confidence Gates</h3>
+        <p>Multi-layer checks: corroboration, stability, independence, intervention — each producing a calibrated confidence score.</p>
+        <span class="card-tag">Verified</span>
+      </div>
+      <div class="overview-card">
+        <div class="card-icon amber">📊</div>
+        <h3>Production Dashboard</h3>
+        <p>Real-time graph snapshots, decision readiness, evidence timelines, and anomaly flags — built for control room monitoring.</p>
+        <span class="card-tag">Live</span>
+      </div>
+      <div class="overview-card">
+        <div class="card-icon cyan">🔗</div>
+        <h3>Kafka &amp; In-Memory Pipeline</h3>
+        <p>Pluggable transport layer — stream evidence via Kafka topics or process in-memory for low-latency evaluation scenarios.</p>
+        <span class="card-tag">Pluggable</span>
+      </div>
+      <div class="overview-card">
+        <div class="card-icon violet">🎯</div>
+        <h3>Decision Readiness API</h3>
+        <p>Query the causal graph at any point: confidence scores, evidence paths, contradictory signals, and recommended decisions.</p>
+        <span class="card-tag">REST &amp; gRPC</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- === PIPELINE === -->
+<section id="pipeline" class="section">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-label">Pipeline</span>
+      <h2 class="section-title">From evidence to decision in five stages</h2>
+      <p class="section-subtitle">
+        Each stage is independently monitored, auditable, and gated — ensuring that only trusted signals reach the decision layer.
+      </p>
+    </div>
+    <div class="pipeline-steps reveal">
+      <div class="pipeline-step active" data-step="1">
+        <div class="pipeline-step-num">01</div>
+        <div class="pipeline-step-content">
+          <h3>Raw Evidence Ingestion</h3>
+          <p>Collector data streams into the pipeline via Kafka topics or direct ingestion endpoints. Each datum is timestamped, sourced, and hashed for integrity verification.</p>
+          <div class="step-tags"><span>Kafka</span><span>gRPC</span><span>Integrity Hash</span></div>
+        </div>
+      </div>
+      <div class="pipeline-step" data-step="2">
+        <div class="pipeline-step-num">02</div>
+        <div class="pipeline-step-content">
+          <h3>Safe Feature Extraction</h3>
+          <p>The SPL DSL compiler parses extraction rules into a sandboxed execution plan — guaranteed to terminate within bounded time and memory, with no side effects on the pipeline.</p>
+          <div class="step-tags"><span>DSL Compiler</span><span>Sandboxed</span><span>Bounded</span></div>
+        </div>
+      </div>
+      <div class="pipeline-step" data-step="3">
+        <div class="pipeline-step-num">03</div>
+        <div class="pipeline-step-content">
+          <h3>Online Causal Graph Learning</h3>
+          <p>An incremental constraint-based learner updates the causal graph with each new evidence vector — discovering structure without ever retraining from scratch.</p>
+          <div class="step-tags"><span>Incremental</span><span>Constraint-Based</span><span>Online</span></div>
+        </div>
+      </div>
+      <div class="pipeline-step" data-step="4">
+        <div class="pipeline-step-num">04</div>
+        <div class="pipeline-step-content">
+          <h3>Trust Checks &amp; Confidence Gates</h3>
+          <p>Every edge and path in the causal graph passes through corroboration, stability, independence, and intervention checks — producing per-path confidence scores.</p>
+          <div class="step-tags"><span>Corroboration</span><span>Stability</span><span>Independence</span></div>
+        </div>
+      </div>
+      <div class="pipeline-step" data-step="5">
+        <div class="pipeline-step-num">05</div>
+        <div class="pipeline-step-content">
+          <h3>Decision &amp; Graph Output</h3>
+          <p>Decisions are emitted with full provenance — the causal paths, confidence scores, and evidence that support them. The updated graph is published for downstream consumers.</p>
+          <div class="step-tags"><span>Provenance</span><span>Graph Output</span><span>Decision Log</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- === CAPABILITIES === -->
+<section id="capabilities" class="section">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-label">Capabilities</span>
+      <h2 class="section-title">Key features of the SPL v7 engine</h2>
+      <p class="section-subtitle">
+        Production-grade primitives for building evidence-driven causal intelligence systems.
+      </p>
+    </div>
+    <div class="cap-grid reveal-stagger">
+      <div class="cap-card">
+        <div class="cap-icon cyan">◆</div>
+        <h3>Safe DSL Compiler</h3>
+        <p>Type-safe, memory-safe feature extraction language with compile-time verification, termination analysis, and automatic parallelization across evidence streams.</p>
+        <span class="cap-status live"><span class="dot"></span> Production Ready</span>
+      </div>
+      <div class="cap-card">
+        <div class="cap-icon violet">◈</div>
+        <h3>Online Causal Learner</h3>
+        <p>Continuous structure learning using a modified PC algorithm adapted for streaming — each new datum refines edge orientations and latent confounder estimates.</p>
+        <span class="cap-status ready"><span class="dot"></span> Stable</span>
+      </div>
+      <div class="cap-card">
+        <div class="cap-icon teal">⬡</div>
+        <h3>Kafka &amp; In-Memory Pipeline</h3>
+        <p>Configurable transport with exactly-once semantics, back-pressure management, and automatic partitioning for multi-tenant evidence workloads.</p>
+        <span class="cap-status live"><span class="dot"></span> Production Ready</span>
+      </div>
+      <div class="cap-card">
+        <div class="cap-icon amber">◉</div>
+        <h3>Trust &amp; Consistency Checks</h3>
+        <p>Four-factor trust model: empirical corroboration, cross-validation stability, conditional independence tests, and interventional consistency scoring.</p>
+        <span class="cap-status live"><span class="dot"></span> Production Ready</span>
+      </div>
+      <div class="cap-card">
+        <div class="cap-icon emerald">⊞</div>
+        <h3>Dashboard Visualization</h3>
+        <p>Web-based real-time dashboard with DAG rendering, confidence heatmaps, evidence flow timelines, and drill-down provenance inspection.</p>
+        <span class="cap-status ready"><span class="dot"></span> Stable</span>
+      </div>
+      <div class="cap-card">
+        <div class="cap-icon rose">⬟</div>
+        <h3>Confidence Gating</h3>
+        <p>Configurable decision thresholds based on path confidence, graph stability, and corroboration ratios — with automatic alerting on gate violations.</p>
+        <span class="cap-status beta"><span class="dot"></span> Beta</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- === TRUST === -->
+<section id="trust" class="section">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-label">Trust Architecture</span>
+      <h2 class="section-title">Four pillars of evidence confidence</h2>
+      <p class="section-subtitle">
+        Every causal path is scored across corroboration, stability, independence, and intervention — producing a calibrated confidence metric for every decision.
+      </p>
+    </div>
+    <div class="trust-shield reveal-scale">
+      <div class="trust-shield-inner">
+        <div class="trust-shield-ring"></div>
+        <div class="trust-shield-ring"></div>
+        <div class="trust-shield-ring"></div>
+        <div class="trust-shield-center">🛡</div>
+      </div>
+    </div>
+    <div class="trust-grid reveal-stagger">
+      <div class="trust-card">
+        <h3>◈ Corroboration</h3>
+        <div class="trust-bar"><div class="trust-bar-fill fill-cyan" style="width:94%" data-width="94"></div></div>
+        <div class="trust-meta"><span>Multiple independent sources agree on causal direction</span><span class="trust-pct">94%</span></div>
+      </div>
+      <div class="trust-card">
+        <h3>◈ Stability</h3>
+        <div class="trust-bar"><div class="trust-bar-fill fill-violet" style="width:89%" data-width="89"></div></div>
+        <div class="trust-meta"><span>Graph structure remains consistent across samples</span><span class="trust-pct">89%</span></div>
+      </div>
+      <div class="trust-card">
+        <h3>◈ Independence</h3>
+        <div class="trust-bar"><div class="trust-bar-fill fill-teal" style="width:96%" data-width="96"></div></div>
+        <div class="trust-meta"><span>Conditional independence tests pass threshold</span><span class="trust-pct">96%</span></div>
+      </div>
+      <div class="trust-card">
+        <h3>◈ Intervention</h3>
+        <div class="trust-bar"><div class="trust-bar-fill fill-amber" style="width:82%" data-width="82"></div></div>
+        <div class="trust-meta"><span>Interventional consistency scoring</span><span class="trust-pct">82%</span></div>
+      </div>
+      <div class="trust-card">
+        <h3>◈ Signal Integrity</h3>
+        <div class="trust-bar"><div class="trust-bar-fill fill-emerald" style="width:97%" data-width="97"></div></div>
+        <div class="trust-meta"><span>Raw signal quality and noise floor metrics</span><span class="trust-pct">97%</span></div>
+      </div>
+      <div class="trust-card">
+        <h3>◈ Decision Readiness</h3>
+        <div class="trust-bar"><div class="trust-bar-fill fill-cyan" style="width:91%" data-width="91"></div></div>
+        <div class="trust-meta"><span>Composite score aggregating all trust factors</span><span class="trust-pct">91%</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- === DASHBOARD === -->
+<section id="dashboard" class="section">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-label">Dashboard</span>
+      <h2 class="section-title">Real-time control center</h2>
+      <p class="section-subtitle">
+        Monitor evidence streams, causal graph health, decision confidence, and system status — all in one unified interface.
+      </p>
+    </div>
+    <div class="dashboard-mock reveal-scale">
+      <div class="dashboard-header">
+        <div class="dashboard-header-left">
+          <div class="db-dots">
+            <span class="db-dot"></span>
+            <span class="db-dot"></span>
+            <span class="db-dot"></span>
+          </div>
+          <span class="db-title">spl-dashboard — evidence-control</span>
+        </div>
+        <div class="dashboard-header-right">
+          <span class="db-status">
+            <span class="dot"></span> Connected
+          </span>
+          <span>| Uptime 14d 6h</span>
+          <span>| v7.2.1</span>
+        </div>
+      </div>
+      <div class="dashboard-body">
+        <div class="dashboard-panel">
+          <div class="panel-label">Causal Graph Snapshot</div>
+          <div style="display:flex;gap:8px;margin-bottom:16px">
+            <div style="flex:1;height:100px;background:rgba(0,212,255,0.03);border-radius:8px;border:1px solid var(--border-glass);position:relative;overflow:hidden">
+              <canvas id="graph-mini" width="300" height="100"></canvas>
+            </div>
+          </div>
+          <div class="panel-label">Confidence Metrics</div>
+          <div class="dashboard-metrics-grid">
+            <div class="dashboard-metric">
+              <div class="dm-label">Graph Confidence</div>
+              <div class="dm-value cyan">92.4<span style="font-size:12px;font-weight:400;color:var(--text-muted)">%</span></div>
+              <div class="dm-sub">▲ 0.8% from baseline</div>
+            </div>
+            <div class="dashboard-metric">
+              <div class="dm-label">Decision Readiness</div>
+              <div class="dm-value emerald">87.6<span style="font-size:12px;font-weight:400;color:var(--text-muted)">%</span></div>
+              <div class="dm-sub">▲ 3.2% this window</div>
+            </div>
+            <div class="dashboard-metric">
+              <div class="dm-label">Signal Integrity</div>
+              <div class="dm-value emerald">96.8<span style="font-size:12px;font-weight:400;color:var(--text-muted)">%</span></div>
+              <div class="dm-sub">▼ 0.3% degradation</div>
+            </div>
+            <div class="dashboard-metric">
+              <div class="dm-label">Anomaly Score</div>
+              <div class="dm-value amber">12<span style="font-size:12px;font-weight:400;color:var(--text-muted)"> flags</span></div>
+              <div class="dm-sub">3 critical, 9 warning</div>
+            </div>
+          </div>
+        </div>
+        <div class="dashboard-panel">
+          <div class="panel-label">Evidence Stream Timeline</div>
+          <div style="display:flex;gap:2px;height:60px;align-items:flex-end;margin-bottom:12px" id="stream-bars">
+          </div>
+          <div class="panel-label">Recent Decisions</div>
+          <div class="dashboard-list">
+            <div class="dashboard-list-item">
+              <span class="dli-label">tx-7a3f — fraud risk assessment</span>
+              <span style="display:flex;align-items:center;gap:6px">
+                <span class="dli-value" style="color:var(--accent-emerald)">Trusted</span>
+                <span class="dli-status passed"></span>
+              </span>
+            </div>
+            <div class="dashboard-list-item">
+              <span class="dli-label">tx-9b21 — identity verification</span>
+              <span style="display:flex;align-items:center;gap:6px">
+                <span class="dli-value" style="color:var(--accent-emerald)">Trusted</span>
+                <span class="dli-status passed"></span>
+              </span>
+            </div>
+            <div class="dashboard-list-item">
+              <span class="dli-label">tx-4c87 — anomaly correlation</span>
+              <span style="display:flex;align-items:center;gap:6px">
+                <span class="dli-value" style="color:var(--accent-amber)">Pending</span>
+                <span class="dli-status warning"></span>
+              </span>
+            </div>
+            <div class="dashboard-list-item">
+              <span class="dli-label">tx-2e45 — threat path analysis</span>
+              <span style="display:flex;align-items:center;gap:6px">
+                <span class="dli-value" style="color:var(--accent-rose)">Rejected</span>
+                <span class="dli-status failed"></span>
+              </span>
+            </div>
+            <div class="dashboard-list-item">
+              <span class="dli-label">tx-8f13 — evidence correlation</span>
+              <span style="display:flex;align-items:center;gap:6px">
+                <span class="dli-value" style="color:var(--accent-cyan)">Streaming</span>
+                <span class="dli-status streaming"></span>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- === USE CASES === -->
+<section id="usecases" class="section">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-label">Use Cases</span>
+      <h2 class="section-title">Built for evidence-critical operations</h2>
+      <p class="section-subtitle">
+        Wherever streaming evidence must become trusted decisions, SPL v7 provides the causal intelligence layer.
+      </p>
+    </div>
+    <div class="usecase-grid reveal-stagger">
+      <div class="usecase-card">
+        <div class="uc-icon">🛡</div>
+        <h3>Fraud &amp; Risk Analysis</h3>
+        <p>Real-time fraud detection with causal reasoning — identify coordinated attack patterns and anomalous evidence paths before decisions are finalized.</p>
+        <span class="uc-tag">Financial Services</span>
+      </div>
+      <div class="usecase-card">
+        <div class="uc-icon">🔍</div>
+        <h3>Intelligence Workflows</h3>
+        <p>Corroborate signals from multiple collectors, learn causal relationships between events, and produce verified intelligence assessments.</p>
+        <span class="uc-tag">Security &amp; Defense</span>
+      </div>
+      <div class="usecase-card">
+        <div class="uc-icon">⚖</div>
+        <h3>Decision Support Systems</h3>
+        <p>Augment human decision-making with transparent causal evidence — every recommendation includes its full provenance chain.</p>
+        <span class="uc-tag">Enterprise</span>
+      </div>
+      <div class="usecase-card">
+        <div class="uc-icon">◉</div>
+        <h3>Streaming Evidence Ops</h3>
+        <p>Monitor and manage streaming evidence pipelines with automated trust gating, anomaly detection, and real-time graph health metrics.</p>
+        <span class="uc-tag">Infrastructure</span>
+      </div>
+      <div class="usecase-card">
+        <div class="uc-icon">◈</div>
+        <h3>Observability for Causal Systems</h3>
+        <p>Instrument causal ML models and pipelines with SPL's trust metrics — detect drift, degradation, and emerging confounders.</p>
+        <span class="uc-tag">ML Platform</span>
+      </div>
+      <div class="usecase-card">
+        <div class="uc-icon">⊞</div>
+        <h3>Regulatory Compliance</h3>
+        <p>Maintain auditable evidence trails for regulated decisions — every causal path and confidence score is logged and inspectable.</p>
+        <span class="uc-tag">Compliance</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- === ARCHITECTURE === -->
+<section id="architecture" class="section">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-label">Architecture</span>
+      <h2 class="section-title">Modular, composable, production-ready</h2>
+      <p class="section-subtitle">
+        Six interoperable layers that together form a complete evidence intelligence platform.
+      </p>
+    </div>
+    <div class="arch-diagram reveal-scale">
+      <div class="arch-row">
+        <div class="arch-label">Data Layer</div>
+        <div class="arch-node">
+          <div class="arch-node-icon">📡</div>
+          <div class="arch-node-name">Collectors</div>
+          <div class="arch-node-desc">Kafka / HTTP / gRPC</div>
+        </div>
+        <div class="arch-node">
+          <div class="arch-node-icon">⚡</div>
+          <div class="arch-node-name">Evidence Stream</div>
+          <div class="arch-node-desc">Partitioned, Ordered</div>
+        </div>
+        <div class="arch-node">
+          <div class="arch-node-icon">🔐</div>
+          <div class="arch-node-name">Integrity Layer</div>
+          <div class="arch-node-desc">Hash Chain, Audit</div>
+        </div>
+      </div>
+      <div class="arch-flow-arrows">▸ ▸ ▸</div>
+      <div class="arch-row">
+        <div class="arch-label">Processing Layer</div>
+        <div class="arch-node">
+          <div class="arch-node-icon">◇</div>
+          <div class="arch-node-name">Feature Compiler</div>
+          <div class="arch-node-desc">Safe DSL, Bounded</div>
+        </div>
+        <div class="arch-node">
+          <div class="arch-node-icon">◈</div>
+          <div class="arch-node-name">Causal Learner</div>
+          <div class="arch-node-desc">Online, Incremental</div>
+        </div>
+        <div class="arch-node">
+          <div class="arch-node-icon">◉</div>
+          <div class="arch-node-name">Graph Store</div>
+          <div class="arch-node-desc">DAG, Edge Weights</div>
+        </div>
+      </div>
+      <div class="arch-flow-arrows">▸ ▸ ▸</div>
+      <div class="arch-row">
+        <div class="arch-label">Trust &amp; Output Layer</div>
+        <div class="arch-node">
+          <div class="arch-node-icon">🛡</div>
+          <div class="arch-node-name">Trust Gate</div>
+          <div class="arch-node-desc">4-Factor Scoring</div>
+        </div>
+        <div class="arch-node">
+          <div class="arch-node-icon">📊</div>
+          <div class="arch-node-name">Dashboard</div>
+          <div class="arch-node-desc">Real-time Viz</div>
+        </div>
+        <div class="arch-node">
+          <div class="arch-node-icon">🎯</div>
+          <div class="arch-node-name">Decision Output</div>
+          <div class="arch-node-desc">REST / gRPC / Stream</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- === CTA === -->
+<section id="cta">
+  <div class="cta-glow"></div>
+  <div class="container cta-content">
+    <div class="reveal">
+      <span class="section-label" style="color:var(--accent-cyan)">Get Started</span>
+    </div>
+    <h2 class="reveal" style="transition-delay:0.1s">Make evidence safer, smarter, and more reliable.</h2>
+    <p class="reveal" style="transition-delay:0.2s">
+      SPL v7 is the causal intelligence layer for organizations that need trusted decisions from streaming evidence.
+    </p>
+    <div class="reveal" style="transition-delay:0.3s">
+      <a href="#" class="btn btn-primary" style="font-size:15px;padding:20px 52px;">
+        Deploy SPL v7
+        <span class="btn-arrow">→</span>
+      </a>
+    </div>
+  </div>
+  <div class="cta-glow" style="bottom:-300px;width:800px;height:800px;opacity:0.5"></div>
+</section>
+
+<!-- === FOOTER === -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-left">
+        <span>SPL</span> v7 — Evidence Intelligence Platform
+      </div>
+      <div class="footer-right">
+        <a href="#">Documentation</a>
+        <a href="#">API Reference</a>
+        <a href="#">Status</a>
+        <a href="#">Privacy</a>
+        <span>© 2026</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+
+const canvasContainer = document.getElementById('hero-canvas');
+if (!canvasContainer) throw new Error('hero-canvas missing');
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(55, canvasContainer.clientWidth / canvasContainer.clientHeight, 0.1, 100);
+camera.position.set(0, 0, 8);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setSize(canvasContainer.clientWidth, canvasContainer.clientHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.2;
+canvasContainer.appendChild(renderer.domElement);
+
+const group = new THREE.Group();
+scene.add(group);
+
+// === CORE ===
+const coreGeo = new THREE.IcosahedronGeometry(0.8, 1);
+const coreMat = new THREE.MeshPhysicalMaterial({
+  color: 0x00d4ff, emissive: 0x00d4ff, emissiveIntensity: 0.6,
+  metalness: 0.8, roughness: 0.15, transparent: true, opacity: 0.85, clearcoat: 0.3, clearcoatRoughness: 0.2,
+});
+const core = new THREE.Mesh(coreGeo, coreMat);
+group.add(core);
+
+const coreGlowGeo = new THREE.IcosahedronGeometry(0.9, 1);
+const coreGlowMat = new THREE.MeshBasicMaterial({ color: 0x00d4ff, transparent: true, opacity: 0.08, wireframe: true });
+const coreGlow = new THREE.Mesh(coreGlowGeo, coreGlowMat);
+group.add(coreGlow);
+
+// === RINGS ===
+const rings = [];
+const ringCfgs = [
+  { r: 1.8, c: 0x00d4ff, rx: Math.PI / 3, rz: 0.2, sp: 0.3 },
+  { r: 2.2, c: 0x7c3aed, rx: -Math.PI / 4, rz: 0.5, sp: -0.2 },
+  { r: 1.4, c: 0x0d9488, rx: Math.PI / 2, rz: 0.8, sp: 0.4 },
+];
+for (const cfg of ringCfgs) {
+  const geo = new THREE.TorusGeometry(cfg.r, 0.015, 16, 80);
+  const mat = new THREE.MeshPhysicalMaterial({ color: cfg.c, emissive: cfg.c, emissiveIntensity: 0.2, transparent: true, opacity: 0.3, metalness: 0.4, roughness: 0.3 });
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.rotation.x = cfg.rx;
+  mesh.rotation.z = cfg.rz;
+  mesh.userData = { speed: cfg.sp, drift: Math.random() * Math.PI * 2 };
+  group.add(mesh);
+  rings.push(mesh);
+}
+
+const glowRingGeo = new THREE.TorusGeometry(2.0, 0.004, 8, 80);
+const glowRingMat = new THREE.MeshBasicMaterial({ color: 0x00d4ff, transparent: true, opacity: 0.15 });
+const glowRing = new THREE.Mesh(glowRingGeo, glowRingMat);
+glowRing.rotation.x = Math.PI / 2.5;
+group.add(glowRing);
+rings.push(glowRing);
+glowRing.userData = { speed: 0.15 };
+
+// === NODES ===
+const nodePositions = [];
+const nodeCount = 60;
+for (let i = 0; i < nodeCount; i++) {
+  const theta = Math.random() * Math.PI * 2;
+  const phi = Math.acos(2 * Math.random() - 1);
+  const r = 1.6 + Math.random() * 2.0;
+  nodePositions.push(new THREE.Vector3(r * Math.sin(phi) * Math.cos(theta), r * Math.sin(phi) * Math.sin(theta), r * Math.cos(phi)));
+}
+
+const nodeMat = new THREE.MeshPhysicalMaterial({ color: 0x00d4ff, emissive: 0x00d4ff, emissiveIntensity: 0.15, metalness: 0.2, roughness: 0.3, transparent: true, opacity: 0.7 });
+const nodeGeo = new THREE.SphereGeometry(0.04, 8, 8);
+const nodeMeshes = [];
+for (let i = 0; i < nodePositions.length; i++) {
+  const mesh = new THREE.Mesh(nodeGeo, nodeMat.clone());
+  mesh.position.copy(nodePositions[i]);
+  const s = 0.8 + Math.random() * 1.2;
+  mesh.scale.set(s, s, s);
+  mesh.userData = { baseScale: s, phase: Math.random() * Math.PI * 2, speed: 0.5 + Math.random() * 1.0 };
+  group.add(mesh);
+  nodeMeshes.push(mesh);
+}
+
+// === EDGES ===
+const edgePos = [], edgeCol = [];
+const cCyan = new THREE.Color(0x00d4ff), cViolet = new THREE.Color(0x7c3aed);
+for (let i = 0; i < nodePositions.length; i++) {
+  for (let j = i + 1; j < nodePositions.length; j++) {
+    const dist = nodePositions[i].distanceTo(nodePositions[j]);
+    if (dist < 2.8) {
+      edgePos.push(nodePositions[i].x, nodePositions[i].y, nodePositions[i].z);
+      edgePos.push(nodePositions[j].x, nodePositions[j].y, nodePositions[j].z);
+      const t = Math.min(dist / 3.0, 1.0);
+      const col = cCyan.clone().lerp(cViolet, t);
+      edgeCol.push(col.r, col.g, col.b, col.r, col.g, col.b);
+    }
+  }
+}
+const edgeGeo = new THREE.BufferGeometry();
+edgeGeo.setAttribute('position', new THREE.Float32BufferAttribute(edgePos, 3));
+edgeGeo.setAttribute('color', new THREE.Float32BufferAttribute(edgeCol, 3));
+const edges = new THREE.LineSegments(edgeGeo, new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.15 }));
+group.add(edges);
+
+// === PARTICLES ===
+const pCount = 1500;
+const pGeo = new THREE.BufferGeometry();
+const pP = new Float32Array(pCount * 3);
+for (let i = 0; i < pCount; i++) {
+  const t = Math.random() * Math.PI * 2, p = Math.acos(2 * Math.random() - 1), r = 2 + Math.random() * 6;
+  pP[i*3] = r * Math.sin(p) * Math.cos(t); pP[i*3+1] = r * Math.sin(p) * Math.sin(t); pP[i*3+2] = r * Math.cos(p);
+}
+pGeo.setAttribute('position', new THREE.Float32BufferAttribute(pP, 3));
+const pMat = new THREE.PointsMaterial({ color: 0x00d4ff, size: 0.025, transparent: true, opacity: 0.4, blending: THREE.AdditiveBlending, sizeAttenuation: true });
+const particles = new THREE.Points(pGeo, pMat);
+group.add(particles);
+
+const p2Count = 600;
+const p2Geo = new THREE.BufferGeometry();
+const p2P = new Float32Array(p2Count * 3);
+for (let i = 0; i < p2Count; i++) {
+  const t = Math.random() * Math.PI * 2, p = Math.acos(2 * Math.random() - 1), r = 3 + Math.random() * 5;
+  p2P[i*3] = r * Math.sin(p) * Math.cos(t); p2P[i*3+1] = r * Math.sin(p) * Math.sin(t); p2P[i*3+2] = r * Math.cos(p);
+}
+p2Geo.setAttribute('position', new THREE.Float32BufferAttribute(p2P, 3));
+const p2Mat = new THREE.PointsMaterial({ color: 0x7c3aed, size: 0.02, transparent: true, opacity: 0.2, blending: THREE.AdditiveBlending, sizeAttenuation: true });
+const particles2 = new THREE.Points(p2Geo, p2Mat);
+group.add(particles2);
+
+// === MOUSE ===
+let mouseX = 0, mouseY = 0, targetRX = 0, targetRY = 0;
+document.addEventListener('mousemove', (e) => {
+  const rect = canvasContainer.getBoundingClientRect();
+  const x = (e.clientX - rect.left) / rect.width;
+  const y = (e.clientY - rect.top) / rect.height;
+  mouseX = (x - 0.5) * 2;
+  mouseY = (y - 0.5) * 2;
+});
+
+// === RESIZE ===
+const resize = () => {
+  const w = canvasContainer.clientWidth, h = canvasContainer.clientHeight;
+  camera.aspect = w / h; camera.updateProjectionMatrix();
+  renderer.setSize(w, h);
+};
+window.addEventListener('resize', resize);
+
+// === ANIMATION ===
+let time = 0;
+const clock = new THREE.Clock();
+
+function animate() {
+  requestAnimationFrame(animate);
+  const dt = clock.getDelta();
+  time += dt;
+
+  targetRX += (mouseY * 0.3 - targetRX) * 0.02;
+  targetRY += (mouseX * 0.3 - targetRY) * 0.02;
+
+  group.rotation.x = targetRX;
+  group.rotation.y = targetRY + time * 0.08;
+
+  for (const ring of rings) {
+    ring.rotation.y += dt * ring.userData.speed;
+  }
+
+  for (const node of nodeMeshes) {
+    const pulse = 1 + 0.15 * Math.sin(time * node.userData.speed + node.userData.phase);
+    node.scale.setScalar(node.userData.baseScale * pulse);
+    node.material.emissiveIntensity = 0.1 + 0.2 * Math.sin(time * node.userData.speed + node.userData.phase);
+  }
+
+  core.rotation.x += dt * 0.15;
+  core.rotation.y += dt * 0.2;
+  coreGlow.rotation.x += dt * 0.1;
+  coreGlow.rotation.y += dt * 0.15;
+  core.material.emissiveIntensity = 0.5 + 0.2 * Math.sin(time * 0.5);
+
+  const pos = particles.geometry.attributes.position.array;
+  const pos2 = particles2.geometry.attributes.position.array;
+  for (let i = 0; i < pCount; i++) {
+    pos[i*3] += Math.sin(time + i) * 0.0003;
+    pos[i*3+1] += Math.cos(time * 0.7 + i * 0.5) * 0.0003;
+    pos[i*3+2] += Math.sin(time * 0.5 + i * 0.3) * 0.0003;
+  }
+  particles.geometry.attributes.position.needsUpdate = true;
+  for (let i = 0; i < p2Count; i++) {
+    pos2[i*3] += Math.cos(time * 0.4 + i * 0.7) * 0.0002;
+    pos2[i*3+1] += Math.sin(time * 0.6 + i * 0.3) * 0.0002;
+    pos2[i*3+2] += Math.cos(time * 0.3 + i * 0.5) * 0.0002;
+  }
+  particles2.geometry.attributes.position.needsUpdate = true;
+
+  renderer.render(scene, camera);
+}
+animate();
+</script>
+
+<script>
+// === SCROLL REVEAL ===
+const revealEls = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale, .reveal-stagger');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+revealEls.forEach(el => observer.observe(el));
+
+// === NAV SCROLL ===
+const nav = document.getElementById('navbar');
+let lastScroll = 0;
+window.addEventListener('scroll', () => {
+  const y = window.scrollY;
+  if (y > 50) {
+    nav.classList.add('scrolled');
+  } else {
+    nav.classList.remove('scrolled');
+  }
+  lastScroll = y;
+});
+
+// === PIPELINE STEP ANIMATION ===
+const pipeSteps = document.querySelectorAll('.pipeline-step');
+const pipeObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('active');
+    }
+  });
+}, { threshold: 0.4 });
+
+pipeSteps.forEach(el => pipeObserver.observe(el));
+
+// === TRUST BAR ANIMATION ===
+const trustBars = document.querySelectorAll('.trust-bar-fill');
+const trustObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const el = entry.target;
+      const width = el.getAttribute('data-width') || el.style.width;
+      el.style.width = '0%';
+      setTimeout(() => {
+        el.style.width = width;
+      }, 200);
+    }
+  });
+}, { threshold: 0.3 });
+
+trustBars.forEach(el => trustObserver.observe(el));
+
+// === STREAM BARS ===
+const streamBarsContainer = document.getElementById('stream-bars');
+if (streamBarsContainer) {
+  const count = 40;
+  for (let i = 0; i < count; i++) {
+    const bar = document.createElement('div');
+    bar.className = 'bar';
+    const h = 10 + Math.random() * 90;
+    bar.style.height = h + '%';
+    bar.style.background = i % 3 === 0 
+      ? 'linear-gradient(180deg,var(--accent-violet),rgba(124,58,237,0.1))'
+      : 'linear-gradient(180deg,var(--accent-cyan),rgba(0,212,255,0.1))';
+    bar.style.flex = '1';
+    bar.style.borderRadius = '2px 2px 0 0';
+    bar.style.minHeight = '2px';
+    bar.style.transition = 'height 0.5s ease';
+    streamBarsContainer.appendChild(bar);
+  }
+  setInterval(() => {
+    const bars = streamBarsContainer.querySelectorAll('.bar');
+    bars.forEach(bar => {
+      bar.style.height = (10 + Math.random() * 90) + '%';
+    });
+  }, 1200);
+}
+
+// === COUNTER ANIMATION ===
+function animateCounters() {
+  document.querySelectorAll('.counter-value').forEach(el => {
+    const target = parseInt(el.getAttribute('data-target'));
+    if (!target) return;
+    let current = 0;
+    const step = Math.ceil(target / 60);
+    const interval = setInterval(() => {
+      current += step;
+      if (current >= target) {
+        current = target;
+        clearInterval(interval);
+      }
+      el.textContent = current;
+    }, 25);
+  });
+}
+
+// === MINI GRAPH ===
+const miniCanvas = document.getElementById('graph-mini');
+if (miniCanvas) {
+  const ctx = miniCanvas.getContext('2d');
+  const w = miniCanvas.width;
+  const h = miniCanvas.height;
+  
+  const miniNodes = [];
+  for (let i = 0; i < 20; i++) {
+    miniNodes.push({
+      x: 20 + Math.random() * (w - 40),
+      y: 15 + Math.random() * (h - 30),
+    });
+  }
+  
+  function drawMiniGraph() {
+    ctx.clearRect(0, 0, w, h);
+    
+    for (let i = 0; i < miniNodes.length; i++) {
+      for (let j = i + 1; j < miniNodes.length; j++) {
+        const dx = miniNodes[i].x - miniNodes[j].x;
+        const dy = miniNodes[i].y - miniNodes[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 80) {
+          ctx.beginPath();
+          ctx.moveTo(miniNodes[i].x, miniNodes[i].y);
+          ctx.lineTo(miniNodes[j].x, miniNodes[j].y);
+          ctx.strokeStyle = dist < 40 
+            ? `rgba(0, 212, 255, ${0.3 - dist / 300})`
+            : `rgba(124, 58, 237, ${0.15 - dist / 600})`;
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+    
+    for (const node of miniNodes) {
+      ctx.beginPath();
+      ctx.arc(node.x, node.y, 2, 0, Math.PI * 2);
+      ctx.fillStyle = '#00d4ff';
+      ctx.globalAlpha = 0.6;
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+  }
+  drawMiniGraph();
+  setInterval(drawMiniGraph, 2000);
+}
+
+// === PARALLAX ===
+window.addEventListener('scroll', () => {
+  const scrolled = window.scrollY;
+  const hero = document.getElementById('hero');
+  if (hero) {
+    const content = hero.querySelector('.hero-content');
+    if (content) {
+      content.style.transform = `translateY(${scrolled * 0.08}px)`;
+    }
+  }
+});
+</script>
+</body>
+</html>

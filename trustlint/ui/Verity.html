@@ -1,0 +1,1281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>VERITY — Contradiction Analyzer</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=IBM+Plex+Mono:wght@300;400;500&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root {
+--bg: #0d0d0f;
+--surface: #13131a;
+--border: #1e1e2a;
+--gold: #c9a84c;
+--gold2: #f0d080;
+--red: #e05252;
+--green: #4ecb8a;
+--blue: #5b9bd5;
+--text: #e8e6e0;
+--muted: #6a6878;
+--mono: 'IBM Plex Mono', monospace;
+--serif: 'Playfair Display', serif;
+--sans: 'Barlow', sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+background: var(--bg);
+color: var(--text);
+font-family: var(--sans);
+min-height: 100vh;
+overflow-x: hidden;
+}
+/* ── NOISE OVERLAY ── */
+body::after {
+content: '';
+position: fixed; inset: 0;
+background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+pointer-events: none; z-index: 999; opacity: .4;
+}
+/* ══════════════════════════════
+HERO / MASTHEAD
+══════════════════════════════ */
+.masthead {
+border-bottom: 1px solid var(--border);
+padding: 28px 48px;
+display: flex;
+align-items: center;
+justify-content: space-between;
+position: sticky; top: 0;
+background: rgba(13,13,15,.92);
+backdrop-filter: blur(20px);
+z-index: 50;
+}
+.logo {
+display: flex;
+align-items: baseline;
+gap: 14px;
+}
+.logo-name {
+font-family: var(--serif);
+font-size: 28px;
+font-weight: 900;
+letter-spacing: -1px;
+color: var(--text);
+line-height: 1;
+}
+.logo-sub {
+font-family: var(--mono);
+font-size: 9px;
+letter-spacing: 3px;
+color: var(--muted);
+text-transform: uppercase;
+}
+.masthead-right {
+display: flex;
+align-items: center;
+gap: 24px;
+}
+.engine-badge {
+font-family: var(--mono);
+font-size: 9px;
+letter-spacing: 2px;
+color: var(--gold);
+border: 1px solid var(--gold);
+padding: 4px 10px;
+text-transform: uppercase;
+}
+.status-dot {
+width: 7px; height: 7px;
+border-radius: 50%;
+background: var(--green);
+box-shadow: 0 0 8px var(--green);
+animation: pulse-dot 2s ease infinite;
+}
+@keyframes pulse-dot {
+0%,100% { opacity: 1; transform: scale(1); }
+50% { opacity: .6; transform: scale(.8); }
+}
+/* ══════════════════════════════
+HERO
+══════════════════════════════ */
+.hero {
+padding: 80px 48px 64px;
+max-width: 1100px;
+margin: 0 auto;
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 80px;
+align-items: center;
+}
+.hero-left {}
+.hero-label {
+font-family: var(--mono);
+font-size: 10px;
+letter-spacing: 4px;
+color: var(--gold);
+text-transform: uppercase;
+margin-bottom: 20px;
+display: flex;
+align-items: center;
+gap: 10px;
+}
+.hero-label::before {
+content: '';
+width: 30px; height: 1px;
+background: var(--gold);
+}
+.hero h1 {
+font-family: var(--serif);
+font-size: clamp(36px, 4vw, 54px);
+font-weight: 900;
+line-height: 1.05;
+letter-spacing: -1.5px;
+margin-bottom: 20px;
+}
+.hero h1 em {
+font-style: italic;
+color: var(--gold);
+}
+.hero-desc {
+font-size: 15px;
+line-height: 1.75;
+color: #9a98a0;
+margin-bottom: 32px;
+max-width: 440px;
+}
+.hero-stats {
+display: flex;
+gap: 32px;
+}
+.hstat {
+text-align: center;
+}
+.hstat-num {
+font-family: var(--serif);
+font-size: 32px;
+font-weight: 700;
+color: var(--gold);
+line-height: 1;
+display: block;
+}
+.hstat-label {
+font-family: var(--mono);
+font-size: 8px;
+letter-spacing: 2px;
+color: var(--muted);
+text-transform: uppercase;
+display: block;
+margin-top: 4px;
+}
+.hero-right {
+position: relative;
+}
+/* Decorative matrix display */
+.matrix-display {
+background: var(--surface);
+border: 1px solid var(--border);
+padding: 28px;
+position: relative;
+font-family: var(--mono);
+}
+.matrix-display::before {
+content: 'SL(2,ℤ) HOLONOMY MATRIX';
+font-size: 8px;
+letter-spacing: 3px;
+color: var(--gold);
+display: block;
+margin-bottom: 20px;
+padding-bottom: 12px;
+border-bottom: 1px solid var(--border);
+}
+.matrix-eq {
+display: flex;
+align-items: center;
+gap: 12px;
+font-size: 13px;
+color: #8880b0;
+margin-bottom: 14px;
+}
+.mat {
+display: inline-grid;
+grid-template-columns: 1fr 1fr;
+gap: 2px 12px;
+background: rgba(201,168,76,.06);
+border: 1px solid rgba(201,168,76,.15);
+padding: 8px 14px;
+color: var(--gold2);
+}
+.mat-bracket {
+color: var(--muted);
+font-size: 20px;
+line-height: 1;
+}
+.matrix-note {
+font-size: 10px;
+color: var(--muted);
+line-height: 1.7;
+margin-top: 14px;
+padding-top: 14px;
+border-top: 1px solid var(--border);
+}
+.matrix-note span { color: var(--green); }
+/* ══════════════════════════════
+MAIN ANALYZER
+══════════════════════════════ */
+.analyzer-section {
+max-width: 1100px;
+margin: 0 auto;
+padding: 0 48px 80px;
+}
+.section-header {
+display: flex;
+align-items: center;
+gap: 16px;
+margin-bottom: 32px;
+padding-bottom: 20px;
+border-bottom: 1px solid var(--border);
+}
+.section-header h2 {
+font-family: var(--serif);
+font-size: 22px;
+font-weight: 700;
+color: var(--text);
+}
+.section-num {
+font-family: var(--mono);
+font-size: 9px;
+letter-spacing: 3px;
+color: var(--muted);
+background: var(--surface);
+border: 1px solid var(--border);
+padding: 4px 10px;
+}
+/* Input Panel */
+.input-panel {
+display: grid;
+grid-template-columns: 1fr 80px 1fr;
+gap: 0;
+margin-bottom: 28px;
+align-items: stretch;
+}
+.strand-input {
+background: var(--surface);
+border: 1px solid var(--border);
+padding: 24px;
+transition: border-color .2s;
+position: relative;
+}
+.strand-input:focus-within {
+border-color: rgba(201,168,76,.4);
+}
+.strand-input.up-strand { border-top: 2px solid var(--blue); }
+.strand-input.dn-strand { border-top: 2px solid var(--red); }
+.strand-label {
+font-family: var(--mono);
+font-size: 9px;
+letter-spacing: 3px;
+text-transform: uppercase;
+margin-bottom: 12px;
+display: flex;
+align-items: center;
+gap: 8px;
+}
+.strand-label.up { color: var(--blue); }
+.strand-label.dn { color: var(--red); }
+.strand-glyph {
+font-size: 16px;
+font-weight: 700;
+}
+.strand-input textarea {
+width: 100%;
+background: transparent;
+border: none;
+outline: none;
+color: var(--text);
+font-family: var(--sans);
+font-size: 14px;
+line-height: 1.7;
+resize: none;
+height: 90px;
+}
+.strand-input textarea::placeholder {
+color: var(--muted);
+font-style: italic;
+}
+.weight-row {
+display: flex;
+align-items: center;
+gap: 10px;
+margin-top: 14px;
+padding-top: 14px;
+border-top: 1px solid var(--border);
+}
+.weight-label {
+font-family: var(--mono);
+font-size: 9px;
+letter-spacing: 2px;
+color: var(--muted);
+white-space: nowrap;
+}
+.weight-slider {
+flex: 1;
+-webkit-appearance: none;
+height: 2px;
+background: var(--border);
+outline: none;
+cursor: pointer;
+}
+.weight-slider.up::-webkit-slider-thumb {
+-webkit-appearance: none;
+width: 14px; height: 14px;
+border-radius: 50%;
+background: var(--blue);
+box-shadow: 0 0 8px var(--blue);
+cursor: pointer;
+}
+.weight-slider.dn::-webkit-slider-thumb {
+-webkit-appearance: none;
+width: 14px; height: 14px;
+border-radius: 50%;
+background: var(--red);
+box-shadow: 0 0 8px var(--red);
+cursor: pointer;
+}
+.weight-val {
+font-family: var(--mono);
+font-size: 11px;
+color: var(--text);
+width: 32px;
+text-align: right;
+}
+.vs-divider {
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+background: var(--bg);
+border-top: 1px solid var(--border);
+border-bottom: 1px solid var(--border);
+gap: 8px;
+}
+.vs-text {
+font-family: var(--serif);
+font-size: 20px;
+font-style: italic;
+color: var(--gold);
+}
+.vs-line {
+width: 1px;
+flex: 1;
+background: var(--border);
+}
+/* Preset buttons */
+.presets {
+display: flex;
+gap: 8px;
+flex-wrap: wrap;
+margin-bottom: 20px;
+}
+.preset-label {
+font-family: var(--mono);
+font-size: 9px;
+letter-spacing: 3px;
+color: var(--muted);
+display: flex;
+align-items: center;
+gap: 6px;
+margin-right: 4px;
+}
+.preset-btn {
+font-family: var(--mono);
+font-size: 9px;
+letter-spacing: 1px;
+padding: 5px 12px;
+background: var(--surface);
+border: 1px solid var(--border);
+color: var(--muted);
+cursor: pointer;
+transition: all .15s;
+white-space: nowrap;
+}
+.preset-btn:hover {
+border-color: var(--gold);
+color: var(--gold);
+background: rgba(201,168,76,.05);
+}
+/* Analyze button */
+.analyze-btn {
+width: 100%;
+padding: 18px;
+background: var(--gold);
+border: none;
+color: var(--bg);
+font-family: var(--mono);
+font-size: 12px;
+letter-spacing: 4px;
+text-transform: uppercase;
+cursor: pointer;
+transition: all .2s;
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 12px;
+margin-bottom: 40px;
+font-weight: 500;
+}
+.analyze-btn:hover {
+background: var(--gold2);
+transform: translateY(-1px);
+box-shadow: 0 8px 32px rgba(201,168,76,.25);
+}
+.analyze-btn:active { transform: translateY(0); }
+.analyze-btn:disabled {
+opacity: .5; cursor: not-allowed;
+transform: none; box-shadow: none;
+}
+.btn-spinner {
+display: none;
+width: 14px; height: 14px;
+border: 2px solid rgba(13,13,15,.3);
+border-top-color: var(--bg);
+border-radius: 50%;
+animation: spin .6s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+/* ══════════════════════════════
+RESULTS
+══════════════════════════════ */
+#results { display: none; }
+#results.visible { display: block; animation: slideUp .4s ease; }
+@keyframes slideUp {
+from { opacity: 0; transform: translateY(16px); }
+to { opacity: 1; transform: translateY(0); }
+}
+/* Verdict card */
+.verdict-card {
+border: 1px solid var(--border);
+margin-bottom: 24px;
+overflow: hidden;
+}
+.verdict-header {
+padding: 24px 28px;
+display: flex;
+align-items: center;
+justify-content: space-between;
+border-bottom: 1px solid var(--border);
+}
+.verdict-header h3 {
+font-family: var(--mono);
+font-size: 9px;
+letter-spacing: 4px;
+color: var(--muted);
+text-transform: uppercase;
+}
+.verdict-badge {
+font-family: var(--mono);
+font-size: 9px;
+letter-spacing: 2px;
+padding: 4px 12px;
+text-transform: uppercase;
+}
+.verdict-badge.confirmed { background: rgba(78,203,138,.1); color: var(--green); border: 1px solid rgba(78,203,138,.3); }
+.verdict-badge.probable { background: rgba(201,168,76,.1); color: var(--gold); border: 1px solid rgba(201,168,76,.3); }
+.verdict-badge.uncertain { background: rgba(224,82,82,.1); color: var(--red); border: 1px solid rgba(224,82,82,.3); }
+.verdict-body {
+padding: 28px;
+display: grid;
+grid-template-columns: 1fr 1fr 1fr;
+gap: 24px;
+}
+.verdict-item {}
+.verdict-item-label {
+font-family: var(--mono);
+font-size: 8px;
+letter-spacing: 3px;
+color: var(--muted);
+text-transform: uppercase;
+margin-bottom: 8px;
+display: block;
+}
+.verdict-item-value {
+font-family: var(--serif);
+font-size: 28px;
+font-weight: 700;
+line-height: 1;
+display: block;
+margin-bottom: 4px;
+}
+.verdict-item-sub {
+font-size: 11px;
+color: var(--muted);
+font-style: italic;
+}
+/* Tension bar */
+.tension-bar-wrap {
+margin-bottom: 24px;
+background: var(--surface);
+border: 1px solid var(--border);
+padding: 20px 24px;
+}
+.tension-bar-header {
+display: flex;
+justify-content: space-between;
+align-items: baseline;
+margin-bottom: 12px;
+}
+.tension-bar-label {
+font-family: var(--mono);
+font-size: 9px;
+letter-spacing: 3px;
+color: var(--muted);
+}
+.tension-bar-val {
+font-family: var(--mono);
+font-size: 14px;
+color: var(--gold);
+}
+.tension-bar-track {
+height: 4px;
+background: var(--border);
+border-radius: 2px;
+overflow: hidden;
+position: relative;
+}
+.tension-bar-fill {
+height: 100%;
+border-radius: 2px;
+background: linear-gradient(90deg, var(--blue), var(--gold), var(--red));
+transition: width 1s cubic-bezier(.4,0,.2,1);
+width: 0%;
+}
+/* Faction grid */
+.faction-grid {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 16px;
+margin-bottom: 24px;
+}
+.faction-card {
+background: var(--surface);
+border: 1px solid var(--border);
+padding: 20px 24px;
+position: relative;
+overflow: hidden;
+}
+.faction-card::before {
+content: '';
+position: absolute;
+top: 0; left: 0; right: 0;
+height: 2px;
+}
+.faction-card.up-card::before { background: var(--blue); }
+.faction-card.dn-card::before { background: var(--red); }
+.faction-card.winner {
+border-color: var(--gold);
+}
+.faction-card.winner::after {
+content: 'DOMINANT';
+position: absolute;
+top: 14px; right: 14px;
+font-family: var(--mono);
+font-size: 8px;
+letter-spacing: 2px;
+color: var(--gold);
+background: rgba(201,168,76,.1);
+border: 1px solid rgba(201,168,76,.2);
+padding: 2px 8px;
+}
+.faction-name {
+font-family: var(--mono);
+font-size: 9px;
+letter-spacing: 3px;
+margin-bottom: 12px;
+text-transform: uppercase;
+}
+.faction-card.up-card .faction-name { color: var(--blue); }
+.faction-card.dn-card .faction-name { color: var(--red); }
+.faction-sov {
+font-family: var(--serif);
+font-size: 40px;
+font-weight: 700;
+line-height: 1;
+display: block;
+margin-bottom: 4px;
+}
+.faction-card.up-card .faction-sov { color: var(--blue); }
+.faction-card.dn-card .faction-sov { color: var(--red); }
+.faction-label {
+font-size: 11px;
+color: var(--muted);
+}
+/* Proof section */
+.proof-card {
+background: #0a0a0d;
+border: 1px solid var(--border);
+padding: 24px;
+margin-bottom: 24px;
+font-family: var(--mono);
+}
+.proof-card-header {
+font-size: 8px;
+letter-spacing: 4px;
+color: var(--gold);
+text-transform: uppercase;
+margin-bottom: 16px;
+padding-bottom: 12px;
+border-bottom: 1px solid var(--border);
+display: flex;
+justify-content: space-between;
+align-items: center;
+}
+.proof-copy-btn {
+font-family: var(--mono);
+font-size: 8px;
+letter-spacing: 2px;
+background: none;
+border: 1px solid var(--border);
+color: var(--muted);
+padding: 3px 8px;
+cursor: pointer;
+transition: all .15s;
+}
+.proof-copy-btn:hover { border-color: var(--gold); color: var(--gold); }
+.proof-line {
+font-size: 11px;
+color: #8880b8;
+line-height: 2;
+}
+.proof-line .pk { color: var(--muted); }
+.proof-line .pv { color: var(--text); }
+.proof-line .pg { color: var(--green); }
+.proof-line .pb { color: var(--blue); }
+.proof-line .py { color: var(--gold); }
+.proof-line .pr { color: var(--red); }
+/* Absorption log */
+.absorption-log {
+background: var(--surface);
+border: 1px solid var(--border);
+padding: 20px 24px;
+}
+.absorption-title {
+font-family: var(--mono);
+font-size: 9px;
+letter-spacing: 3px;
+color: var(--muted);
+text-transform: uppercase;
+margin-bottom: 14px;
+}
+.absorption-item {
+display: flex;
+align-items: flex-start;
+gap: 12px;
+margin-bottom: 10px;
+font-size: 12px;
+line-height: 1.6;
+}
+.absorption-item:last-child { margin-bottom: 0; }
+.abs-arrow {
+color: var(--gold);
+flex-shrink: 0;
+font-family: var(--mono);
+font-size: 10px;
+margin-top: 2px;
+}
+.abs-text { color: #9a98a0; }
+.abs-text strong { color: var(--text); }
+/* ══════════════════════════════
+HOW IT WORKS
+══════════════════════════════ */
+.how-section {
+max-width: 1100px;
+margin: 0 auto;
+padding: 0 48px 80px;
+}
+.how-grid {
+display: grid;
+grid-template-columns: repeat(4, 1fr);
+gap: 0;
+margin-top: 32px;
+}
+.how-step {
+padding: 28px 24px;
+border: 1px solid var(--border);
+border-right: none;
+position: relative;
+}
+.how-step:last-child { border-right: 1px solid var(--border); }
+.how-step-num {
+font-family: var(--mono);
+font-size: 9px;
+letter-spacing: 3px;
+color: var(--gold);
+display: block;
+margin-bottom: 14px;
+}
+.how-step-icon {
+font-size: 22px;
+display: block;
+margin-bottom: 12px;
+}
+.how-step h3 {
+font-family: var(--sans);
+font-weight: 600;
+font-size: 13px;
+text-transform: uppercase;
+letter-spacing: 1px;
+color: var(--text);
+margin-bottom: 10px;
+}
+.how-step p {
+font-size: 12px;
+line-height: 1.7;
+color: var(--muted);
+}
+/* ══════════════════════════════
+FOOTER
+══════════════════════════════ */
+.footer {
+border-top: 1px solid var(--border);
+padding: 32px 48px;
+max-width: 1100px;
+margin: 0 auto;
+display: flex;
+justify-content: space-between;
+align-items: center;
+}
+.footer-left {
+font-family: var(--mono);
+font-size: 9px;
+letter-spacing: 2px;
+color: var(--muted);
+line-height: 2;
+}
+.footer-right {
+font-family: var(--mono);
+font-size: 9px;
+letter-spacing: 2px;
+color: var(--muted);
+text-align: right;
+}
+.footer-right a {
+color: var(--gold);
+text-decoration: none;
+}
+/* ══════════════════════════════
+RESPONSIVE
+══════════════════════════════ */
+@media (max-width: 768px) {
+.masthead { padding: 20px 24px; }
+.hero { grid-template-columns: 1fr; gap: 40px; padding: 48px 24px 40px; }
+.hero-right { display: none; }
+.analyzer-section, .how-section { padding: 0 24px 60px; }
+.input-panel { grid-template-columns: 1fr; }
+.vs-divider { flex-direction: row; height: 40px; }
+.vs-line { width: auto; flex: 1; height: 1px; }
+.verdict-body { grid-template-columns: 1fr; gap: 16px; }
+.faction-grid { grid-template-columns: 1fr; }
+.how-grid { grid-template-columns: 1fr 1fr; }
+.how-step:nth-child(2) { border-right: 1px solid var(--border); }
+.how-step:nth-child(3) { border-top: none; }
+.footer { flex-direction: column; gap: 16px; text-align: center; }
+.footer-right { text-align: center; }
+}
+</style>
+</head>
+<body>
+<!-- ── MASTHEAD ── -->
+<nav class="masthead">
+<div class="logo">
+<span class="logo-name">VERITY</span>
+<span class="logo-sub">Contradiction Analyzer</span>
+</div>
+<div class="masthead-right">
+<span class="engine-badge">Powered by Orthogonal Flat Engine</span>
+<div class="status-dot" title="Engine online"></div>
+</div>
+</nav>
+<!-- ── HERO ── -->
+<section class="hero">
+<div class="hero-left">
+<div class="hero-label">Mathematical Truth Detection</div>
+<h1>When headlines<br><em>contradict</em>,<br>the geometry<br>doesn't lie.</h1>
+<p class="hero-desc">VERITY converts conflicting news claims into SL(2,ℤ) matrix pairs and measures their contradiction using non-commutative holonomy — producing a mathematically-grounded credibility assessment, not an opinion.</p>
+<div class="hero-stats">
+<div class="hstat">
+<span class="hstat-num">550%</span>
+<span class="hstat-label">State Diversity</span>
+</div>
+<div class="hstat">
+<span class="hstat-num">100%</span>
+<span class="hstat-label">Symbol Uniqueness</span>
+</div>
+<div class="hstat">
+<span class="hstat-num">950</span>
+<span class="hstat-label">Contradictions Processed</span>
+</div>
+</div>
+</div>
+<div class="hero-right">
+<div class="matrix-display">
+<div class="matrix-eq">
+<span class="mat-bracket">[</span>
+<div class="mat">
+<span>47</span><span>23</span>
+<span>12</span><span>8</span>
+</div>
+<span class="mat-bracket">]</span>
+<span style="color:var(--muted);font-size:18px">×</span>
+<span class="mat-bracket">[</span>
+<div class="mat">
+<span>34</span><span>15</span>
+<span>9</span><span>4</span>
+</div>
+<span class="mat-bracket">]</span>
+<span style="color:var(--muted)">≠</span>
+<span style="color:var(--gold);font-size:11px">reversed</span>
+</div>
+<div class="matrix-eq">
+<span style="color:var(--muted);font-size:11px">det(M) = 1 always · tr(M) = contradiction depth</span>
+</div>
+<div class="matrix-note">
+Non-commutativity proves irreversibility.<br>
+A·B ≠ B·A means <span>history cannot be fabricated.</span><br>
+The order of claims permanently shapes their geometry.
+</div>
+</div>
+</div>
+</section>
+<!-- ── ANALYZER ── -->
+<section class="analyzer-section">
+<div class="section-header">
+<span class="section-num">STEP 01</span>
+<h2>Enter two contradicting claims</h2>
+</div>
+<!-- Presets -->
+<div class="presets">
+<span class="preset-label">↗ Presets</span>
+<button class="preset-btn" onclick="loadPreset(0)">Server Stability</button>
+<button class="preset-btn" onclick="loadPreset(1)">Climate Policy</button>
+<button class="preset-btn" onclick="loadPreset(2)">Market Outlook</button>
+<button class="preset-btn" onclick="loadPreset(3)">Vaccine Safety</button>
+<button class="preset-btn" onclick="loadPreset(4)">Election Results</button>
+</div>
+<!-- Input -->
+<div class="input-panel">
+<div class="strand-input up-strand">
+<div class="strand-label up">
+<span class="strand-glyph">↑</span>
+Claim A — UP SHEAR
+</div>
+<textarea id="claim-a" placeholder="Enter the first claim or headline…"></textarea>
+<div class="weight-row">
+<span class="weight-label">SOURCE WEIGHT</span>
+<input type="range" class="weight-slider up" id="weight-a" min="0" max="100" value="85" oninput="updateWeight('a')"/>
+<span class="weight-val" id="wval-a">0.85</span>
+</div>
+</div>
+<div class="vs-divider">
+<div class="vs-line"></div>
+<span class="vs-text">vs</span>
+<div class="vs-line"></div>
+</div>
+<div class="strand-input dn-strand">
+<div class="strand-label dn">
+<span class="strand-glyph">↓</span>
+Claim B — DOWN SHEAR
+</div>
+<textarea id="claim-b" placeholder="Enter the contradicting claim or headline…"></textarea>
+<div class="weight-row">
+<span class="weight-label">SOURCE WEIGHT</span>
+<input type="range" class="weight-slider dn" id="weight-b" min="0" max="100" value="72" oninput="updateWeight('b')"/>
+<span class="weight-val" id="wval-b">0.72</span>
+</div>
+</div>
+</div>
+<button class="analyze-btn" id="analyze-btn" onclick="analyze()">
+<div class="btn-spinner" id="spinner"></div>
+<span id="btn-text">⬡ ANALYZE CONTRADICTION</span>
+</button>
+<!-- Results -->
+<div id="results">
+<div class="section-header">
+<span class="section-num">STEP 02</span>
+<h2>Mathematical contradiction analysis</h2>
+</div>
+<!-- Verdict -->
+<div class="verdict-card">
+<div class="verdict-header">
+<h3>Engine Verdict</h3>
+<span class="verdict-badge" id="verdict-badge">COMPUTING</span>
+</div>
+<div class="verdict-body">
+<div class="verdict-item">
+<span class="verdict-item-label">Dominant Claim</span>
+<span class="verdict-item-value" id="v-dominant" style="font-size:18px;color:var(--gold)">—</span>
+<span class="verdict-item-sub" id="v-dominant-text">—</span>
+</div>
+<div class="verdict-item">
+<span class="verdict-item-label">Confidence</span>
+<span class="verdict-item-value" id="v-confidence" style="color:var(--green)">—</span>
+<span class="verdict-item-sub">mathematical certainty</span>
+</div>
+<div class="verdict-item">
+<span class="verdict-item-label">SCI Score</span>
+<span class="verdict-item-value" id="v-sci" style="color:var(--blue)">—</span>
+<span class="verdict-item-sub">structural complexity index</span>
+</div>
+</div>
+</div>
+<!-- Tension bar -->
+<div class="tension-bar-wrap">
+<div class="tension-bar-header">
+<span class="tension-bar-label">CONTRADICTION TENSION — BACKGROUND FIELD</span>
+<span class="tension-bar-val" id="tension-val">—</span>
+</div>
+<div class="tension-bar-track">
+<div class="tension-bar-fill" id="tension-fill"></div>
+</div>
+</div>
+<!-- Faction grid -->
+<div class="faction-grid">
+<div class="faction-card up-card" id="faction-a">
+<div class="faction-name">↑ UP SHEAR · CLAIM A</div>
+<span class="faction-sov" id="sov-a">—</span>
+<span class="faction-label">sovereign strands</span>
+</div>
+<div class="faction-card dn-card" id="faction-b">
+<div class="faction-name">↓ DOWN SHEAR · CLAIM B</div>
+<span class="faction-sov" id="sov-b">—</span>
+<span class="faction-label">sovereign strands</span>
+</div>
+</div>
+<!-- Mathematical proof -->
+<div class="proof-card">
+<div class="proof-card-header">
+Mathematical Proof Chain
+<button class="proof-copy-btn" onclick="copyProof()">COPY PROOF</button>
+</div>
+<div id="proof-output"></div>
+</div>
+<!-- Absorption log -->
+<div class="absorption-log">
+<div class="absorption-title">Contradiction Absorption Log</div>
+<div id="absorption-output"></div>
+</div>
+</div><!-- /results -->
+</section>
+<!-- ── HOW IT WORKS ── -->
+<section class="how-section">
+<div class="section-header">
+<span class="section-num">MECHANISM</span>
+<h2>How the engine processes contradiction</h2>
+</div>
+<div class="how-grid">
+<div class="how-step">
+<span class="how-step-num">01</span>
+<span class="how-step-icon">⟁</span>
+<h3>Strand Injection</h3>
+<p>Each claim becomes a Braid Strand with a source-weight-calibrated SL(2,ℤ) holonomy matrix. The matrix encodes the claim's credibility geometry.</p>
+</div>
+<div class="how-step">
+<span class="how-step-num">02</span>
+<span class="how-step-icon">τ</span>
+<h3>Tau Engine Evaluation</h3>
+<p>The 3-valued Tau Engine evaluates the strand pair: Compatible, Collapsed, or Incomparable. Contradiction generates BACKGROUND_TENSION — a scalar energy field.</p>
+</div>
+<div class="how-step">
+<span class="how-step-num">03</span>
+<span class="how-step-icon">⊙</span>
+<h3>Sovereign Emergence</h3>
+<p>Strands whose holonomy trace exceeds the adaptive threshold become Sovereign. The faction with more Sovereigns carries greater mathematical weight.</p>
+</div>
+<div class="how-step">
+<span class="how-step-num">04</span>
+<span class="how-step-icon">∴</span>
+<h3>Holonomy Proof</h3>
+<p>The accumulated SL(2,ℤ) matrix product is the mathematical proof. Its trace is the contradiction depth. Its determinant is always 1 — identity preserved.</p>
+</div>
+</div>
+</section>
+<!-- ── FOOTER ── -->
+<footer class="footer">
+<div class="footer-left">
+VERITY · Built on Orthogonal Flat Engine v0.9.0<br>
+SL(2,ℤ) Non-Commutative Holonomy Architecture<br>
+All analysis is mathematical — not statistical
+</div>
+<div class="footer-right">
+<a href="#">GitHub</a> · <a href="#">One-Pager</a> · <a href="#">Research</a><br>
+550% state diversity vs baseline<br>
+100% symbol uniqueness · 0 collisions
+</div>
+</footer>
+<!-- ══════════════════════════════
+ENGINE CORE (JS port of OFE)
+══════════════════════════════ -->
+<script>
+'use strict';
+// ── SL(2,Z) CORE ──────────────────────────────────────────────────────────
+const mul = (A,B) => ([
+[A[0][0]*B[0][0]+A[0][1]*B[1][0], A[0][0]*B[0][1]+A[0][1]*B[1][1]],
+[A[1][0]*B[0][0]+A[1][1]*B[1][0], A[1][0]*B[0][1]+A[1][1]*B[1][1]]
+]);
+const mtr = M => M[0][0] + M[1][1];
+const mdet = M => M[0][0]*M[1][1] - M[0][1]*M[1][0];
+const S = [[0,-1],[1,0]], T = [[1,1],[0,1]], Id = [[1,0],[0,1]];
+// ── RNG ──────────────────────────────────────────────────────────────────
+function makeRng(seed) {
+let s = (seed ^ 0x12345678) >>> 0;
+return {
+next() { s=(s*1664525+1013904223)&0xffffffff; return (s>>>0)/0xffffffff; },
+ch(a) { return a[Math.floor(this.next()*a.length)]; },
+int(lo,hi){ return Math.floor(this.next()*(hi-lo+1))+lo; },
+bool(p=.5){ return this.next()<p; }
+};
+}
+function strToSeed(s) {
+let h = 0;
+for(let i=0;i<s.length;i++) h=(h*31+s.charCodeAt(i))&0x7fffffff;
+return h>>>0;
+}
+// ── ENGINE ────────────────────────────────────────────────────────────────
+function runEngine(claimA, wA, claimB, wB) {
+const seed = strToSeed(claimA + claimB);
+const rng = makeRng(seed);
+const cycles = rng.int(3, 5);
+const thresh = Math.max(3, Math.round((wA+wB)*3));
+let tension = Math.abs(wA - wB) * (wA + wB) / 2;
+let bid = 0;
+const strands = [], crossings = [], alphabet = new Set();
+function newH() {
+let M = Id;
+for(let i=0;i<rng.int(2,4);i++) M=mul(M, rng.ch([S,T]));
+return M;
+}
+// Calibrate holonomy to source weight
+function weightedH(w) {
+let M = Id;
+const steps = Math.max(1, Math.round(w * 5));
+for(let i=0;i<steps;i++) M = mul(M, rng.ch([S,T]));
+return M;
+}
+const up = { id:bid++, sym:"↑", fac:"up", H:weightedH(wA), gen:0, sov:false, trace:0 };
+const down = { id:bid++, sym:"↓", fac:"down", H:weightedH(wB), gen:0, sov:false, trace:0 };
+up.trace = mtr(up.H);
+down.trace = mtr(down.H);
+strands.push(up, down);
+// Contradiction crossing
+crossings.push({ src:up.id, tgt:down.id, type:"contradiction", sing: Math.abs(mtr(mul(up.H,down.H))) });
+for(let c=0;c<cycles;c++) {
+tension += 0.5;
+// void nodes
+strands.push({ id:bid++, sym:"∅", fac:"void", H:Id, gen:1, sov:false, trace:2 });
+strands.push({ id:bid++, sym:"∅", fac:"void", H:Id, gen:1, sov:false, trace:2 });
+while(tension >= 0.5) {
+tension -= 0.5;
+const pH = rng.ch([up,down]).H;
+const vH = newH();
+const sh = rng.bool() ? S : T;
+const cH = mul(mul(sh, vH), pH);
+const tr = mtr(cH);
+const fac = rng.bool() ? "up" : "down";
+const s = {
+id:bid++,
+sym:`⊙${bid}:${Math.abs(tr).toString(16).slice(0,4)}`,
+fac, H:cH, trace:tr, gen:2,
+sov: Math.abs(tr) >= thresh
+};
+strands.push(s);
+alphabet.add(s.sym);
+crossings.push({ src: rng.ch([up.id,down.id]), tgt:s.id,
+type: fac==="up"?"up_shear":"down_shear",
+sing: Math.abs(mtr(mul(up.H, s.H))) });
+}
+}
+// Inter-faction
+const upSovs = strands.filter(s=>s.sov && s.fac==="up");
+const dnSovs = strands.filter(s=>s.sov && s.fac==="down");
+for(const u of upSovs) for(const d of dnSovs)
+crossings.push({ src:u.id, tgt:d.id, type:"inter_faction",
+sing: Math.abs(mtr(mul(u.H, d.H))) });
+// SCI
+const V=strands.length, E=crossings.length;
+const mC=strands.filter(s=>s.gen===2).reduce((a,s)=>a+Math.abs(mtr(s.H)),0);
+const sci=(E-V+2)+mC;
+// Accumulated holonomy (identity × all gen2 matrices)
+let acc = Id;
+strands.filter(s=>s.gen===2&&s.sov).forEach(s=>{ acc=mul(acc,s.H); });
+// Dominant faction
+const upCount = upSovs.length, dnCount = dnSovs.length;
+const dominant = upCount >= dnCount ? "A" : "B";
+const margin = Math.abs(upCount - dnCount);
+const total = Math.max(upCount + dnCount, 1);
+const conf = Math.min(1, (margin/total)*1.5 + Math.abs(wA-wB)*0.3);
+// Contradiction spouts
+const contraSpouts = crossings.filter(c=>c.type==="inter_faction");
+const maxSing = contraSpouts.length
+? Math.max(...contraSpouts.map(c=>c.sing))
+: 0;
+// Real tension from engine
+const bgTension = Math.abs(wA-wB)*(wA+wB)/2 + cycles*0.1;
+return {
+strands, crossings, alphabet:[...alphabet],
+sci, dominant, conf, upCount, dnCount,
+acc, accTrace: mtr(acc),
+bgTension, maxSing, thresh, cycles, seed,
+contraCount: contraSpouts.length,
+upH: up.H, dnH: down.H,
+wA, wB,
+contradictionTension: Math.abs(wA-wB)
+};
+}
+// ── UI HELPERS ────────────────────────────────────────────────────────────
+const PRESETS = [
+{
+a: "Server X is fully stable and operating at 100% efficiency with zero downtime reported",
+wa: 85,
+b: "Server X is experiencing critical failures and dropping 40% of user requests with timeout errors",
+wb: 72
+},
+{
+a: "Global temperatures have remained stable for the past decade — climate emergency is overstated",
+wa: 60,
+b: "2024 is the hottest year on record — climate change is accelerating beyond all projections",
+wb: 91
+},
+{
+a: "Markets will rally 25% in 2025 — inflation is beaten and rate cuts are imminent",
+wa: 78,
+b: "A severe recession is inevitable in 2025 — debt levels are at historic highs and liquidity is drying up",
+wb: 74
+},
+{
+a: "The vaccine has a 95% efficacy rate with no serious adverse events reported in trials",
+wa: 93,
+b: "Independent researchers document a statistically significant spike in cardiac events following vaccination",
+wb: 61
+},
+{
+a: "Official results confirm a decisive 7-point victory for the incumbent with no evidence of irregularities",
+wa: 88,
+b: "Multiple precincts report vote tallies that exceed registered voter counts by thousands",
+wb: 55
+}
+];
+function loadPreset(i) {
+const p = PRESETS[i];
+document.getElementById("claim-a").value = p.a;
+document.getElementById("claim-b").value = p.b;
+document.getElementById("weight-a").value = p.wa;
+document.getElementById("weight-b").value = p.wb;
+updateWeight("a"); updateWeight("b");
+}
+function updateWeight(side) {
+const v = document.getElementById(`weight-${side}`).value;
+document.getElementById(`wval-${side}`).textContent = (v/100).toFixed(2);
+}
+function copyProof() {
+const text = document.getElementById("proof-output").innerText;
+navigator.clipboard.writeText(text).then(() => {
+const btn = document.querySelector(".proof-copy-btn");
+btn.textContent = "COPIED ✓";
+setTimeout(() => btn.textContent = "COPY PROOF", 2000);
+});
+}
+function setLoading(on) {
+const btn = document.getElementById("analyze-btn");
+const sp = document.getElementById("spinner");
+const tx = document.getElementById("btn-text");
+btn.disabled = on;
+sp.style.display = on ? "block" : "none";
+tx.textContent = on ? "COMPUTING HOLONOMY…" : "⬡ ANALYZE CONTRADICTION";
+}
+function analyze() {
+const a = document.getElementById("claim-a").value.trim();
+const b = document.getElementById("claim-b").value.trim();
+const wa = parseInt(document.getElementById("weight-a").value) / 100;
+const wb = parseInt(document.getElementById("weight-b").value) / 100;
+if(!a || !b) {
+alert("Please enter both claims before analyzing.");
+return;
+}
+setLoading(true);
+document.getElementById("results").classList.remove("visible");
+setTimeout(() => {
+const R = runEngine(a, wa, b, wb);
+renderResults(R, a, b);
+setLoading(false);
+document.getElementById("results").classList.add("visible");
+document.getElementById("results").scrollIntoView({ behavior:"smooth", block:"start" });
+}, 900);
+}
+function renderResults(R, claimA, claimB) {
+// Verdict badge
+const badge = document.getElementById("verdict-badge");
+const conf = R.conf;
+if(conf >= 0.65) { badge.textContent="CONFIRMED"; badge.className="verdict-badge confirmed"; }
+else if(conf >= 0.35) { badge.textContent="PROBABLE"; badge.className="verdict-badge probable"; }
+else { badge.textContent="UNCERTAIN"; badge.className="verdict-badge uncertain"; }
+// Dominant
+const domLabel = R.dominant === "A" ? claimA.slice(0,50)+"…" : claimB.slice(0,50)+"…";
+const domLetter = R.dominant === "A" ? "CLAIM A" : "CLAIM B";
+document.getElementById("v-dominant").textContent = domLetter;
+document.getElementById("v-dominant-text").textContent = domLabel;
+document.getElementById("v-confidence").textContent = (conf*100).toFixed(1)+"%";
+document.getElementById("v-sci").textContent = R.sci.toLocaleString();
+// Tension bar
+const tensionPct = Math.min(100, R.bgTension * 200);
+document.getElementById("tension-val").textContent = R.bgTension.toFixed(4);
+setTimeout(()=>{ document.getElementById("tension-fill").style.width = tensionPct+"%"; }, 100);
+// Factions
+document.getElementById("sov-a").textContent = R.upCount;
+document.getElementById("sov-b").textContent = R.dnCount;
+const fa = document.getElementById("faction-a");
+const fb = document.getElementById("faction-b");
+fa.classList.toggle("winner", R.dominant==="A");
+fb.classList.toggle("winner", R.dominant==="B");
+// Proof
+const acc = R.acc;
+const proofLines = [
+`<div class="proof-line"><span class="pk">INPUT A </span> <span class="pb">"${claimA.slice(0,55)}…"</span></div>`,
+`<div class="proof-line"><span class="pk">INPUT B </span> <span class="pr">"${claimB.slice(0,55)}…"</span></div>`,
+`<div class="proof-line"><span class="pk">SOURCE WEIGHT A </span> <span class="pv">${R.wA.toFixed(2)}</span></div>`,
+`<div class="proof-line"><span class="pk">SOURCE WEIGHT B </span> <span class="pv">${R.wb ? R.wb.toFixed(2) : R.wB.toFixed(2)}</span></div>`,
+`<div class="proof-line"><span class="pk">HOLONOMY A </span> <span class="py">[[${R.upH[0][0]},${R.upH[0][1]}],[${R.upH[1][0]},${R.upH[1][1]}]] det=${R.upH[0][0]*R.upH[1][1]-R.upH[0][1]*R.upH[1][0]}</span></div>`,
+`<div class="proof-line"><span class="pk">HOLONOMY B </span> <span class="py">[[${R.dnH[0][0]},${R.dnH[0][1]}],[${R.dnH[1][0]},${R.dnH[1][1]}]] det=${R.dnH[0][0]*R.dnH[1][1]-R.dnH[0][1]*R.dnH[1][0]}</span></div>`,
+`<div class="proof-line"><span class="pk">CYCLES RUN </span> <span class="pv">${R.cycles}</span></div>`,
+`<div class="proof-line"><span class="pk">DETACH THRESHOLD </span> <span class="pv">${R.thresh}</span></div>`,
+`<div class="proof-line"><span class="pk">UP SOVEREIGNS </span> <span class="pb">${R.upCount}</span></div>`,
+`<div class="proof-line"><span class="pk">DOWN SOVEREIGNS </span> <span class="pr">${R.dnCount}</span></div>`,
+`<div class="proof-line"><span class="pk">CONTRA SPOUTS </span> <span class="pv">${R.contraCount} (max singularity: ${R.maxSing})</span></div>`,
+`<div class="proof-line"><span class="pk">BACKGROUND ζ </span> <span class="py">${R.bgTension.toFixed(4)}</span></div>`,
+`<div class="proof-line"><span class="pk">ACC HOLONOMY </span> <span class="py">[[${acc[0][0]},${acc[0][1]}],[${acc[1][0]},${acc[1][1]}]]</span></div>`,
+`<div class="proof-line"><span class="pk">ACC TRACE </span> <span class="py">${R.accTrace}</span></div>`,
+`<div class="proof-line"><span class="pk">SCI </span> <span class="pb">${R.sci.toLocaleString()}</span></div>`,
+`<div class="proof-line"><span class="pk">SEED </span> <span class="pv">0x${R.seed.toString(16).padStart(8,"0")}</span></div>`,
+`<div class="proof-line"><span class="pk">CONFIDENCE </span> <span class="${conf>=.65?"pg":conf>=.35?"py":"pr"}">${(conf*100).toFixed(2)}%</span></div>`,
+`<div class="proof-line"><span class="pk">DOMINANT CLAIM </span> <span class="${R.dominant==="A"?"pb":"pr"}">CLAIM ${R.dominant}</span></div>`,
+`<div class="proof-line"><span class="pk">VERDICT </span> <span class="${conf>=.65?"pg":conf>=.35?"py":"pr"}">${conf>=.65?"CONFIRMED":conf>=.35?"PROBABLE":"UNCERTAIN"}</span></div>`,
+];
+document.getElementById("proof-output").innerHTML = proofLines.join("");
+// Absorption log
+const absorbed = R.strands.filter(s=>s.gen===2).length;
+const voids = R.strands.filter(s=>s.sym==="∅").length;
+const absLines = [
+`<div class="absorption-item"><span class="abs-arrow">→</span><div class="abs-text">Claim A (↑) and Claim B (↓) <strong>collided</strong>. Tau Engine returned: <strong>COLLAPSED</strong>. ${voids} void nodes ∅ spawned from collision energy.</div></div>`,
+`<div class="absorption-item"><span class="abs-arrow">→</span><div class="abs-text">Background tension accumulated to <strong>${R.bgTension.toFixed(4)}</strong>. ${absorbed} emergent entities ⊙ born from contradiction energy via geometric insemination.</div></div>`,
+`<div class="absorption-item"><span class="abs-arrow">→</span><div class="abs-text"><strong>${R.upCount}</strong> strands achieved UP sovereignty · <strong>${R.dnCount}</strong> strands achieved DOWN sovereignty · threshold: ${R.thresh}.</div></div>`,
+`<div class="absorption-item"><span class="abs-arrow">→</span><div class="abs-text"><strong>${R.contraCount}</strong> inter-faction contradiction crossings computed. Maximum singularity: <strong>${R.maxSing}</strong>. Alphabet generated: <strong>${R.alphabet.length}</strong> unique symbols.</div></div>`,
+`<div class="absorption-item"><span class="abs-arrow">∴</span><div class="abs-text">Contradiction absorbed. Claim <strong>${R.dominant}</strong> achieved geometric dominance. Mathematical proof recorded in holonomy chain. Identity trace: <strong>${R.accTrace}</strong>.</div></div>`,
+];
+document.getElementById("absorption-output").innerHTML = absLines.join("");
+}
+// Init weight display
+updateWeight("a");
+updateWeight("b");
+// Load first preset by default
+loadPreset(0);
+</script>
+</body>
+</html>

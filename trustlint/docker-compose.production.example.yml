@@ -1,0 +1,85 @@
+# TrustLint Kafka Infrastructure — PRODUCTION EXAMPLE
+#
+# This is a REFERENCE CONFIGURATION for production Kafka deployment.
+# You must adapt secrets, certificates, and credentials for your environment.
+#
+# Key security features vs. dev config:
+# - TLS encryption for client-broker communication
+# - SASL/SCRAM authentication (no anonymous access)
+# - ACL authorization
+# - Non-default credentials via secrets
+# - Replication factor > 1
+# - No automatic topic creation
+# - Persistent storage with volume mounts
+# - Health checks
+# - Resource limits
+#
+# Start: docker compose -f docker-compose.production.example.yml up
+#
+# SECRETS: Never commit real credentials. Use Docker secrets, Vault, or
+# environment variable injection from a secrets manager.
+
+services:
+  zookeeper:
+    image: bitnami/zookeeper:3.9
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=no
+      - ZOOKEEPER_CLIENT_PORT=2181
+      - ZOOKEEPER_TICK_TIME=2000
+      - ZOOKEEPER_SYNC_LIMIT=2
+    volumes:
+      - zookeeper_data:/bitnami/zookeeper
+    healthcheck:
+      test: ["CMD-SHELL", "echo ruok | nc localhost 2181"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "0.5"
+
+  kafka:
+    image: bitnami/kafka:3.7
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+    environment:
+      - KAFKA_BROKER_ID=1
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_CFG_LISTENERS=SASL_SSL://:9093
+      - KAFKA_CFG_ADVERTISED_LISTENERS=SASL_SSL://kafka:9093
+      - KAFKA_CFG_SSL_KEYSTORE_LOCATION=/bitnami/kafka/config/certs/kafka.keystore.pfx
+      - KAFKA_CFG_SSL_KEYSTORE_PASSWORD=${KAFKA_KEYSTORE_PASSWORD}
+      - KAFKA_CFG_SSL_TRUSTSTORE_LOCATION=/bitnami/kafka/config/certs/kafka.truststore.pfx
+      - KAFKA_CFG_SSL_TRUSTSTORE_PASSWORD=${KAFKA_TRUSTSTORE_PASSWORD}
+      - KAFKA_CFG_SASL_ENABLED_MECHANISMS=SCRAM-SHA-512
+      - KAFKA_CFG_SASL_MECHANINTER_BROKER_PROTOCOL=SCRAM-SHA-512
+      - KAFKA_CFG_SASL_MECHANINTER_BROKER_PROTOCOL=SCRAM-SHA-512
+      - KAFKA_CFG_AUTHORIZER_CLASS_NAME=kafka.security.authorizer.AclAuthorizer
+      - KAFKA_CFG_ALLOW_EVERYONE_IF_NO_ACL_FOUND=false
+      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=false
+      - KAFKA_CFG_OFFSETS_TOPIC_REPLICATION_FACTOR=3
+      - KAFKA_CFG_NUM_PARTITIONS=3
+      - KAFKA_CFG_DEFAULT_REPLICATION_FACTOR=3
+      - KAFKA_CFG_MIN_INSYNC_REPLICAS=2
+    volumes:
+      - kafka_data:/bitnami/kafka
+      - ./certs:/bitnami/kafka/config/certs:ro
+    healthcheck:
+      test: ["CMD-SHELL", "kafka-broker-api-versions.sh --bootstrap-server localhost:9093"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: "1.0"
+
+volumes:
+  zookeeper_data:
+    driver: local
+  kafka_data:
+    driver: local

@@ -1,0 +1,86 @@
+{
+  "_metadata": {
+    "description": "Expected TLS classifications for real_tls_mixed_domains.txt",
+    "purpose": "Controlled validation of TLS probe classification accuracy",
+    "note": "Not global truth — expected outcomes based on well-known test services and domain characteristics. Actual results may differ due to network conditions, OpenSSL version, or service changes.",
+    "categories": [
+      "VALID_TLS", "EXPIRED_CERT", "SELF_SIGNED_CERT", "WRONG_HOST_CERT",
+      "UNTRUSTED_CHAIN", "INCOMPLETE_CHAIN", "TLS_HANDSHAKE_FAILURE",
+      "DNS_FAILURE", "CONNECTION_ERROR", "TIMEOUT", "UNKNOWN_SSL_ERROR"
+    ]
+  },
+  "expected": [
+    {"domain": "google.com", "expected_category": "VALID_TLS"},
+    {"domain": "github.com", "expected_category": "VALID_TLS"},
+    {"domain": "gitlab.com", "expected_category": "VALID_TLS"},
+    {"domain": "python.org", "expected_category": "VALID_TLS"},
+    {"domain": "pypi.org", "expected_category": "VALID_TLS"},
+    {"domain": "docker.com", "expected_category": "VALID_TLS"},
+    {"domain": "mozilla.org", "expected_category": "VALID_TLS"},
+    {"domain": "wikipedia.org", "expected_category": "VALID_TLS"},
+    {"domain": "archive.org", "expected_category": "VALID_TLS"},
+    {"domain": "w3.org", "expected_category": "VALID_TLS"},
+    {"domain": "ietf.org", "expected_category": "VALID_TLS"},
+    {"domain": "openssl.org", "expected_category": "VALID_TLS"},
+    {"domain": "debian.org", "expected_category": "VALID_TLS"},
+    {"domain": "ubuntu.com", "expected_category": "VALID_TLS"},
+    {"domain": "redhat.com", "expected_category": "VALID_TLS"},
+    {"domain": "caltech.edu", "expected_category": "VALID_TLS"},
+    {"domain": "stanford.edu", "expected_category": "VALID_TLS"},
+    {"domain": "harvard.edu", "expected_category": "VALID_TLS"},
+    {"domain": "berkeley.edu", "expected_category": "VALID_TLS"},
+    {"domain": "eff.org", "expected_category": "VALID_TLS"},
+    {"domain": "npr.org", "expected_category": "VALID_TLS"},
+    {"domain": "bbc.com", "expected_category": "VALID_TLS"},
+    {"domain": "reuters.com", "expected_category": "VALID_TLS"},
+    {"domain": "acm.org", "expected_category": "VALID_TLS"},
+    {"domain": "ieee.org", "expected_category": "VALID_TLS"},
+    {"domain": "science.org", "expected_category": "VALID_TLS"},
+    {"domain": "nature.com", "expected_category": "VALID_TLS"},
+    {"domain": "arxiv.org", "expected_category": "VALID_TLS"},
+    {"domain": "ssrn.com", "expected_category": "VALID_TLS"},
+    {"domain": "postgresql.org", "expected_category": "VALID_TLS"},
+    {"domain": "badssl.com", "expected_category": "VALID_TLS"},
+
+    {"domain": "expired.badssl.com", "expected_category": "EXPIRED_CERT"},
+
+    {"domain": "self-signed.badssl.com", "expected_category": "SELF_SIGNED_CERT"},
+
+    {"domain": "wrong.host.badssl.com", "expected_category": "WRONG_HOST_CERT"},
+
+    {"domain": "untrusted-root.badssl.com", "expected_category": "UNTRUSTED_CHAIN"},
+
+    {"domain": "incomplete-chain.badssl.com", "expected_category": "INCOMPLETE_CHAIN"},
+
+    {"domain": "dh480.badssl.com", "expected_category": "TLS_HANDSHAKE_FAILURE"},
+    {"domain": "dh512.badssl.com", "expected_category": "TLS_HANDSHAKE_FAILURE"},
+    {"domain": "null.badssl.com", "expected_category": "TLS_HANDSHAKE_FAILURE"},
+    {"domain": "rc4.badssl.com", "expected_category": "TLS_HANDSHAKE_FAILURE"},
+    {"domain": "3des.badssl.com", "expected_category": "TLS_HANDSHAKE_FAILURE"},
+
+    {"domain": "thissitedoesnotexistxyzabc99999.nonexistent", "expected_category": "DNS_FAILURE"},
+    {"domain": "jjf8d9a7sd6f5asdf.testing-reserved", "expected_category": "DNS_FAILURE"},
+    {"domain": "never-gonna-resolve-987654321.example.com", "expected_category": "DNS_FAILURE"},
+
+    {"domain": "localhost", "expected_category": "CONNECTION_ERROR"},
+    {"domain": "127.0.0.1", "expected_category": "CONNECTION_ERROR"},
+    {"domain": "0.0.0.0", "expected_category": "CONNECTION_ERROR"},
+
+    {"domain": "10.255.255.1", "expected_category": "TIMEOUT"},
+    {"domain": "203.0.113.1", "expected_category": "TIMEOUT"},
+
+    {"domain": "sha256.badssl.com", "expected_category": "VALID_TLS"},
+    {"domain": "sha384.badssl.com", "expected_category": "EXPIRED_CERT"},
+    {"domain": "sha512.badssl.com", "expected_category": "EXPIRED_CERT"},
+    {"domain": "1000-sans.badssl.com", "expected_category": "EXPIRED_CERT"},
+    {"domain": "mozilla-intermediate.badssl.com", "expected_category": "VALID_TLS"},
+    {"domain": "mozilla-modern.badssl.com", "expected_category": "VALID_TLS"},
+    {"domain": "tls-v1-2.badssl.com", "expected_category": "VALID_TLS"},
+
+    {"domain": "superfish.badssl.com", "expected_category": "UNTRUSTED_CHAIN"},
+    {"domain": "dh1024.badssl.com", "expected_category": "TLS_HANDSHAKE_FAILURE"},
+    {"domain": "rc4-md5.badssl.com", "expected_category": "TLS_HANDSHAKE_FAILURE"},
+    {"domain": "tls-v1-1.badssl.com", "expected_category": "VALID_TLS"},
+    {"domain": "tls-v1-0.badssl.com", "expected_category": "VALID_TLS"}
+  ]
+}

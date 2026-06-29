@@ -1,0 +1,79 @@
+{
+  "metadata": {
+    "tool": "trustlint",
+    "profile": "balanced",
+    "spl_active": false,
+    "generated_at": "2026-06-03T18:43:09.379403+00:00Z",
+    "scope": "local-only",
+    "production_ready": false
+  },
+  "ca_store": "platform",
+  "summary": {
+    "total_domains": 1,
+    "allow": 1,
+    "review": 0,
+    "deny": 0,
+    "fallback": 1,
+    "probe_limited": 0,
+    "probe_errors": 0,
+    "highest_risk": "NONE"
+  },
+  "results": [
+    {
+      "domain": "example.com",
+      "profile": "balanced",
+      "ca_store": "platform",
+      "spl_active": false,
+      "probe_timestamp": "GENERATED_AT_PLACEHOLDER",
+      "tls_probe": {
+        "classification": "VALID_TLS",
+        "raw_classification": "VALID_TLS",
+        "tls_version": "TLSv1.3",
+        "expiry_days": 89,
+        "resolved_ip": "93.184.216.34",
+        "cert_is_expired": false,
+        "chain_complete": true,
+        "handshake_time_ms": 45.2,
+        "ocsp_performed": false,
+        "ocsp_stapled": false,
+        "ocsp_status": null,
+        "ocsp_error": null,
+        "ocsp_responder_url": null,
+        "deprecated_tls_check": null,
+        "deprecated_tls_detected": false,
+        "warnings": [],
+        "is_probe_limited": false
+      },
+      "policy_adapter": {
+        "risk_category": "ACCEPTABLE_TLS",
+        "severity": "NONE",
+        "failure_family": "NONE",
+        "reason": "TLS handshake succeeded with valid certificate chain.",
+        "action_hint": "NONE"
+      },
+      "spl": {
+        "decision": null,
+        "confidence": 0.0,
+        "confidence_source": "FALLBACK",
+        "weakness_flags": []
+      },
+      "final": {
+        "decision": "ALLOW",
+        "risk": "NONE",
+        "source": "ADAPTER_FALLBACK",
+        "fallback_used": true,
+        "primary_reason": "VALID_TLS allowed by balanced profile fallback policy because SPL confidence is unavailable and probe result is clean",
+        "supporting_reasons": [
+          "Profile: balanced",
+          "Adapter: ACCEPTABLE_TLS (NONE severity)",
+          "SPL confidence: unavailable (adapter-only mode)",
+          "Fallback ALLOW is a deterministic adapter-based CLI policy, not SPL confidence",
+          "This ALLOW does not indicate production readiness"
+        ],
+        "recommended_action": "No action required.",
+        "limitations": []
+      },
+      "ofe_observed": false
+    }
+  ]
+}

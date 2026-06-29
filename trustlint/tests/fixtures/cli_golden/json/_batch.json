@@ -1,0 +1,678 @@
+{
+  "metadata": {
+    "tool": "trustlint",
+    "profile": "balanced",
+    "spl_active": false,
+    "generated_at": "2026-06-03T18:43:09.437225+00:00Z",
+    "scope": "local-only",
+    "production_ready": false
+  },
+  "ca_store": "platform",
+  "summary": {
+    "total_domains": 12,
+    "allow": 1,
+    "review": 10,
+    "deny": 1,
+    "fallback": 1,
+    "probe_limited": 4,
+    "probe_errors": 1,
+    "highest_risk": "CRITICAL"
+  },
+  "results": [
+    {
+      "domain": "example.com",
+      "profile": "balanced",
+      "ca_store": "platform",
+      "spl_active": false,
+      "probe_timestamp": "GENERATED_AT_PLACEHOLDER",
+      "tls_probe": {
+        "classification": "VALID_TLS",
+        "raw_classification": "VALID_TLS",
+        "tls_version": "TLSv1.3",
+        "expiry_days": 89,
+        "resolved_ip": "93.184.216.34",
+        "cert_is_expired": false,
+        "chain_complete": true,
+        "handshake_time_ms": 45.2,
+        "ocsp_performed": false,
+        "ocsp_stapled": false,
+        "ocsp_status": null,
+        "ocsp_error": null,
+        "ocsp_responder_url": null,
+        "deprecated_tls_check": null,
+        "deprecated_tls_detected": false,
+        "warnings": [],
+        "is_probe_limited": false
+      },
+      "policy_adapter": {
+        "risk_category": "ACCEPTABLE_TLS",
+        "severity": "NONE",
+        "failure_family": "NONE",
+        "reason": "TLS handshake succeeded with valid certificate chain.",
+        "action_hint": "NONE"
+      },
+      "spl": {
+        "decision": null,
+        "confidence": 0.0,
+        "confidence_source": "FALLBACK",
+        "weakness_flags": []
+      },
+      "final": {
+        "decision": "ALLOW",
+        "risk": "NONE",
+        "source": "ADAPTER_FALLBACK",
+        "fallback_used": true,
+        "primary_reason": "VALID_TLS allowed by balanced profile fallback policy because SPL confidence is unavailable and probe result is clean",
+        "supporting_reasons": [
+          "Profile: balanced",
+          "Adapter: ACCEPTABLE_TLS (NONE severity)",
+          "SPL confidence: unavailable (adapter-only mode)",
+          "Fallback ALLOW is a deterministic adapter-based CLI policy, not SPL confidence",
+          "This ALLOW does not indicate production readiness"
+        ],
+        "recommended_action": "No action required.",
+        "limitations": []
+      },
+      "ofe_observed": false
+    },
+    {
+      "domain": "expired.example.com",
+      "profile": "balanced",
+      "ca_store": "platform",
+      "spl_active": false,
+      "probe_timestamp": "GENERATED_AT_PLACEHOLDER",
+      "tls_probe": {
+        "classification": "EXPIRED_CERT",
+        "raw_classification": "EXPIRED_CERT",
+        "tls_version": "TLSv1.2",
+        "expiry_days": -1,
+        "resolved_ip": "1.2.3.4",
+        "cert_is_expired": true,
+        "chain_complete": true,
+        "handshake_time_ms": 32.1,
+        "ocsp_performed": false,
+        "ocsp_stapled": false,
+        "ocsp_status": null,
+        "ocsp_error": null,
+        "ocsp_responder_url": null,
+        "deprecated_tls_check": null,
+        "deprecated_tls_detected": false,
+        "warnings": [
+          "Certificate is expired according to the probe."
+        ],
+        "is_probe_limited": true
+      },
+      "policy_adapter": {
+        "risk_category": "SECURITY_RISK",
+        "severity": "HIGH",
+        "failure_family": "CERTIFICATE_TRUST",
+        "reason": "Certificate is expired.",
+        "action_hint": "RENEW_OR_DENY"
+      },
+      "spl": {
+        "decision": null,
+        "confidence": 0.0,
+        "confidence_source": "UNAVAILABLE",
+        "weakness_flags": []
+      },
+      "final": {
+        "decision": "REVIEW",
+        "risk": "HIGH",
+        "source": "ADAPTER",
+        "fallback_used": false,
+        "primary_reason": "Security risk (balanced profile): RENEW_OR_DENY for EXPIRED_CERT",
+        "supporting_reasons": [
+          "Profile: balanced",
+          "Adapter risk: SECURITY_RISK"
+        ],
+        "recommended_action": "Renew or replace the certificate immediately.",
+        "limitations": [
+          "Certificate is expired according to the probe."
+        ]
+      },
+      "ofe_observed": false
+    },
+    {
+      "domain": "self-signed.example.com",
+      "profile": "balanced",
+      "ca_store": "platform",
+      "spl_active": false,
+      "probe_timestamp": "GENERATED_AT_PLACEHOLDER",
+      "tls_probe": {
+        "classification": "SELF_SIGNED_CERT",
+        "raw_classification": "SELF_SIGNED_CERT",
+        "tls_version": "TLSv1.2",
+        "expiry_days": 180,
+        "resolved_ip": "5.6.7.8",
+        "cert_is_expired": false,
+        "chain_complete": true,
+        "handshake_time_ms": 28.5,
+        "ocsp_performed": false,
+        "ocsp_stapled": false,
+        "ocsp_status": null,
+        "ocsp_error": null,
+        "ocsp_responder_url": null,
+        "deprecated_tls_check": null,
+        "deprecated_tls_detected": false,
+        "warnings": [],
+        "is_probe_limited": false
+      },
+      "policy_adapter": {
+        "risk_category": "SECURITY_RISK",
+        "severity": "HIGH",
+        "failure_family": "CERTIFICATE_TRUST",
+        "reason": "Certificate is self-signed and not trusted.",
+        "action_hint": "REVIEW_OR_DENY"
+      },
+      "spl": {
+        "decision": null,
+        "confidence": 0.0,
+        "confidence_source": "UNAVAILABLE",
+        "weakness_flags": []
+      },
+      "final": {
+        "decision": "REVIEW",
+        "risk": "HIGH",
+        "source": "ADAPTER",
+        "fallback_used": false,
+        "primary_reason": "Security risk (balanced profile): REVIEW_OR_DENY for SELF_SIGNED_CERT",
+        "supporting_reasons": [
+          "Profile: balanced",
+          "Adapter risk: SECURITY_RISK"
+        ],
+        "recommended_action": "Use a certificate issued by a trusted CA unless this is an internal-only system.",
+        "limitations": []
+      },
+      "ofe_observed": false
+    },
+    {
+      "domain": "wronghost.example.com",
+      "profile": "balanced",
+      "ca_store": "platform",
+      "spl_active": false,
+      "probe_timestamp": "GENERATED_AT_PLACEHOLDER",
+      "tls_probe": {
+        "classification": "WRONG_HOST_CERT",
+        "raw_classification": "WRONG_HOST_CERT",
+        "tls_version": "TLSv1.2",
+        "expiry_days": 200,
+        "resolved_ip": "9.10.11.12",
+        "cert_is_expired": false,
+        "chain_complete": true,
+        "handshake_time_ms": 30.0,
+        "ocsp_performed": false,
+        "ocsp_stapled": false,
+        "ocsp_status": null,
+        "ocsp_error": null,
+        "ocsp_responder_url": null,
+        "deprecated_tls_check": null,
+        "deprecated_tls_detected": false,
+        "warnings": [],
+        "is_probe_limited": false
+      },
+      "policy_adapter": {
+        "risk_category": "SECURITY_RISK",
+        "severity": "CRITICAL",
+        "failure_family": "CERTIFICATE_TRUST",
+        "reason": "Certificate does not match the requested hostname.",
+        "action_hint": "DENY"
+      },
+      "spl": {
+        "decision": null,
+        "confidence": 0.0,
+        "confidence_source": "UNAVAILABLE",
+        "weakness_flags": []
+      },
+      "final": {
+        "decision": "DENY",
+        "risk": "CRITICAL",
+        "source": "ADAPTER",
+        "fallback_used": false,
+        "primary_reason": "Adapter severity CRITICAL for WRONG_HOST_CERT. DENY",
+        "supporting_reasons": [
+          "Profile: balanced",
+          "Adapter risk: SECURITY_RISK"
+        ],
+        "recommended_action": "Replace certificate with one matching the requested hostname.",
+        "limitations": []
+      },
+      "ofe_observed": false
+    },
+    {
+      "domain": "untrusted.example.com",
+      "profile": "balanced",
+      "ca_store": "platform",
+      "spl_active": false,
+      "probe_timestamp": "GENERATED_AT_PLACEHOLDER",
+      "tls_probe": {
+        "classification": "UNTRUSTED_CHAIN",
+        "raw_classification": "UNTRUSTED_CHAIN",
+        "tls_version": "TLSv1.2",
+        "expiry_days": 90,
+        "resolved_ip": "13.14.15.16",
+        "cert_is_expired": false,
+        "chain_complete": true,
+        "handshake_time_ms": 35.0,
+        "ocsp_performed": false,
+        "ocsp_stapled": false,
+        "ocsp_status": null,
+        "ocsp_error": null,
+        "ocsp_responder_url": null,
+        "deprecated_tls_check": null,
+        "deprecated_tls_detected": false,
+        "warnings": [],
+        "is_probe_limited": false
+      },
+      "policy_adapter": {
+        "risk_category": "SECURITY_RISK",
+        "severity": "HIGH",
+        "failure_family": "CHAIN_TRUST",
+        "reason": "Certificate chain is complete but root CA is not trusted.",
+        "action_hint": "REVIEW_OR_DENY"
+      },
+      "spl": {
+        "decision": null,
+        "confidence": 0.0,
+        "confidence_source": "UNAVAILABLE",
+        "weakness_flags": []
+      },
+      "final": {
+        "decision": "REVIEW",
+        "risk": "HIGH",
+        "source": "ADAPTER",
+        "fallback_used": false,
+        "primary_reason": "Security risk (balanced profile): REVIEW_OR_DENY for UNTRUSTED_CHAIN",
+        "supporting_reasons": [
+          "Profile: balanced",
+          "Adapter risk: SECURITY_RISK"
+        ],
+        "recommended_action": "Fix the certificate chain \u2014 ensure all intermediate certificates are installed on the server.",
+        "limitations": []
+      },
+      "ofe_observed": false
+    },
+    {
+      "domain": "incomplete.example.com",
+      "profile": "balanced",
+      "ca_store": "platform",
+      "spl_active": false,
+      "probe_timestamp": "GENERATED_AT_PLACEHOLDER",
+      "tls_probe": {
+        "classification": "INCOMPLETE_CHAIN",
+        "raw_classification": "INCOMPLETE_CHAIN",
+        "tls_version": "TLSv1.2",
+        "expiry_days": 120,
+        "resolved_ip": "17.18.19.20",
+        "cert_is_expired": false,
+        "chain_complete": false,
+        "handshake_time_ms": 40.0,
+        "ocsp_performed": false,
+        "ocsp_stapled": false,
+        "ocsp_status": null,
+        "ocsp_error": null,
+        "ocsp_responder_url": null,
+        "deprecated_tls_check": null,
+        "deprecated_tls_detected": false,
+        "warnings": [
+          "Certificate chain is incomplete."
+        ],
+        "is_probe_limited": true
+      },
+      "policy_adapter": {
+        "risk_category": "CHAIN_TRUST_FAILURE",
+        "severity": "HIGH",
+        "failure_family": "CHAIN_TRUST",
+        "reason": "Server did not send intermediate certificate.",
+        "action_hint": "REVIEW_OR_DENY"
+      },
+      "spl": {
+        "decision": null,
+        "confidence": 0.0,
+        "confidence_source": "UNAVAILABLE",
+        "weakness_flags": []
+      },
+      "final": {
+        "decision": "REVIEW",
+        "risk": "HIGH",
+        "source": "ADAPTER",
+        "fallback_used": false,
+        "primary_reason": "Security risk (balanced profile): REVIEW_OR_DENY for INCOMPLETE_CHAIN",
+        "supporting_reasons": [
+          "Profile: balanced",
+          "Adapter risk: CHAIN_TRUST_FAILURE"
+        ],
+        "recommended_action": "Install all missing intermediate certificates on the server.",
+        "limitations": [
+          "Certificate chain is incomplete."
+        ]
+      },
+      "ofe_observed": false
+    },
+    {
+      "domain": "dnsfail.example.com",
+      "profile": "balanced",
+      "ca_store": "platform",
+      "spl_active": false,
+      "probe_timestamp": "GENERATED_AT_PLACEHOLDER",
+      "tls_probe": {
+        "classification": "DNS_FAILURE",
+        "raw_classification": "DNS_FAILURE",
+        "tls_version": null,
+        "expiry_days": null,
+        "resolved_ip": null,
+        "cert_is_expired": null,
+        "chain_complete": null,
+        "handshake_time_ms": null,
+        "ocsp_performed": false,
+        "ocsp_stapled": false,
+        "ocsp_status": null,
+        "ocsp_error": null,
+        "ocsp_responder_url": null,
+        "deprecated_tls_check": null,
+        "deprecated_tls_detected": false,
+        "warnings": [
+          "DNS resolution failed: Name or service not known"
+        ],
+        "is_probe_limited": true
+      },
+      "policy_adapter": {
+        "risk_category": "AVAILABILITY_RISK",
+        "severity": "MEDIUM",
+        "failure_family": "AVAILABILITY",
+        "reason": "Domain could not be resolved.",
+        "action_hint": "REVIEW"
+      },
+      "spl": {
+        "decision": null,
+        "confidence": 0.0,
+        "confidence_source": "UNAVAILABLE",
+        "weakness_flags": []
+      },
+      "final": {
+        "decision": "REVIEW",
+        "risk": "MEDIUM",
+        "source": "ADAPTER",
+        "fallback_used": false,
+        "primary_reason": "Availability risk: REVIEW for DNS_FAILURE",
+        "supporting_reasons": [
+          "Profile: balanced",
+          "Adapter risk: AVAILABILITY_RISK"
+        ],
+        "recommended_action": "Check DNS records and resolver availability for this domain.",
+        "limitations": [
+          "DNS resolution failed: Name or service not known"
+        ]
+      },
+      "ofe_observed": false
+    },
+    {
+      "domain": "timeout.example.com",
+      "profile": "balanced",
+      "ca_store": "platform",
+      "spl_active": false,
+      "probe_timestamp": "GENERATED_AT_PLACEHOLDER",
+      "tls_probe": {
+        "classification": "TIMEOUT",
+        "raw_classification": "TIMEOUT",
+        "tls_version": null,
+        "expiry_days": null,
+        "resolved_ip": "21.22.23.24",
+        "cert_is_expired": false,
+        "chain_complete": null,
+        "handshake_time_ms": null,
+        "ocsp_performed": false,
+        "ocsp_stapled": false,
+        "ocsp_status": null,
+        "ocsp_error": null,
+        "ocsp_responder_url": null,
+        "deprecated_tls_check": null,
+        "deprecated_tls_detected": false,
+        "warnings": [],
+        "is_probe_limited": false
+      },
+      "policy_adapter": {
+        "risk_category": "AVAILABILITY_RISK",
+        "severity": "MEDIUM",
+        "failure_family": "AVAILABILITY",
+        "reason": "No response within probe timeout window.",
+        "action_hint": "REVIEW"
+      },
+      "spl": {
+        "decision": null,
+        "confidence": 0.0,
+        "confidence_source": "UNAVAILABLE",
+        "weakness_flags": []
+      },
+      "final": {
+        "decision": "REVIEW",
+        "risk": "MEDIUM",
+        "source": "ADAPTER",
+        "fallback_used": false,
+        "primary_reason": "Availability risk: REVIEW for TIMEOUT",
+        "supporting_reasons": [
+          "Profile: balanced",
+          "Adapter risk: AVAILABILITY_RISK"
+        ],
+        "recommended_action": "Check network availability, firewall, or server responsiveness. The connection timed out.",
+        "limitations": []
+      },
+      "ofe_observed": false
+    },
+    {
+      "domain": "connrefused.example.com",
+      "profile": "balanced",
+      "ca_store": "platform",
+      "spl_active": false,
+      "probe_timestamp": "GENERATED_AT_PLACEHOLDER",
+      "tls_probe": {
+        "classification": "CONNECTION_ERROR",
+        "raw_classification": "CONNECTION_ERROR",
+        "tls_version": null,
+        "expiry_days": null,
+        "resolved_ip": "25.26.27.28",
+        "cert_is_expired": false,
+        "chain_complete": null,
+        "handshake_time_ms": null,
+        "ocsp_performed": false,
+        "ocsp_stapled": false,
+        "ocsp_status": null,
+        "ocsp_error": null,
+        "ocsp_responder_url": null,
+        "deprecated_tls_check": null,
+        "deprecated_tls_detected": false,
+        "warnings": [],
+        "is_probe_limited": false
+      },
+      "policy_adapter": {
+        "risk_category": "AVAILABILITY_RISK",
+        "severity": "MEDIUM",
+        "failure_family": "AVAILABILITY",
+        "reason": "TCP connection failed.",
+        "action_hint": "REVIEW"
+      },
+      "spl": {
+        "decision": null,
+        "confidence": 0.0,
+        "confidence_source": "UNAVAILABLE",
+        "weakness_flags": []
+      },
+      "final": {
+        "decision": "REVIEW",
+        "risk": "MEDIUM",
+        "source": "ADAPTER",
+        "fallback_used": false,
+        "primary_reason": "Availability risk: REVIEW for CONNECTION_ERROR",
+        "supporting_reasons": [
+          "Profile: balanced",
+          "Adapter risk: AVAILABILITY_RISK"
+        ],
+        "recommended_action": "Check network availability and firewall rules for the target server.",
+        "limitations": []
+      },
+      "ofe_observed": false
+    },
+    {
+      "domain": "tlsfail.example.com",
+      "profile": "balanced",
+      "ca_store": "platform",
+      "spl_active": false,
+      "probe_timestamp": "GENERATED_AT_PLACEHOLDER",
+      "tls_probe": {
+        "classification": "TLS_HANDSHAKE_FAILURE",
+        "raw_classification": "TLS_HANDSHAKE_FAILURE",
+        "tls_version": null,
+        "expiry_days": null,
+        "resolved_ip": "29.30.31.32",
+        "cert_is_expired": false,
+        "chain_complete": null,
+        "handshake_time_ms": null,
+        "ocsp_performed": false,
+        "ocsp_stapled": false,
+        "ocsp_status": null,
+        "ocsp_error": null,
+        "ocsp_responder_url": null,
+        "deprecated_tls_check": null,
+        "deprecated_tls_detected": false,
+        "warnings": [],
+        "is_probe_limited": false
+      },
+      "policy_adapter": {
+        "risk_category": "AMBIGUOUS_FAILURE",
+        "severity": "MEDIUM",
+        "failure_family": "AMBIGUOUS",
+        "reason": "TLS handshake failed; root cause is ambiguous.",
+        "action_hint": "INVESTIGATE"
+      },
+      "spl": {
+        "decision": null,
+        "confidence": 0.0,
+        "confidence_source": "UNAVAILABLE",
+        "weakness_flags": []
+      },
+      "final": {
+        "decision": "REVIEW",
+        "risk": "MEDIUM",
+        "source": "ADAPTER",
+        "fallback_used": false,
+        "primary_reason": "Ambiguous failure: INVESTIGATE for TLS_HANDSHAKE_FAILURE",
+        "supporting_reasons": [
+          "Profile: balanced",
+          "Adapter risk: AMBIGUOUS_FAILURE"
+        ],
+        "recommended_action": "Check TLS configuration and supported protocol/cipher settings on the server.",
+        "limitations": []
+      },
+      "ofe_observed": false
+    },
+    {
+      "domain": "old-tls.example.com",
+      "profile": "balanced",
+      "ca_store": "platform",
+      "spl_active": false,
+      "probe_timestamp": "GENERATED_AT_PLACEHOLDER",
+      "tls_probe": {
+        "classification": "DEPRECATED_TLS_VERSION",
+        "raw_classification": "VALID_TLS",
+        "tls_version": "TLSv1",
+        "expiry_days": 60,
+        "resolved_ip": "33.34.35.36",
+        "cert_is_expired": false,
+        "chain_complete": true,
+        "handshake_time_ms": 50.0,
+        "ocsp_performed": false,
+        "ocsp_stapled": false,
+        "ocsp_status": null,
+        "ocsp_error": null,
+        "ocsp_responder_url": null,
+        "deprecated_tls_check": null,
+        "deprecated_tls_detected": false,
+        "warnings": [
+          "Deprecated TLS version detected via secondary probe \u2014 server allows TLS 1.0 or 1.1 (primary negotiated TLSv1)."
+        ],
+        "is_probe_limited": true
+      },
+      "policy_adapter": {
+        "risk_category": "DEPRECATED_PROTOCOL_RISK",
+        "severity": "HIGH",
+        "failure_family": "PROTOCOL_WEAKNESS",
+        "reason": "Deprecated TLS version negotiated (TLS 1.0/1.1).",
+        "action_hint": "MODERNIZE_OR_DENY"
+      },
+      "spl": {
+        "decision": null,
+        "confidence": 0.0,
+        "confidence_source": "UNAVAILABLE",
+        "weakness_flags": []
+      },
+      "final": {
+        "decision": "REVIEW",
+        "risk": "HIGH",
+        "source": "ADAPTER",
+        "fallback_used": false,
+        "primary_reason": "Security risk (balanced profile): MODERNIZE_OR_DENY for DEPRECATED_TLS_VERSION",
+        "supporting_reasons": [
+          "Profile: balanced",
+          "Adapter risk: DEPRECATED_PROTOCOL_RISK"
+        ],
+        "recommended_action": "Disable deprecated TLS protocols (TLS 1.0/1.1) and require TLS 1.2+ or TLS 1.3.",
+        "limitations": [
+          "Deprecated TLS version detected via secondary probe \u2014 server allows TLS 1.0 or 1.1 (primary negotiated TLSv1)."
+        ]
+      },
+      "ofe_observed": false
+    },
+    {
+      "domain": "unknown-error.example.com",
+      "profile": "balanced",
+      "ca_store": "platform",
+      "spl_active": false,
+      "probe_timestamp": "GENERATED_AT_PLACEHOLDER",
+      "tls_probe": {
+        "classification": "UNKNOWN_SSL_ERROR",
+        "raw_classification": "UNKNOWN_SSL_ERROR",
+        "tls_version": null,
+        "expiry_days": null,
+        "resolved_ip": "37.38.39.40",
+        "cert_is_expired": false,
+        "chain_complete": null,
+        "handshake_time_ms": null,
+        "ocsp_performed": false,
+        "ocsp_stapled": false,
+        "ocsp_status": null,
+        "ocsp_error": null,
+        "ocsp_responder_url": null,
+        "deprecated_tls_check": null,
+        "deprecated_tls_detected": false,
+        "warnings": [],
+        "is_probe_limited": false
+      },
+      "policy_adapter": {
+        "risk_category": "UNKNOWN_RISK",
+        "severity": "LOW",
+        "failure_family": "UNKNOWN",
+        "reason": "Unrecognized SSL error occurred.",
+        "action_hint": "INVESTIGATE"
+      },
+      "spl": {
+        "decision": null,
+        "confidence": 0.0,
+        "confidence_source": "UNAVAILABLE",
+        "weakness_flags": []
+      },
+      "final": {
+        "decision": "REVIEW",
+        "risk": "LOW",
+        "source": "ADAPTER",
+        "fallback_used": false,
+        "primary_reason": "Ambiguous failure: INVESTIGATE for UNKNOWN_SSL_ERROR",
+        "supporting_reasons": [
+          "Profile: balanced",
+          "Adapter risk: UNKNOWN_RISK"
+        ],
+        "recommended_action": "Investigate SSL error details manually \u2014 the specific cause could not be determined by automated probing.",
+        "limitations": []
+      },
+      "ofe_observed": false
+    }
+  ]
+}

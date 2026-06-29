@@ -1,0 +1,610 @@
+{
+  "_metadata": {
+    "description": "Benchmark policy expectations for stratified SPL validation",
+    "version": "Phase 5",
+    "total_domains": 120,
+    "purpose": "Measure SPL policy conformance across stratified categories"
+  },
+  "decisions": [
+    {
+      "domain": "google.com",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "github.com",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "gitlab.com",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "python.org",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "pypi.org",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "docker.com",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "mozilla.org",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "stackoverflow.com",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "cloudflare.com",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "nginx.com",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "apache.org",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "kubernetes.io",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "hashicorp.com",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "digitalocean.com",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "netlify.com",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "atlassian.com",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "stripe.com",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "shopify.com",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "wordpress.org",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "medium.com",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "amazon.com",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "microsoft.com",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "apple.com",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "linkedin.com",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "netflix.com",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "dropbox.com",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "adobe.com",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "oracle.com",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "ibm.com",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "intel.com",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "cisco.com",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "salesforce.com",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "mit.edu",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "cmu.edu",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "ox.ac.uk",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "cam.ac.uk",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "ethz.ch",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "ucla.edu",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "princeton.edu",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "yale.edu",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "columbia.edu",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "cornell.edu",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "uchicago.edu",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "imperial.ac.uk",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "nasa.gov",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "nih.gov",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "nist.gov",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "noaa.gov",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "usa.gov",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "data.gov",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "whitehouse.gov",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "congress.gov",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "eff.org",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "wikipedia.org",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "archive.org",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "w3.org",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "ietf.org",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "openssl.org",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "gnu.org",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "kernel.org",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "debian.org",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "ubuntu.com",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "redhat.com",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "postgresql.org",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "sqlite.org",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "reuters.com",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "bbc.com",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "npr.org",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "acm.org",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "ieee.org",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "science.org",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "nature.com",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "arxiv.org",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "ssrn.com",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "badssl.com",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "sha256.badssl.com",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "mozilla-intermediate.badssl.com",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "mozilla-modern.badssl.com",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "tls-v1-2.badssl.com",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "caltech.edu",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "stanford.edu",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "harvard.edu",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "berkeley.edu",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "dns.google",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "one.one.one.one",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "quad9.net",
+      "expected_decision": "ACCEPTABLE_TLS",
+      "category": "VALID_TLS"
+    },
+    {
+      "domain": "expired.badssl.com",
+      "expected_decision": "SECURITY_RISK",
+      "category": "EXPIRED_CERT"
+    },
+    {
+      "domain": "sha384.badssl.com",
+      "expected_decision": "SECURITY_RISK",
+      "category": "EXPIRED_CERT"
+    },
+    {
+      "domain": "sha512.badssl.com",
+      "expected_decision": "SECURITY_RISK",
+      "category": "EXPIRED_CERT"
+    },
+    {
+      "domain": "1000-sans.badssl.com",
+      "expected_decision": "SECURITY_RISK",
+      "category": "EXPIRED_CERT"
+    },
+    {
+      "domain": "self-signed.badssl.com",
+      "expected_decision": "SECURITY_RISK",
+      "category": "SELF_SIGNED_CERT"
+    },
+    {
+      "domain": "wrong.host.badssl.com",
+      "expected_decision": "SECURITY_RISK",
+      "category": "WRONG_HOST_CERT"
+    },
+    {
+      "domain": "untrusted-root.badssl.com",
+      "expected_decision": "SECURITY_RISK",
+      "category": "UNTRUSTED_CHAIN"
+    },
+    {
+      "domain": "superfish.badssl.com",
+      "expected_decision": "SECURITY_RISK",
+      "category": "UNTRUSTED_CHAIN"
+    },
+    {
+      "domain": "incomplete-chain.badssl.com",
+      "expected_decision": "SECURITY_RISK",
+      "category": "INCOMPLETE_CHAIN"
+    },
+    {
+      "domain": "thissitedoesnotexistxyzabc99999.nonexistent",
+      "expected_decision": "AVAILABILITY_RISK",
+      "category": "DNS_FAILURE"
+    },
+    {
+      "domain": "jjf8d9a7sd6f5asdf.testing-reserved",
+      "expected_decision": "AVAILABILITY_RISK",
+      "category": "DNS_FAILURE"
+    },
+    {
+      "domain": "never-gonna-resolve-987654321.example.com",
+      "expected_decision": "AVAILABILITY_RISK",
+      "category": "DNS_FAILURE"
+    },
+    {
+      "domain": "qweryuiopasdfghjklzxcvbnm.test",
+      "expected_decision": "AVAILABILITY_RISK",
+      "category": "DNS_FAILURE"
+    },
+    {
+      "domain": "invalid-test-domain-00001.example.net",
+      "expected_decision": "AVAILABILITY_RISK",
+      "category": "DNS_FAILURE"
+    },
+    {
+      "domain": "dh480.badssl.com",
+      "expected_decision": "AMBIGUOUS_FAILURE",
+      "category": "TLS_HANDSHAKE_FAILURE"
+    },
+    {
+      "domain": "dh512.badssl.com",
+      "expected_decision": "AMBIGUOUS_FAILURE",
+      "category": "TLS_HANDSHAKE_FAILURE"
+    },
+    {
+      "domain": "null.badssl.com",
+      "expected_decision": "AMBIGUOUS_FAILURE",
+      "category": "TLS_HANDSHAKE_FAILURE"
+    },
+    {
+      "domain": "rc4.badssl.com",
+      "expected_decision": "AMBIGUOUS_FAILURE",
+      "category": "TLS_HANDSHAKE_FAILURE"
+    },
+    {
+      "domain": "3des.badssl.com",
+      "expected_decision": "AMBIGUOUS_FAILURE",
+      "category": "TLS_HANDSHAKE_FAILURE"
+    },
+    {
+      "domain": "dh1024.badssl.com",
+      "expected_decision": "AMBIGUOUS_FAILURE",
+      "category": "TLS_HANDSHAKE_FAILURE"
+    },
+    {
+      "domain": "rc4-md5.badssl.com",
+      "expected_decision": "AMBIGUOUS_FAILURE",
+      "category": "TLS_HANDSHAKE_FAILURE"
+    },
+    {
+      "domain": "localhost",
+      "expected_decision": "AVAILABILITY_RISK",
+      "category": "CONNECTION_ERROR"
+    },
+    {
+      "domain": "127.0.0.1",
+      "expected_decision": "AVAILABILITY_RISK",
+      "category": "CONNECTION_ERROR"
+    },
+    {
+      "domain": "0.0.0.0",
+      "expected_decision": "AVAILABILITY_RISK",
+      "category": "CONNECTION_ERROR"
+    },
+    {
+      "domain": "192.0.2.1",
+      "expected_decision": "AVAILABILITY_RISK",
+      "category": "CONNECTION_ERROR"
+    },
+    {
+      "domain": "198.51.100.1",
+      "expected_decision": "AVAILABILITY_RISK",
+      "category": "CONNECTION_ERROR"
+    },
+    {
+      "domain": "100.64.0.1",
+      "expected_decision": "AVAILABILITY_RISK",
+      "category": "CONNECTION_ERROR"
+    },
+    {
+      "domain": "10.255.255.1",
+      "expected_decision": "AVAILABILITY_RISK",
+      "category": "TIMEOUT"
+    },
+    {
+      "domain": "203.0.113.1",
+      "expected_decision": "AVAILABILITY_RISK",
+      "category": "TIMEOUT"
+    },
+    {
+      "domain": "10.0.0.1",
+      "expected_decision": "AVAILABILITY_RISK",
+      "category": "TIMEOUT"
+    },
+    {
+      "domain": "172.16.0.1",
+      "expected_decision": "AVAILABILITY_RISK",
+      "category": "TIMEOUT"
+    },
+    {
+      "domain": "192.168.0.1",
+      "expected_decision": "AVAILABILITY_RISK",
+      "category": "TIMEOUT"
+    },
+    {
+      "domain": "tls-v1-0.badssl.com",
+      "expected_decision": "SECURITY_RISK",
+      "category": "DEPRECATED_TLS"
+    },
+    {
+      "domain": "tls-v1-1.badssl.com",
+      "expected_decision": "SECURITY_RISK",
+      "category": "DEPRECATED_TLS"
+    }
+  ]
+}

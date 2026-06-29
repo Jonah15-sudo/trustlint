@@ -1,0 +1,36 @@
+# TrustLint VPS Dry Run Dataset
+# Small set for controlled VPS testing.
+# Lines starting with # are ignored.
+#
+# Categories:
+#   VALID: Clean TLS domains (expected ALLOW with balanced profile)
+#   EXPIRED: Known expired certificate
+#   WRONG_HOST: Certificate hostname mismatch (expected DENY)
+#   DNS_FAIL: Predictable DNS failure (expected REVIEW)
+#
+# Total: 15 domains
+
+# --- VALID: Clean TLS domains ---
+google.com
+github.com
+cloudflare.com
+python.org
+mozilla.org
+wikipedia.org
+gitlab.com
+docker.com
+
+# --- EXPIRED: Known certificate issue ---
+expired.badssl.com
+
+# --- WRONG_HOST: Hostname mismatch ---
+wrong.host.badssl.com
+
+# --- TLS_TEST: Other certificate issues ---
+self-signed.badssl.com
+untrusted-root.badssl.com
+incomplete-chain.badssl.com
+sha1-intermediate.badssl.com
+
+# --- DNS_FAIL: Predictable failure ---
+this-domain-definitely-does-not-exist-12345xyz.com

@@ -1,0 +1,36 @@
+============================================================
+  DOMAIN: connrefused.example.com
+  Profile: balanced
+  SPL Core: Inactive
+  Final Decision: REVIEW
+  Final Risk: MEDIUM
+  Decision Source: ADAPTER
+============================================================
+
+  [TLS Probe]
+  Classification: CONNECTION_ERROR
+  CA Store: platform
+  Resolved IP: 25.26.27.28
+  OCSP Status: N/A
+  Deprecated TLS Check: None
+
+  [Policy Adapter]
+  Risk Category: AVAILABILITY_RISK
+  Severity: MEDIUM
+  Failure Family: AVAILABILITY
+  Policy Reason: TCP connection failed.
+  Action Hint: REVIEW
+
+  [SPL]
+  Decision: N/A (adapter-only mode)
+  Confidence Source: UNAVAILABLE
+  Weakness Flags: None
+
+  [Decision Reasoning]
+  Primary Reason: Availability risk: REVIEW for CONNECTION_ERROR
+    Supporting Reasons:
+      - Profile: balanced
+      - Adapter risk: AVAILABILITY_RISK
+
+  [Recommended Action]
+    Check network availability and firewall rules for the target server.

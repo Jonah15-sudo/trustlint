@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Orthogonal Flat Engine — One Pager</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Syne+Mono&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet"/>
+<style>
+:root {
+--ink: #0c0c10;
+--paper: #f5f2eb;
+--gold: #c8a84b;
+--red: #c0392b;
+--blue: #1a3a5c;
+--dim: #8a8578;
+--mono: 'Syne Mono', monospace;
+--serif: 'DM Serif Display', serif;
+--sans: 'Syne', sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; }
+body {
+background: var(--paper);
+color: var(--ink);
+font-family: var(--sans);
+min-height: 100vh;
+position: relative;
+overflow-x: hidden;
+}
+/* ── GRAIN TEXTURE ── */
+body::before {
+content: '';
+position: fixed; inset: 0;
+background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+pointer-events: none; z-index: 100; opacity: .5;
+}
+/* ── LAYOUT ── */
+.page {
+max-width: 960px;
+margin: 0 auto;
+padding: 64px 48px 80px;
+position: relative;
+}
+/* ── CORNER MARKS ── */
+.page::before, .page::after {
+content: '';
+position: absolute;
+width: 32px; height: 32px;
+border-color: var(--gold);
+border-style: solid;
+}
+.page::before { top: 32px; left: 32px; border-width: 2px 0 0 2px; }
+.page::after { bottom: 48px; right: 32px; border-width: 0 2px 2px 0; }
+/* ── HEADER ── */
+header {
+display: grid;
+grid-template-columns: 1fr auto;
+align-items: start;
+gap: 24px;
+padding-bottom: 40px;
+border-bottom: 1px solid var(--ink);
+margin-bottom: 56px;
+position: relative;
+}
+.header-left {}
+.eyebrow {
+font-family: var(--mono);
+font-size: 10px;
+letter-spacing: 4px;
+color: var(--dim);
+text-transform: uppercase;
+margin-bottom: 16px;
+display: flex;
+align-items: center;
+gap: 12px;
+}
+.eyebrow::before {
+content: '';
+display: inline-block;
+width: 24px; height: 1px;
+background: var(--gold);
+}
+h1 {
+font-family: var(--serif);
+font-size: clamp(36px, 5vw, 58px);
+line-height: 1.05;
+letter-spacing: -1px;
+color: var(--ink);
+max-width: 560px;
+}
+h1 em {
+font-style: italic;
+color: var(--blue);
+}
+.header-right {
+text-align: right;
+padding-top: 8px;
+}
+.version-badge {
+font-family: var(--mono);
+font-size: 9px;
+letter-spacing: 2px;
+color: var(--paper);
+background: var(--ink);
+padding: 5px 10px;
+display: inline-block;
+margin-bottom: 12px;
+}
+.header-meta {
+font-family: var(--mono);
+font-size: 9px;
+color: var(--dim);
+line-height: 2;
+letter-spacing: 1px;
+}
+/* ── TAGLINE ── */
+.tagline {
+margin-top: 28px;
+font-family: var(--serif);
+font-size: clamp(15px, 2vw, 19px);
+font-style: italic;
+color: var(--blue);
+max-width: 520px;
+line-height: 1.5;
+padding-left: 20px;
+border-left: 3px solid var(--gold);
+}
+/* ── BODY GRID ── */
+.body-grid {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 0;
+}
+/* ── SECTION ── */
+.section {
+padding: 40px 0;
+border-bottom: 1px solid #ddd8cc;
+}
+.section:nth-child(odd) { padding-right: 40px; border-right: 1px solid #ddd8cc; }
+.section:nth-child(even) { padding-left: 40px; }
+.section:nth-last-child(-n+2) { border-bottom: none; }
+.section-label {
+font-family: var(--mono);
+font-size: 9px;
+letter-spacing: 4px;
+text-transform: uppercase;
+color: var(--gold);
+margin-bottom: 14px;
+display: flex;
+align-items: center;
+gap: 10px;
+}
+.section-label::after {
+content: '';
+flex: 1;
+height: 1px;
+background: #ddd8cc;
+}
+.section h2 {
+font-family: var(--serif);
+font-size: clamp(18px, 2.5vw, 24px);
+line-height: 1.2;
+color: var(--ink);
+margin-bottom: 14px;
+}
+.section p {
+font-size: 13.5px;
+line-height: 1.75;
+color: #3a3830;
+}
+/* ── PROBLEM SECTION special ── */
+.problem-statement {
+grid-column: 1 / -1;
+padding: 40px 0;
+border-bottom: 1px solid #ddd8cc;
+display: grid;
+grid-template-columns: 1fr 2fr;
+gap: 48px;
+align-items: center;
+}
+.problem-left h2 {
+font-family: var(--serif);
+font-size: clamp(22px, 3vw, 32px);
+line-height: 1.15;
+color: var(--ink);
+}
+.problem-left h2 strong {
+color: var(--red);
+font-style: italic;
+}
+.problem-right p {
+font-size: 14px;
+line-height: 1.8;
+color: #3a3830;
+margin-bottom: 12px;
+}
+.problem-right p:last-child { margin-bottom: 0; }
+/* ── METRICS BAR ── */
+.metrics-bar {
+grid-column: 1 / -1;
+padding: 36px 0;
+border-bottom: 1px solid #ddd8cc;
+display: grid;
+grid-template-columns: repeat(4, 1fr);
+gap: 0;
+}
+.metric-item {
+padding: 0 32px;
+border-right: 1px solid #ddd8cc;
+text-align: center;
+}
+.metric-item:first-child { padding-left: 0; }
+.metric-item:last-child { padding-right: 0; border-right: none; }
+.metric-number {
+font-family: var(--serif);
+font-size: clamp(28px, 4vw, 44px);
+color: var(--blue);
+line-height: 1;
+margin-bottom: 6px;
+display: block;
+}
+.metric-number sup {
+font-family: var(--mono);
+font-size: 14px;
+color: var(--gold);
+vertical-align: super;
+}
+.metric-label {
+font-family: var(--mono);
+font-size: 9px;
+letter-spacing: 2px;
+text-transform: uppercase;
+color: var(--dim);
+display: block;
+margin-bottom: 4px;
+}
+.metric-sub {
+font-size: 11px;
+color: var(--dim);
+font-style: italic;
+}
+/* ── CODE SPECIMEN ── */
+.code-specimen {
+grid-column: 1 / -1;
+padding: 40px 0;
+border-bottom: 1px solid #ddd8cc;
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 48px;
+align-items: start;
+}
+.code-block {
+background: var(--ink);
+padding: 24px;
+position: relative;
+}
+.code-block::before {
+content: 'TERMINAL OUTPUT — v0.9.0';
+font-family: var(--mono);
+font-size: 8px;
+letter-spacing: 3px;
+color: var(--gold);
+display: block;
+margin-bottom: 16px;
+padding-bottom: 10px;
+border-bottom: 1px solid #2a2a30;
+}
+.code-block pre {
+font-family: var(--mono);
+font-size: 10.5px;
+line-height: 1.8;
+color: #c8c4b8;
+white-space: pre-wrap;
+word-break: break-all;
+}
+.code-block .hl-gold { color: var(--gold); }
+.code-block .hl-green { color: #5dcc8a; }
+.code-block .hl-blue { color: #6bb3d6; }
+.code-block .hl-red { color: #e07070; }
+.code-block .hl-dim { color: #60605a; }
+.code-right {}
+.code-right h2 {
+font-family: var(--serif);
+font-size: clamp(18px, 2.5vw, 26px);
+line-height: 1.2;
+color: var(--ink);
+margin-bottom: 16px;
+}
+.code-right p {
+font-size: 13.5px;
+line-height: 1.75;
+color: #3a3830;
+margin-bottom: 14px;
+}
+/* ── ARCH DIAGRAM ── */
+.arch-row {
+grid-column: 1 / -1;
+padding: 40px 0;
+border-bottom: 1px solid #ddd8cc;
+}
+.arch-row-label {
+font-family: var(--mono);
+font-size: 9px;
+letter-spacing: 4px;
+text-transform: uppercase;
+color: var(--gold);
+margin-bottom: 28px;
+}
+.arch-flow {
+display: flex;
+align-items: stretch;
+gap: 0;
+}
+.arch-node {
+flex: 1;
+padding: 20px 16px;
+border: 1px solid #ddd8cc;
+position: relative;
+background: #faf8f3;
+transition: background 0.2s;
+}
+.arch-node:hover { background: #f0ece0; }
+.arch-node-num {
+font-family: var(--mono);
+font-size: 9px;
+color: var(--gold);
+letter-spacing: 2px;
+display: block;
+margin-bottom: 8px;
+}
+.arch-node-title {
+font-family: var(--sans);
+font-weight: 700;
+font-size: 11px;
+letter-spacing: 1px;
+text-transform: uppercase;
+color: var(--ink);
+margin-bottom: 8px;
+display: block;
+}
+.arch-node-desc {
+font-size: 11px;
+color: var(--dim);
+line-height: 1.6;
+}
+.arch-arrow {
+display: flex;
+align-items: center;
+padding: 0 8px;
+color: var(--gold);
+font-size: 18px;
+flex-shrink: 0;
+}
+/* ── DIFFERENTIATION TABLE ── */
+.diff-section {
+grid-column: 1 / -1;
+padding: 40px 0;
+border-bottom: 1px solid #ddd8cc;
+}
+.diff-table {
+width: 100%;
+border-collapse: collapse;
+margin-top: 20px;
+}
+.diff-table th {
+font-family: var(--mono);
+font-size: 9px;
+letter-spacing: 3px;
+text-transform: uppercase;
+color: var(--dim);
+text-align: left;
+padding: 10px 16px;
+border-bottom: 1px solid var(--ink);
+background: transparent;
+}
+.diff-table td {
+font-size: 12.5px;
+padding: 12px 16px;
+border-bottom: 1px solid #e8e4da;
+line-height: 1.5;
+vertical-align: top;
+}
+.diff-table td:first-child {
+font-weight: 700;
+color: var(--ink);
+width: 22%;
+}
+.diff-table td:nth-child(2) {
+color: var(--red);
+width: 35%;
+font-style: italic;
+}
+.diff-table td:nth-child(3) {
+color: var(--blue);
+width: 43%;
+font-weight: 600;
+}
+.diff-table tr:last-child td { border-bottom: none; }
+.diff-table tr.highlight { background: #f0f4f8; }
+.diff-table tr.highlight td:nth-child(3) { color: var(--blue); }
+/* ── USE CASES ── */
+.use-cases {
+grid-column: 1 / -1;
+padding: 40px 0;
+border-bottom: 1px solid #ddd8cc;
+display: grid;
+grid-template-columns: repeat(3, 1fr);
+gap: 0;
+}
+.use-case {
+padding: 0 32px;
+border-right: 1px solid #ddd8cc;
+}
+.use-case:first-child { padding-left: 0; }
+.use-case:last-child { padding-right: 0; border-right: none; }
+.use-case-icon {
+font-size: 24px;
+margin-bottom: 12px;
+display: block;
+}
+.use-case h3 {
+font-family: var(--sans);
+font-weight: 700;
+font-size: 13px;
+letter-spacing: 1px;
+text-transform: uppercase;
+color: var(--ink);
+margin-bottom: 10px;
+}
+.use-case p {
+font-size: 12px;
+line-height: 1.7;
+color: #5a5650;
+}
+.use-case .market {
+font-family: var(--mono);
+font-size: 10px;
+color: var(--gold);
+letter-spacing: 1px;
+margin-top: 10px;
+display: block;
+}
+/* ── PROOF SECTION ── */
+.proof-section {
+grid-column: 1 / -1;
+padding: 40px 0;
+border-bottom: 1px solid #ddd8cc;
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 48px;
+}
+.proof-item {
+display: flex;
+gap: 16px;
+margin-bottom: 20px;
+align-items: flex-start;
+}
+.proof-item:last-child { margin-bottom: 0; }
+.proof-num {
+font-family: var(--mono);
+font-size: 9px;
+letter-spacing: 2px;
+color: var(--gold);
+background: var(--ink);
+padding: 4px 8px;
+flex-shrink: 0;
+margin-top: 2px;
+}
+.proof-text strong {
+font-family: var(--sans);
+font-weight: 700;
+font-size: 12px;
+text-transform: uppercase;
+letter-spacing: 1px;
+display: block;
+margin-bottom: 4px;
+color: var(--ink);
+}
+.proof-text p {
+font-size: 12px;
+line-height: 1.6;
+color: #5a5650;
+}
+/* ── FOOTER ── */
+footer {
+display: grid;
+grid-template-columns: 1fr auto;
+gap: 24px;
+align-items: end;
+padding-top: 40px;
+margin-top: 8px;
+}
+.footer-left .closing {
+font-family: var(--serif);
+font-style: italic;
+font-size: clamp(16px, 2.5vw, 22px);
+color: var(--blue);
+line-height: 1.4;
+max-width: 480px;
+margin-bottom: 16px;
+}
+.footer-left .contact {
+font-family: var(--mono);
+font-size: 10px;
+letter-spacing: 2px;
+color: var(--dim);
+line-height: 2;
+}
+.footer-right {
+text-align: right;
+}
+.stamp {
+display: inline-block;
+border: 2px solid var(--gold);
+padding: 12px 20px;
+text-align: center;
+position: relative;
+}
+.stamp::before {
+content: '';
+position: absolute;
+inset: 4px;
+border: 1px solid var(--gold);
+opacity: .4;
+}
+.stamp-text {
+font-family: var(--mono);
+font-size: 9px;
+letter-spacing: 3px;
+text-transform: uppercase;
+color: var(--gold);
+display: block;
+}
+.stamp-num {
+font-family: var(--serif);
+font-size: 28px;
+color: var(--ink);
+display: block;
+line-height: 1;
+margin: 4px 0;
+}
+/* ── DIVIDER ── */
+.full-divider {
+grid-column: 1 / -1;
+height: 1px;
+background: var(--ink);
+margin: 0;
+}
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+from { opacity: 0; transform: translateY(20px); }
+to { opacity: 1; transform: translateY(0); }
+}
+.page > * {
+animation: fadeUp .6s ease both;
+}
+header { animation-delay: .05s; }
+.problem-statement { animation-delay: .1s; }
+.metrics-bar { animation-delay: .15s; }
+.code-specimen { animation-delay: .2s; }
+.arch-row { animation-delay: .25s; }
+.diff-section { animation-delay: .3s; }
+.use-cases { animation-delay: .35s; }
+.proof-section { animation-delay: .4s; }
+footer { animation-delay: .45s; }
+/* ── PRINT ── */
+@media print {
+body { background: white; }
+body::before { display: none; }
+.page { padding: 32px; }
+* { animation: none !important; }
+}
+/* ── RESPONSIVE ── */
+@media (max-width: 720px) {
+.body-grid { grid-template-columns: 1fr; }
+.section:nth-child(odd) { padding-right: 0; border-right: none; }
+.section:nth-child(even) { padding-left: 0; }
+.problem-statement { grid-template-columns: 1fr; gap: 24px; }
+.metrics-bar { grid-template-columns: repeat(2, 1fr); }
+.metric-item:nth-child(2) { border-right: none; }
+.metric-item:nth-child(3) { border-top: 1px solid #ddd8cc; border-right: 1px solid #ddd8cc; }
+.metric-item:nth-child(4) { border-top: 1px solid #ddd8cc; }
+.code-specimen { grid-template-columns: 1fr; gap: 24px; }
+.arch-flow { flex-direction: column; }
+.arch-arrow { transform: rotate(90deg); align-self: center; }
+.diff-section { grid-column: 1; }
+.use-cases { grid-template-columns: 1fr; gap: 24px; }
+.use-case { padding: 0; border-right: none; border-bottom: 1px solid #ddd8cc; padding-bottom: 24px; }
+.use-case:last-child { border-bottom: none; }
+.proof-section { grid-template-columns: 1fr; gap: 0; }
+footer { grid-template-columns: 1fr; }
+.footer-right { text-align: left; }
+}
+</style>
+</head>
+<body>
+<main class="page">
+<!-- ── HEADER ── -->
+<header>
+<div class="header-left">
+<div class="eyebrow">Technical Briefing · Computational Systems</div>
+<h1>A System That <em>Feeds</em><br>On Contradiction</h1>
+<p class="tagline">
+While every classical computer halts on logical paradox,
+the Orthogonal Flat Engine converts contradiction into structural energy —
+producing irreducible complexity from nothing but conflict.
+</p>
+</div>
+<div class="header-right">
+<span class="version-badge">v0.9.0 — VERIFIED</span>
+<div class="header-meta">
+Engine · SL(2,ℤ) Architecture<br>
+Sovereign Perception Layer<br>
+Temporal Pattern Intelligence<br>
+─────────────────────<br>
+All metrics from real execution
+</div>
+</div>
+</header>
+<div class="body-grid">
+<!-- ── PROBLEM ── -->
+<div class="problem-statement">
+<div class="problem-left">
+<div class="section-label">The Problem</div>
+<h2>Classical systems<br><strong>break</strong> when<br>reality contradicts<br>itself.</h2>
+</div>
+<div class="problem-right">
+<p>Every existing computational framework — from relational databases to neural networks — is built on Aristotle's law of identity: <em>A = A</em>. When confronted with A = ¬A simultaneously, these systems either crash, discard one truth, or freeze in an undefined state.</p>
+<p>But reality is relentlessly contradictory. Markets move on opposing beliefs. Servers fail and report stability simultaneously. Legal clauses contradict. News conflicts. Intelligence agencies receive paradoxical signals. The world does not wait for its contradictions to be resolved before demanding decisions.</p>
+<p>The standard solution — discard the conflicting input — destroys exactly the information that matters most.</p>
+</div>
+</div>
+<!-- ── METRICS ── -->
+<div class="metrics-bar">
+<div class="metric-item">
+<span class="metric-label">State Diversity</span>
+<span class="metric-number">550<sup>%</sup></span>
+<span class="metric-sub">vs. standard graph systems<br>at identical interaction scale</span>
+</div>
+<div class="metric-item">
+<span class="metric-label">Symbol Uniqueness</span>
+<span class="metric-number">100<sup>%</sup></span>
+<span class="metric-sub">zero collisions across<br>all generated entities</span>
+</div>
+<div class="metric-item">
+<span class="metric-label">Contradiction Events</span>
+<span class="metric-number">950</span>
+<span class="metric-sub">inter-faction clashes<br>processed without failure</span>
+</div>
+<div class="metric-item">
+<span class="metric-label">Starting Nodes</span>
+<span class="metric-number">2</span>
+<span class="metric-sub">↑ and ↓ — all complexity<br>emerges from this alone</span>
+</div>
+</div>
+<!-- ── CODE SPECIMEN ── -->
+<div class="code-specimen">
+<div class="code-block">
+<pre><span class="hl-dim">THE ORTHOGONAL FLAT ENGINE v0.9.0</span>
+<span class="hl-dim">─────────────────────────────────</span>
+<span class="hl-gold">TOPOLOGICAL READING — Chamber #0</span>
+Structural Complexity Index: <span class="hl-green">2,773</span>
+├─ Circuit Rank (E-V+C): <span class="hl-blue">3</span>
+└─ Matrix Correction: <span class="hl-blue">2,770</span>
+Graph Euler Characteristic: <span class="hl-green">1</span>
+Background Tension: <span class="hl-gold">1.0141</span>
+Sovereign Strands: <span class="hl-green">63 / 63</span>
+Contradiction Spouts: <span class="hl-red">950</span> (deduplicated)
+Alphabet Size: <span class="hl-blue">67</span> unique symbols
+<span class="hl-gold">UNIQUENESS VERIFICATION</span>
+Total Gen-2 symbols: 63
+Unique symbols: 63
+Duplicates: <span class="hl-green">0</span>
+<span class="hl-green">✓ ALL SYMBOLS UNIQUE</span>
+<span class="hl-green">✓ TENSION CONSERVED</span>
+<span class="hl-green">✓ 100% TOPOLOGICAL UNIQUENESS</span>
+<span class="hl-dim">─────────────────────────────────</span>
+<span class="hl-dim">Benchmark vs NetworkX (2,156 interactions):</span>
+NetworkX unique states: <span class="hl-red">2</span>
+Engine unique states: <span class="hl-green">13</span> (+550%)
+Engine execution time: <span class="hl-green">-28%</span> faster</pre>
+</div>
+<div class="code-right">
+<div class="section-label">The Mechanism</div>
+<h2>Non-commutative matrix memory as identity</h2>
+<p>Every entity in the system carries its complete interaction history encoded as an SL(2,ℤ) matrix — a 2×2 integer matrix with determinant 1. Because matrix multiplication is non-commutative, the <em>order</em> of interactions permanently shapes identity.</p>
+<p>Entity A that first encountered ↑ then ↓ is mathematically distinct from an entity that first encountered ↓ then ↑ — even if both had identical inputs. History is irreversible. Identity cannot be forged.</p>
+<p>When ↑ and ↓ collide, the system does not choose a winner. It converts the collision into tension energy, then births a new entity ⊙ from that energy — one that neither parent could produce alone. Contradiction becomes fuel.</p>
+</div>
+</div>
+<!-- ── ARCHITECTURE ── -->
+<div class="arch-row">
+<div class="arch-row-label">System Architecture — Three Layers</div>
+<div class="arch-flow">
+<div class="arch-node">
+<span class="arch-node-num">01</span>
+<span class="arch-node-title">Orthogonal Flat Engine</span>
+<span class="arch-node-desc">SL(2,ℤ) matrix computation core. Tau engine with 3-valued logic. Hyper-sheet architecture. Contradiction-to-energy conversion.</span>
+</div>
+<div class="arch-arrow">→</div>
+<div class="arch-node">
+<span class="arch-node-num">02</span>
+<span class="arch-node-title">Sovereign Perception Layer</span>
+<span class="arch-node-desc">Converts real-world inputs into contradiction pairs. Persistent holonomy memory across sessions. Adaptive parameter evolution. Decision crystallization with mathematical proof.</span>
+</div>
+<div class="arch-arrow">→</div>
+<div class="arch-node">
+<span class="arch-node-num">03</span>
+<span class="arch-node-title">Temporal Pattern Intelligence</span>
+<span class="arch-node-desc">System self-audit across 7 dimensions. Obsession detection. Learning rate analysis. Faction drift. Self-prediction. System health scoring.</span>
+</div>
+<div class="arch-arrow">→</div>
+<div class="arch-node" style="background:#f0f4f8;">
+<span class="arch-node-num">OUT</span>
+<span class="arch-node-title">Decision + Proof</span>
+<span class="arch-node-desc">Crystallized decision in plain language. Mathematical holonomy proof. Complete audit trail. Memory that persists and evolves.</span>
+</div>
+</div>
+</div>
+<!-- ── DIFFERENTIATION ── -->
+<div class="diff-section">
+<div class="section-label">Differentiation</div>
+<table class="diff-table">
+<thead>
+<tr>
+<th>Dimension</th>
+<th>Every Other System</th>
+<th>Orthogonal Flat Engine</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>On contradiction</td>
+<td>Crashes, discards, or freezes</td>
+<td>Converts to energy. Births new entities.</td>
+</tr>
+<tr class="highlight">
+<td>State diversity</td>
+<td>2 unique states per 2,156 interactions</td>
+<td>13 unique states — 550% more — same inputs</td>
+</tr>
+<tr>
+<td>Identity model</td>
+<td>UUID or hash — stateless</td>
+<td>Non-commutative holonomy — history is identity</td>
+</tr>
+<tr class="highlight">
+<td>On ambiguity</td>
+<td>Performance degrades</td>
+<td>Performance improves — contradiction = more fuel</td>
+</tr>
+<tr>
+<td>Self-knowledge</td>
+<td>None</td>
+<td>TPI audits its own reasoning across 7 dimensions</td>
+</tr>
+<tr class="highlight">
+<td>Decision proof</td>
+<td>Black box output</td>
+<td>Holonomy matrix + SCI + full mathematical chain</td>
+</tr>
+<tr>
+<td>Memory model</td>
+<td>Stateless per session</td>
+<td>Accumulated SL(2,ℤ) identity — grows, never resets</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- ── USE CASES ── -->
+<div class="use-cases">
+<div class="use-case">
+<span class="use-case-icon">⚖️</span>
+<h3>Contradiction Analysis</h3>
+<p>Legal clauses that conflict. News reports that contradict. Intelligence signals that oppose. The engine resolves each with a decision and a mathematical proof — not an approximation.</p>
+<span class="market">Legal Tech · Media · Intelligence</span>
+</div>
+<div class="use-case">
+<span class="use-case-icon">🔐</span>
+<h3>Unforgeable Identity</h3>
+<p>Every entity's identity is the accumulated product of its interaction history via non-commutative matrices. The order of history cannot be reversed. Identity cannot be duplicated or spoofed.</p>
+<span class="market">Cybersecurity · Blockchain · Auth Systems</span>
+</div>
+<div class="use-case">
+<span class="use-case-icon">🧬</span>
+<h3>Generative Systems</h3>
+<p>From 2 opposing forces, the engine generates ecosystems of 63+ unique entities — each irreducible, each with a distinct mathematical biography. Every run produces a different universe.</p>
+<span class="market">Generative Art · Game Design · Simulation</span>
+</div>
+</div>
+<!-- ── PROOF ── -->
+<div class="proof-section">
+<div class="proof-left">
+<div class="section-label">Evidence of Function</div>
+<div class="proof-item">
+<span class="proof-num">P.01</span>
+<div class="proof-text">
+<strong>Real execution verified</strong>
+<p>Every metric in this document comes from actual terminal output on physical hardware. No simulation. No estimates.</p>
+</div>
+</div>
+<div class="proof-item">
+<span class="proof-num">P.02</span>
+<div class="proof-text">
+<strong>Fair benchmark conducted</strong>
+<p>Identical parameters: 63 nodes, 2,156 interactions. NetworkX produced 2 unique states. The engine produced 13. The comparison is honest.</p>
+</div>
+</div>
+<div class="proof-item">
+<span class="proof-num">P.03</span>
+<div class="proof-text">
+<strong>Deterministic reproducibility</strong>
+<p>Seed parameter locks output. Any researcher can reproduce any result exactly. Science requires this. We provide it.</p>
+</div>
+</div>
+</div>
+<div class="proof-right">
+<div class="section-label">What Was Built</div>
+<div class="proof-item">
+<span class="proof-num">P.04</span>
+<div class="proof-text">
+<strong>11 versions over full development cycle</strong>
+<p>v0.2 through v1.1.0. Every version solved a real problem. Every claim was tested before the next version began.</p>
+</div>
+</div>
+<div class="proof-item">
+<span class="proof-num">P.05</span>
+<div class="proof-text">
+<strong>Self-writing code verified</strong>
+<p>The bootstrap protocol generates runnable child simulations derived from the parent's tension state. ast.parse() syntax check passes. Children execute independently.</p>
+</div>
+</div>
+<div class="proof-item">
+<span class="proof-num">P.06</span>
+<div class="proof-text">
+<strong>Memory persists and grows</strong>
+<p>After 9 runs, identity trace reached 177,309,192,897,300. The accumulated SL(2,ℤ) matrix is a mathematical autobiography that cannot be fabricated.</p>
+</div>
+</div>
+</div>
+</div>
+</div><!-- /body-grid -->
+<!-- ── FOOTER ── -->
+<footer>
+<div class="footer-left">
+<p class="closing">
+"We did not build a system that tolerates contradiction.<br>
+We built one that requires it to function."
+</p>
+<div class="contact">
+PROJECT — Orthogonal Flat Engine + Sovereign Perception Layer<br>
+STATUS — Production-ready · Benchmark-verified · Open to collaboration<br>
+INQUIRY — Technical partnership · Research collaboration · Licensing
+</div>
+</div>
+<div class="footer-right">
+<div class="stamp">
+<span class="stamp-text">Verified Runs</span>
+<span class="stamp-num">9</span>
+<span class="stamp-text">Identity Trace ×10¹⁴</span>
+</div>
+</div>
+</footer>
+</main>
+</body>
+</html>

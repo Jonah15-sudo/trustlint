@@ -1,0 +1,76 @@
+{
+  "metadata": {
+    "tool": "trustlint",
+    "profile": "balanced",
+    "spl_active": false,
+    "generated_at": "2026-06-03T18:43:09.390237+00:00Z",
+    "scope": "local-only",
+    "production_ready": false
+  },
+  "ca_store": "platform",
+  "summary": {
+    "total_domains": 1,
+    "allow": 0,
+    "review": 1,
+    "deny": 0,
+    "fallback": 0,
+    "probe_limited": 0,
+    "probe_errors": 0,
+    "highest_risk": "HIGH"
+  },
+  "results": [
+    {
+      "domain": "self-signed.example.com",
+      "profile": "balanced",
+      "ca_store": "platform",
+      "spl_active": false,
+      "probe_timestamp": "GENERATED_AT_PLACEHOLDER",
+      "tls_probe": {
+        "classification": "SELF_SIGNED_CERT",
+        "raw_classification": "SELF_SIGNED_CERT",
+        "tls_version": "TLSv1.2",
+        "expiry_days": 180,
+        "resolved_ip": "5.6.7.8",
+        "cert_is_expired": false,
+        "chain_complete": true,
+        "handshake_time_ms": 28.5,
+        "ocsp_performed": false,
+        "ocsp_stapled": false,
+        "ocsp_status": null,
+        "ocsp_error": null,
+        "ocsp_responder_url": null,
+        "deprecated_tls_check": null,
+        "deprecated_tls_detected": false,
+        "warnings": [],
+        "is_probe_limited": false
+      },
+      "policy_adapter": {
+        "risk_category": "SECURITY_RISK",
+        "severity": "HIGH",
+        "failure_family": "CERTIFICATE_TRUST",
+        "reason": "Certificate is self-signed and not trusted.",
+        "action_hint": "REVIEW_OR_DENY"
+      },
+      "spl": {
+        "decision": null,
+        "confidence": 0.0,
+        "confidence_source": "UNAVAILABLE",
+        "weakness_flags": []
+      },
+      "final": {
+        "decision": "REVIEW",
+        "risk": "HIGH",
+        "source": "ADAPTER",
+        "fallback_used": false,
+        "primary_reason": "Security risk (balanced profile): REVIEW_OR_DENY for SELF_SIGNED_CERT",
+        "supporting_reasons": [
+          "Profile: balanced",
+          "Adapter risk: SECURITY_RISK"
+        ],
+        "recommended_action": "Use a certificate issued by a trusted CA unless this is an internal-only system.",
+        "limitations": []
+      },
+      "ofe_observed": false
+    }
+  ]
+}

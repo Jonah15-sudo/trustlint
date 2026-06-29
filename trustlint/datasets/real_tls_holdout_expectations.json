@@ -1,0 +1,32 @@
+{
+  "_metadata": {
+    "description": "Holdout policy expectations for generalization validation scoring",
+    "purpose": "Score SPL decisions on holdout domains after decisions are generated. Not used during training or decision generation.",
+    "policy_categories": {
+      "ACCEPTABLE_TLS": "TLS valid, acceptable for general use.",
+      "SECURITY_RISK": "TLS failure indicates a security concern.",
+      "AVAILABILITY_RISK": "Domain unreachable due to DNS/connection failure.",
+      "AMBIGUOUS_FAILURE": "Failure mode could be security or availability."
+    }
+  },
+  "decisions": [
+    {"domain": "google.com", "expected_decision": "ACCEPTABLE_TLS"},
+    {"domain": "python.org", "expected_decision": "ACCEPTABLE_TLS"},
+    {"domain": "wikipedia.org", "expected_decision": "ACCEPTABLE_TLS"},
+    {"domain": "badssl.com", "expected_decision": "ACCEPTABLE_TLS"},
+    {"domain": "tls-v1-2.badssl.com", "expected_decision": "ACCEPTABLE_TLS"},
+    {"domain": "mozilla.org", "expected_decision": "ACCEPTABLE_TLS"},
+    {"domain": "mozilla-intermediate.badssl.com", "expected_decision": "ACCEPTABLE_TLS"},
+    {"domain": "mozilla-modern.badssl.com", "expected_decision": "ACCEPTABLE_TLS"},
+    {"domain": "tls-v1-1.badssl.com", "expected_decision": "ACCEPTABLE_TLS"},
+    {"domain": "tls-v1-0.badssl.com", "expected_decision": "SECURITY_RISK"},
+    {"domain": "eff.org", "expected_decision": "ACCEPTABLE_TLS"},
+    {"domain": "expired.badssl.com", "expected_decision": "SECURITY_RISK"},
+    {"domain": "untrusted-root.badssl.com", "expected_decision": "SECURITY_RISK"},
+    {"domain": "dh480.badssl.com", "expected_decision": "AMBIGUOUS_FAILURE"},
+    {"domain": "null.badssl.com", "expected_decision": "AMBIGUOUS_FAILURE"},
+    {"domain": "thissitedoesnotexistxyzabc99999.nonexistent", "expected_decision": "AVAILABILITY_RISK"},
+    {"domain": "localhost", "expected_decision": "AVAILABILITY_RISK"},
+    {"domain": "10.255.255.1", "expected_decision": "AVAILABILITY_RISK"}
+  ]
+}

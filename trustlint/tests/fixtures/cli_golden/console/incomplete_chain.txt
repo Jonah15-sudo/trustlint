@@ -1,0 +1,43 @@
+============================================================
+  DOMAIN: incomplete.example.com
+  Profile: balanced
+  SPL Core: Inactive
+  Final Decision: REVIEW
+  Final Risk: HIGH
+  Decision Source: ADAPTER
+============================================================
+
+  [TLS Probe]
+  Classification: INCOMPLETE_CHAIN
+  CA Store: platform
+  TLS Version: TLSv1.2
+  Certificate Expiry Days: 120
+  Resolved IP: 17.18.19.20
+  Chain Status: Incomplete
+  OCSP Status: N/A
+  Deprecated TLS Check: None
+  Probe Warnings: Certificate chain is incomplete.
+
+  [Policy Adapter]
+  Risk Category: CHAIN_TRUST_FAILURE
+  Severity: HIGH
+  Failure Family: CHAIN_TRUST
+  Policy Reason: Server did not send intermediate certificate.
+  Action Hint: REVIEW_OR_DENY
+
+  [SPL]
+  Decision: N/A (adapter-only mode)
+  Confidence Source: UNAVAILABLE
+  Weakness Flags: None
+
+  [Decision Reasoning]
+  Primary Reason: Security risk (balanced profile): REVIEW_OR_DENY for INCOMPLETE_CHAIN
+    Supporting Reasons:
+      - Profile: balanced
+      - Adapter risk: CHAIN_TRUST_FAILURE
+
+  [Recommended Action]
+    Install all missing intermediate certificates on the server.
+
+  [Limitations]
+    - Certificate chain is incomplete.

@@ -1,0 +1,80 @@
+{
+  "metadata": {
+    "tool": "trustlint",
+    "profile": "balanced",
+    "spl_active": false,
+    "generated_at": "2026-06-03T18:43:09.384138+00:00Z",
+    "scope": "local-only",
+    "production_ready": false
+  },
+  "ca_store": "platform",
+  "summary": {
+    "total_domains": 1,
+    "allow": 0,
+    "review": 1,
+    "deny": 0,
+    "fallback": 0,
+    "probe_limited": 1,
+    "probe_errors": 0,
+    "highest_risk": "HIGH"
+  },
+  "results": [
+    {
+      "domain": "expired.example.com",
+      "profile": "balanced",
+      "ca_store": "platform",
+      "spl_active": false,
+      "probe_timestamp": "GENERATED_AT_PLACEHOLDER",
+      "tls_probe": {
+        "classification": "EXPIRED_CERT",
+        "raw_classification": "EXPIRED_CERT",
+        "tls_version": "TLSv1.2",
+        "expiry_days": -1,
+        "resolved_ip": "1.2.3.4",
+        "cert_is_expired": true,
+        "chain_complete": true,
+        "handshake_time_ms": 32.1,
+        "ocsp_performed": false,
+        "ocsp_stapled": false,
+        "ocsp_status": null,
+        "ocsp_error": null,
+        "ocsp_responder_url": null,
+        "deprecated_tls_check": null,
+        "deprecated_tls_detected": false,
+        "warnings": [
+          "Certificate is expired according to the probe."
+        ],
+        "is_probe_limited": true
+      },
+      "policy_adapter": {
+        "risk_category": "SECURITY_RISK",
+        "severity": "HIGH",
+        "failure_family": "CERTIFICATE_TRUST",
+        "reason": "Certificate is expired.",
+        "action_hint": "RENEW_OR_DENY"
+      },
+      "spl": {
+        "decision": null,
+        "confidence": 0.0,
+        "confidence_source": "UNAVAILABLE",
+        "weakness_flags": []
+      },
+      "final": {
+        "decision": "REVIEW",
+        "risk": "HIGH",
+        "source": "ADAPTER",
+        "fallback_used": false,
+        "primary_reason": "Security risk (balanced profile): RENEW_OR_DENY for EXPIRED_CERT",
+        "supporting_reasons": [
+          "Profile: balanced",
+          "Adapter risk: SECURITY_RISK"
+        ],
+        "recommended_action": "Renew or replace the certificate immediately.",
+        "limitations": [
+          "Certificate is expired according to the probe."
+        ]
+      },
+      "ofe_observed": false
+    }
+  ]
+}

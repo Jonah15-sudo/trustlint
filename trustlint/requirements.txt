@@ -1,0 +1,17 @@
+# This file is INFORMATIONAL ONLY. Dependencies are managed in pyproject.toml.
+#
+# The CLI has zero external dependencies. These packages are only needed
+# for optional features (dashboard, visualization, tests):
+#
+#   pip install ".[spl-core]"    # numpy, plotly, networkx, fastapi, uvicorn
+#   pip install ".[dev]"         # pytest
+#   pip install ".[kafka]"       # confluent-kafka
+#
+# See pyproject.toml [project.optional-dependencies] for the authoritative list.
+
+numpy>=1.26
+plotly>=5.20
+networkx>=3.2
+fastapi>=0.111
+uvicorn>=0.30
+# Optional: confluent-kafka>=2.5

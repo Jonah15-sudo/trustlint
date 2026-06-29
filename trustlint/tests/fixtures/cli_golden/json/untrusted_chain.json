@@ -1,0 +1,76 @@
+{
+  "metadata": {
+    "tool": "trustlint",
+    "profile": "balanced",
+    "spl_active": false,
+    "generated_at": "2026-06-03T18:43:09.399726+00:00Z",
+    "scope": "local-only",
+    "production_ready": false
+  },
+  "ca_store": "platform",
+  "summary": {
+    "total_domains": 1,
+    "allow": 0,
+    "review": 1,
+    "deny": 0,
+    "fallback": 0,
+    "probe_limited": 0,
+    "probe_errors": 0,
+    "highest_risk": "HIGH"
+  },
+  "results": [
+    {
+      "domain": "untrusted.example.com",
+      "profile": "balanced",
+      "ca_store": "platform",
+      "spl_active": false,
+      "probe_timestamp": "GENERATED_AT_PLACEHOLDER",
+      "tls_probe": {
+        "classification": "UNTRUSTED_CHAIN",
+        "raw_classification": "UNTRUSTED_CHAIN",
+        "tls_version": "TLSv1.2",
+        "expiry_days": 90,
+        "resolved_ip": "13.14.15.16",
+        "cert_is_expired": false,
+        "chain_complete": true,
+        "handshake_time_ms": 35.0,
+        "ocsp_performed": false,
+        "ocsp_stapled": false,
+        "ocsp_status": null,
+        "ocsp_error": null,
+        "ocsp_responder_url": null,
+        "deprecated_tls_check": null,
+        "deprecated_tls_detected": false,
+        "warnings": [],
+        "is_probe_limited": false
+      },
+      "policy_adapter": {
+        "risk_category": "SECURITY_RISK",
+        "severity": "HIGH",
+        "failure_family": "CHAIN_TRUST",
+        "reason": "Certificate chain is complete but root CA is not trusted.",
+        "action_hint": "REVIEW_OR_DENY"
+      },
+      "spl": {
+        "decision": null,
+        "confidence": 0.0,
+        "confidence_source": "UNAVAILABLE",
+        "weakness_flags": []
+      },
+      "final": {
+        "decision": "REVIEW",
+        "risk": "HIGH",
+        "source": "ADAPTER",
+        "fallback_used": false,
+        "primary_reason": "Security risk (balanced profile): REVIEW_OR_DENY for UNTRUSTED_CHAIN",
+        "supporting_reasons": [
+          "Profile: balanced",
+          "Adapter risk: SECURITY_RISK"
+        ],
+        "recommended_action": "Fix the certificate chain \u2014 ensure all intermediate certificates are installed on the server.",
+        "limitations": []
+      },
+      "ofe_observed": false
+    }
+  ]
+}

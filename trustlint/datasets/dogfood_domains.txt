@@ -1,0 +1,48 @@
+# TrustLint Dogfood Dataset
+# Safe public domains for local beta evaluation.
+# Lines starting with # are ignored.
+#
+# Categories:
+#   VALID: High-profile valid TLS domains
+#   TLS_TEST: BadSSL test subdomains with known certificate issues
+#   EDGE: Edge-case TLS configurations
+#   DNS_FAIL: Will fail DNS resolution (expected)
+
+# --- VALID: High-profile domains ---
+google.com
+github.com
+stackoverflow.com
+wikipedia.org
+cloudflare.com
+python.org
+npmjs.com
+docker.com
+gitlab.com
+bitbucket.org
+microsoft.com
+apple.com
+mozilla.org
+youtube.com
+linkedin.com
+
+# --- TLS_TEST: BadSSL known-issue domains ---
+expired.badssl.com
+self-signed.badssl.com
+wrong.host.badssl.com
+untrusted-root.badssl.com
+incomplete-chain.badssl.com
+sha1-intermediate.badssl.com
+revoked.badssl.com
+
+# --- EDGE: TLS version and cert edge cases ---
+tls-v1-2.badssl.com
+tls-v1-1.badssl.com
+tls-v1-0.badssl.com
+no-common-name.badssl.com
+no-subject.badssl.com
+dh480.badssl.com
+null.badssl.com
+
+# --- DNS_FAIL: Predictable DNS failures ---
+this-domain-definitely-does-not-exist-12345xyz.com
+nonexistent-tls-test-domain-99999.org

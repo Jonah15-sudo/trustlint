@@ -1,0 +1,80 @@
+{
+  "metadata": {
+    "tool": "trustlint",
+    "profile": "balanced",
+    "spl_active": false,
+    "generated_at": "2026-06-03T18:43:09.404146+00:00Z",
+    "scope": "local-only",
+    "production_ready": false
+  },
+  "ca_store": "platform",
+  "summary": {
+    "total_domains": 1,
+    "allow": 0,
+    "review": 1,
+    "deny": 0,
+    "fallback": 0,
+    "probe_limited": 1,
+    "probe_errors": 0,
+    "highest_risk": "HIGH"
+  },
+  "results": [
+    {
+      "domain": "incomplete.example.com",
+      "profile": "balanced",
+      "ca_store": "platform",
+      "spl_active": false,
+      "probe_timestamp": "GENERATED_AT_PLACEHOLDER",
+      "tls_probe": {
+        "classification": "INCOMPLETE_CHAIN",
+        "raw_classification": "INCOMPLETE_CHAIN",
+        "tls_version": "TLSv1.2",
+        "expiry_days": 120,
+        "resolved_ip": "17.18.19.20",
+        "cert_is_expired": false,
+        "chain_complete": false,
+        "handshake_time_ms": 40.0,
+        "ocsp_performed": false,
+        "ocsp_stapled": false,
+        "ocsp_status": null,
+        "ocsp_error": null,
+        "ocsp_responder_url": null,
+        "deprecated_tls_check": null,
+        "deprecated_tls_detected": false,
+        "warnings": [
+          "Certificate chain is incomplete."
+        ],
+        "is_probe_limited": true
+      },
+      "policy_adapter": {
+        "risk_category": "CHAIN_TRUST_FAILURE",
+        "severity": "HIGH",
+        "failure_family": "CHAIN_TRUST",
+        "reason": "Server did not send intermediate certificate.",
+        "action_hint": "REVIEW_OR_DENY"
+      },
+      "spl": {
+        "decision": null,
+        "confidence": 0.0,
+        "confidence_source": "UNAVAILABLE",
+        "weakness_flags": []
+      },
+      "final": {
+        "decision": "REVIEW",
+        "risk": "HIGH",
+        "source": "ADAPTER",
+        "fallback_used": false,
+        "primary_reason": "Security risk (balanced profile): REVIEW_OR_DENY for INCOMPLETE_CHAIN",
+        "supporting_reasons": [
+          "Profile: balanced",
+          "Adapter risk: CHAIN_TRUST_FAILURE"
+        ],
+        "recommended_action": "Install all missing intermediate certificates on the server.",
+        "limitations": [
+          "Certificate chain is incomplete."
+        ]
+      },
+      "ofe_observed": false
+    }
+  ]
+}

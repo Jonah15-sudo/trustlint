@@ -1,0 +1,43 @@
+============================================================
+  DOMAIN: example.com
+  Profile: balanced
+  SPL Core: Inactive
+  Final Decision: ALLOW
+  Final Risk: NONE
+  Decision Source: ADAPTER_FALLBACK
+============================================================
+
+  [TLS Probe]
+  Classification: VALID_TLS
+  CA Store: platform
+  TLS Version: TLSv1.3
+  Certificate Expiry Days: 89
+  Resolved IP: 93.184.216.34
+  Chain Status: Complete
+  OCSP Status: N/A
+  Deprecated TLS Check: None
+
+  [Policy Adapter]
+  Risk Category: ACCEPTABLE_TLS
+  Severity: NONE
+  Failure Family: NONE
+  Policy Reason: TLS handshake succeeded with valid certificate chain.
+  Action Hint: NONE
+
+  [SPL]
+  Decision: N/A (adapter-only mode)
+  Confidence Source: FALLBACK
+  Weakness Flags: None
+
+  [Decision Reasoning]
+  Fallback Used: Yes — SPL unavailable, adapter-based fallback policy applied
+  Primary Reason: VALID_TLS allowed by balanced profile fallback policy because SPL confidence is unavailable and probe result is clean
+    Supporting Reasons:
+      - Profile: balanced
+      - Adapter: ACCEPTABLE_TLS (NONE severity)
+      - SPL confidence: unavailable (adapter-only mode)
+      - Fallback ALLOW is a deterministic adapter-based CLI policy, not SPL confidence
+      - This ALLOW does not indicate production readiness
+
+  [Recommended Action]
+    No action required.

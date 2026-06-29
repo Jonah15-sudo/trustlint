@@ -1,0 +1,80 @@
+{
+  "metadata": {
+    "tool": "trustlint",
+    "profile": "balanced",
+    "spl_active": false,
+    "generated_at": "2026-06-03T18:43:09.427672+00:00Z",
+    "scope": "local-only",
+    "production_ready": false
+  },
+  "ca_store": "platform",
+  "summary": {
+    "total_domains": 1,
+    "allow": 0,
+    "review": 1,
+    "deny": 0,
+    "fallback": 0,
+    "probe_limited": 1,
+    "probe_errors": 0,
+    "highest_risk": "HIGH"
+  },
+  "results": [
+    {
+      "domain": "old-tls.example.com",
+      "profile": "balanced",
+      "ca_store": "platform",
+      "spl_active": false,
+      "probe_timestamp": "GENERATED_AT_PLACEHOLDER",
+      "tls_probe": {
+        "classification": "DEPRECATED_TLS_VERSION",
+        "raw_classification": "VALID_TLS",
+        "tls_version": "TLSv1",
+        "expiry_days": 60,
+        "resolved_ip": "33.34.35.36",
+        "cert_is_expired": false,
+        "chain_complete": true,
+        "handshake_time_ms": 50.0,
+        "ocsp_performed": false,
+        "ocsp_stapled": false,
+        "ocsp_status": null,
+        "ocsp_error": null,
+        "ocsp_responder_url": null,
+        "deprecated_tls_check": null,
+        "deprecated_tls_detected": false,
+        "warnings": [
+          "Deprecated TLS version detected via secondary probe \u2014 server allows TLS 1.0 or 1.1 (primary negotiated TLSv1)."
+        ],
+        "is_probe_limited": true
+      },
+      "policy_adapter": {
+        "risk_category": "DEPRECATED_PROTOCOL_RISK",
+        "severity": "HIGH",
+        "failure_family": "PROTOCOL_WEAKNESS",
+        "reason": "Deprecated TLS version negotiated (TLS 1.0/1.1).",
+        "action_hint": "MODERNIZE_OR_DENY"
+      },
+      "spl": {
+        "decision": null,
+        "confidence": 0.0,
+        "confidence_source": "UNAVAILABLE",
+        "weakness_flags": []
+      },
+      "final": {
+        "decision": "REVIEW",
+        "risk": "HIGH",
+        "source": "ADAPTER",
+        "fallback_used": false,
+        "primary_reason": "Security risk (balanced profile): MODERNIZE_OR_DENY for DEPRECATED_TLS_VERSION",
+        "supporting_reasons": [
+          "Profile: balanced",
+          "Adapter risk: DEPRECATED_PROTOCOL_RISK"
+        ],
+        "recommended_action": "Disable deprecated TLS protocols (TLS 1.0/1.1) and require TLS 1.2+ or TLS 1.3.",
+        "limitations": [
+          "Deprecated TLS version detected via secondary probe \u2014 server allows TLS 1.0 or 1.1 (primary negotiated TLSv1)."
+        ]
+      },
+      "ofe_observed": false
+    }
+  ]
+}

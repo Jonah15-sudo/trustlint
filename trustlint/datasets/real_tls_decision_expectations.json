@@ -1,0 +1,85 @@
+{
+  "_metadata": {
+    "description": "Policy expectations for SPL decision validation on mixed TLS probe results",
+    "purpose": "Measure SPL policy conformance — not ground truth, but expected operational risk categories",
+    "policy_categories": {
+      "ACCEPTABLE_TLS": "TLS connection succeeded with valid certificate chain. Acceptable for general use.",
+      "SECURITY_RISK": "TLS failure indicates a security concern (expired, self-signed, wrong-host, untrusted, incomplete chain). Immediate attention recommended.",
+      "AVAILABILITY_RISK": "Domain was unreachable due to DNS or connection failure. Service impact, not necessarily a TLS security issue.",
+      "AMBIGUOUS_FAILURE": "Failure mode could be security or availability. Requires human investigation.",
+      "UNKNOWN": "Classification could not be determined."
+    }
+  },
+  "decisions": [
+    {"domain": "google.com", "expected_decision": "ACCEPTABLE_TLS"},
+    {"domain": "github.com", "expected_decision": "ACCEPTABLE_TLS"},
+    {"domain": "gitlab.com", "expected_decision": "ACCEPTABLE_TLS"},
+    {"domain": "python.org", "expected_decision": "ACCEPTABLE_TLS"},
+    {"domain": "pypi.org", "expected_decision": "ACCEPTABLE_TLS"},
+    {"domain": "docker.com", "expected_decision": "ACCEPTABLE_TLS"},
+    {"domain": "mozilla.org", "expected_decision": "ACCEPTABLE_TLS"},
+    {"domain": "wikipedia.org", "expected_decision": "ACCEPTABLE_TLS"},
+    {"domain": "archive.org", "expected_decision": "ACCEPTABLE_TLS"},
+    {"domain": "w3.org", "expected_decision": "ACCEPTABLE_TLS"},
+    {"domain": "ietf.org", "expected_decision": "ACCEPTABLE_TLS"},
+    {"domain": "openssl.org", "expected_decision": "ACCEPTABLE_TLS"},
+    {"domain": "debian.org", "expected_decision": "ACCEPTABLE_TLS"},
+    {"domain": "ubuntu.com", "expected_decision": "ACCEPTABLE_TLS"},
+    {"domain": "redhat.com", "expected_decision": "ACCEPTABLE_TLS"},
+    {"domain": "caltech.edu", "expected_decision": "ACCEPTABLE_TLS"},
+    {"domain": "stanford.edu", "expected_decision": "ACCEPTABLE_TLS"},
+    {"domain": "harvard.edu", "expected_decision": "ACCEPTABLE_TLS"},
+    {"domain": "berkeley.edu", "expected_decision": "ACCEPTABLE_TLS"},
+    {"domain": "eff.org", "expected_decision": "ACCEPTABLE_TLS"},
+    {"domain": "npr.org", "expected_decision": "ACCEPTABLE_TLS"},
+    {"domain": "bbc.com", "expected_decision": "ACCEPTABLE_TLS"},
+    {"domain": "reuters.com", "expected_decision": "ACCEPTABLE_TLS"},
+    {"domain": "acm.org", "expected_decision": "ACCEPTABLE_TLS"},
+    {"domain": "ieee.org", "expected_decision": "ACCEPTABLE_TLS"},
+    {"domain": "science.org", "expected_decision": "ACCEPTABLE_TLS"},
+    {"domain": "nature.com", "expected_decision": "ACCEPTABLE_TLS"},
+    {"domain": "arxiv.org", "expected_decision": "ACCEPTABLE_TLS"},
+    {"domain": "ssrn.com", "expected_decision": "ACCEPTABLE_TLS"},
+    {"domain": "postgresql.org", "expected_decision": "ACCEPTABLE_TLS"},
+    {"domain": "badssl.com", "expected_decision": "ACCEPTABLE_TLS"},
+    {"domain": "sha256.badssl.com", "expected_decision": "ACCEPTABLE_TLS"},
+    {"domain": "mozilla-intermediate.badssl.com", "expected_decision": "ACCEPTABLE_TLS"},
+    {"domain": "mozilla-modern.badssl.com", "expected_decision": "ACCEPTABLE_TLS"},
+    {"domain": "tls-v1-2.badssl.com", "expected_decision": "ACCEPTABLE_TLS"},
+    {"domain": "tls-v1-1.badssl.com", "expected_decision": "ACCEPTABLE_TLS"},
+    {"domain": "tls-v1-0.badssl.com", "expected_decision": "SECURITY_RISK"},
+
+    {"domain": "expired.badssl.com", "expected_decision": "SECURITY_RISK"},
+    {"domain": "sha384.badssl.com", "expected_decision": "SECURITY_RISK"},
+    {"domain": "sha512.badssl.com", "expected_decision": "SECURITY_RISK"},
+    {"domain": "1000-sans.badssl.com", "expected_decision": "SECURITY_RISK"},
+
+    {"domain": "self-signed.badssl.com", "expected_decision": "SECURITY_RISK"},
+
+    {"domain": "wrong.host.badssl.com", "expected_decision": "SECURITY_RISK"},
+
+    {"domain": "untrusted-root.badssl.com", "expected_decision": "SECURITY_RISK"},
+    {"domain": "superfish.badssl.com", "expected_decision": "SECURITY_RISK"},
+
+    {"domain": "incomplete-chain.badssl.com", "expected_decision": "SECURITY_RISK"},
+
+    {"domain": "dh480.badssl.com", "expected_decision": "AMBIGUOUS_FAILURE"},
+    {"domain": "dh512.badssl.com", "expected_decision": "AMBIGUOUS_FAILURE"},
+    {"domain": "null.badssl.com", "expected_decision": "AMBIGUOUS_FAILURE"},
+    {"domain": "rc4.badssl.com", "expected_decision": "AMBIGUOUS_FAILURE"},
+    {"domain": "3des.badssl.com", "expected_decision": "AMBIGUOUS_FAILURE"},
+    {"domain": "dh1024.badssl.com", "expected_decision": "AMBIGUOUS_FAILURE"},
+    {"domain": "rc4-md5.badssl.com", "expected_decision": "AMBIGUOUS_FAILURE"},
+
+    {"domain": "thissitedoesnotexistxyzabc99999.nonexistent", "expected_decision": "AVAILABILITY_RISK"},
+    {"domain": "jjf8d9a7sd6f5asdf.testing-reserved", "expected_decision": "AVAILABILITY_RISK"},
+    {"domain": "never-gonna-resolve-987654321.example.com", "expected_decision": "AVAILABILITY_RISK"},
+
+    {"domain": "localhost", "expected_decision": "AVAILABILITY_RISK"},
+    {"domain": "127.0.0.1", "expected_decision": "AVAILABILITY_RISK"},
+    {"domain": "0.0.0.0", "expected_decision": "AVAILABILITY_RISK"},
+
+    {"domain": "10.255.255.1", "expected_decision": "AMBIGUOUS_FAILURE"},
+    {"domain": "203.0.113.1", "expected_decision": "AMBIGUOUS_FAILURE"}
+  ]
+}
