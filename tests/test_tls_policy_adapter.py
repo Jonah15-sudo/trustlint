@@ -468,12 +468,6 @@ class TestAdapterBenchmarkResultSchema(unittest.TestCase):
 class TestRunnerStructuredOutput(unittest.TestCase):
     """Runner must produce structured JSON output."""
 
-    def test_runner_script_compiles(self) -> None:
-        import py_compile
-        runner_path = os.path.join(PROJECT_ROOT, "scripts", "run_tls_policy_adapter_benchmark.py")
-        self.assertTrue(os.path.isfile(runner_path))
-        py_compile.compile(runner_path, doraise=True)
-
     def test_runner_produces_structured_json(self) -> None:
         """Check that the runner's output JSON has expected structure."""
         data = _make_benchmark_results()

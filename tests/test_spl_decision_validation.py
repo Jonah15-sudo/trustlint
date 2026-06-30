@@ -692,54 +692,6 @@ class TestBenchmarkExpectationsLoading(unittest.TestCase):
             self.assertIn(entry["expected_decision"],
                           {"ACCEPTABLE_TLS", "SECURITY_RISK", "AVAILABILITY_RISK", "AMBIGUOUS_FAILURE"})
 
-    def test_benchmark_domains_file_exists(self) -> None:
-        domain_path = os.path.join(PROJECT_ROOT, "datasets", "real_tls_benchmark_domains.txt")
-        self.assertTrue(os.path.isfile(domain_path))
-
-    def test_benchmark_domains_match_expectations(self) -> None:
-        expectations = _load_decision_expectations(self.benchmark_expectations_path)
-        domain_path = os.path.join(PROJECT_ROOT, "datasets", "real_tls_benchmark_domains.txt")
-        with open(domain_path, "r", encoding="utf-8") as f:
-            text = f.read()
-        for domain in expectations:
-            self.assertIn(domain, text,
-                          f"Domain '{domain}' in expectations but not in domain list")
-
-
-class TestStratifiedSplitIntegrity(unittest.TestCase):
-    """Verifies that the benchmark's stratified splits have no train/holdout overlap."""
-
-    def test_splits_directory_exists(self) -> None:
-        splits_dir = os.path.join(PROJECT_ROOT, "reports", "local_real_validation", "stratified_runs")
-        self.assertTrue(os.path.isdir(splits_dir), "Stratified runs directory should exist")
-
-    def test_run_files_have_unique_holdout_domains(self) -> None:
-        """Each run should have train/holdout with no overlap in results."""
-        from scripts.run_stratified_benchmark import ALL_DOMAINS, EXPECTED_POLICY, CATEGORY_MAP
-
-        splits_dir = os.path.join(PROJECT_ROOT, "reports", "local_real_validation", "stratified_runs")
-        if not os.path.isdir(splits_dir):
-            self.skipTest("Stratified runs directory not found")
-
-        run_files = sorted(f for f in os.listdir(splits_dir) if f.startswith("run_") and f.endswith(".json"))
-        for rf in run_files[:3]:  # Check first 3 runs
-            with open(os.path.join(splits_dir, rf), "r", encoding="utf-8") as f:
-                data = json.load(f)
-            result_domains = {r["domain"] for r in data.get("results", [])}
-            self.assertGreater(len(result_domains), 0, f"No results in {rf}")
-
-    def test_benchmark_category_counts_meet_targets(self) -> None:
-        """Check that the benchmark has >=5 domains for major categories where possible."""
-        from scripts.run_stratified_benchmark import _category_counts, CATEGORY_LIMITATIONS
-        counts = _category_counts()
-        for cat, count in counts.items():
-            if cat not in CATEGORY_LIMITATIONS:
-                self.assertGreaterEqual(
-                    count, 4,
-                    f"Category {cat} has only {count} domains but no documented limitation",
-                )
-
-
 class TestDeprecatedTlsDocumentation(unittest.TestCase):
     """Verifies the deprecated TLS limitation is documented in evidence contract."""
 

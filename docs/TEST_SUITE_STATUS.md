@@ -129,9 +129,9 @@ The following components are verified by compileall but do not have dedicated un
 | Component | Verification Method |
 |-----------|-------------------|
 | `scripts/run_local_tls_validation.py` | compileall + manual run (Phase 1/2) |
-| `scripts/run_real_tls_spl_decision_validation.py` | Unit tested (60 tests) + manual runs |
-| `scripts/run_stratified_benchmark.py` | compileall + manual benchmark run (Phase 5) |
-| `scripts/run_tls_policy_adapter_benchmark.py` | compileall + manual benchmark run (Phase 6) |
+| `scripts/run_real_tls_spl_decision_validation.py` | Planned but never committed; 60 tests reference it via import guard |
+| `scripts/run_stratified_benchmark.py` | Planned but never committed; Phase 5 benchmark was not implemented |
+| `scripts/run_tls_policy_adapter_benchmark.py` | Planned but never committed; Phase 6 benchmark was not implemented |
 | `tls_policy_adapter/` | Unit tested (69 tests in `test_tls_policy_adapter.py`) + compileall |
 | `scripts/run_decision_orchestration_benchmark.py` | compileall + manual benchmark run (Phase 7/8) |
 | `decision_orchestrator/` | Unit tested (128 tests in `test_decision_orchestrator.py`) + compileall |
