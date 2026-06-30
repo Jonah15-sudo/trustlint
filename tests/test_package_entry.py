@@ -70,7 +70,7 @@ class TestConsoleScriptExists(unittest.TestCase):
         cli_eps = [ep for ep in entry_points if ep.name == "trustlint"]
         self.assertEqual(len(cli_eps), 1,
                          "Expected one 'trustlint' entry point")
-        self.assertEqual(cli_eps[0].value, "scripts.spl_tls_analyze:main")
+        self.assertEqual(cli_eps[0].value, "trustlint.cli:main")
 
     def test_trustlint_alias_entry_point_accessible(self) -> None:
         import importlib.metadata
@@ -79,7 +79,7 @@ class TestConsoleScriptExists(unittest.TestCase):
         trustlint_eps = [ep for ep in entry_points if ep.name == "trustlint"]
         self.assertEqual(len(trustlint_eps), 1,
                          "Expected one 'trustlint' entry point")
-        self.assertEqual(trustlint_eps[0].value, "scripts.spl_tls_analyze:main")
+        self.assertEqual(trustlint_eps[0].value, "trustlint.cli:main")
 
 
 class TestMainThroughEntryPoint(unittest.TestCase):
@@ -253,7 +253,7 @@ class TestTrustlintCommandAlias(unittest.TestCase):
         dist = importlib.metadata.distribution("trustlint")
         eps = {ep.name: ep.value for ep in dist.entry_points}
         self.assertIn("trustlint", eps)
-        self.assertEqual(eps["trustlint"], "scripts.spl_tls_analyze:main")
+        self.assertEqual(eps["trustlint"], "trustlint.cli:main")
 
     def test_main_callable_as_trustlint_entry(self) -> None:
         # Simulate the trustlint console script invocation.

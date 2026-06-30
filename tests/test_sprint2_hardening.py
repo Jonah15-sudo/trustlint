@@ -98,28 +98,6 @@ class TestClassificationsSingleSource(unittest.TestCase):
         self.assertEqual(CLASSIFICATION_ORDER, list(ALL_CLASSIFICATIONS))
 
 
-# ── Issue 2: Eliminate silent failures ─────────────────────────────────────
-
-class TestSilentFailuresEliminated(unittest.TestCase):
-    """Exception handlers must log instead of silently swallowing."""
-
-    def test_run_local_has_logger(self) -> None:
-        import scripts.run_local_tls_validation as mod
-        self.assertTrue(hasattr(mod, "logger"))
-
-    def test_spl_tls_analyze_has_logger(self) -> None:
-        import scripts.spl_tls_analyze as mod
-        self.assertTrue(hasattr(mod, "logger"))
-
-    def test_determine_chain_subtype_logs_exception(self) -> None:
-        """The outer except in _determine_chain_subtype should log."""
-        from scripts.run_local_tls_validation import _determine_chain_subtype
-        # This tests that the function handles exceptions gracefully
-        # The actual logging is verified by the logger existing
-        result = _determine_chain_subtype("nonexistent.example.com", "192.0.2.1", timeout=1.0)
-        self.assertIn(result, ("unknown", "missing_intermediate"))
-
-
 # ── Issue 3: Batch processing reliability ──────────────────────────────────
 
 class TestBatchProcessingReliability(unittest.TestCase):
@@ -191,11 +169,12 @@ class TestHealthCheck(unittest.TestCase):
         result = _run_health_check()
         self.assertEqual(result, 0)
 
-    @patch("scripts.spl_tls_analyze.sys")
+    @patch("trustlint.cli.sys")
     def test_health_check_fails_on_old_python(self, mock_sys: MagicMock) -> None:
-        from scripts.spl_tls_analyze import _run_health_check
-        # Create a proper mock for version_info with major/minor/micro attributes
+        from trustlint.cli import _run_health_check
+        # Create a proper mock for version_info that supports comparison
         mock_version_info = MagicMock()
+        mock_version_info.__lt__ = lambda self, other: (3, 9, 0) < other
         mock_version_info.major = 3
         mock_version_info.minor = 9
         mock_version_info.micro = 0

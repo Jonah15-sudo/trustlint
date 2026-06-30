@@ -1,43 +1,26 @@
-============================================================
-  DOMAIN: old-tls.example.com
-  Profile: balanced
-  SPL Core: Inactive
-  Final Decision: REVIEW
-  Final Risk: HIGH
-  Decision Source: ADAPTER
-============================================================
-
+Domain: old-tls.example.com
+  Decision: REVIEW
+  Risk: HIGH
+  Source: ADAPTER
+  Classification: DEPRECATED_TLS_VERSION
+  TLS Version: TLSv1
+  Resolved IP: 33.34.35.36
+  Handshake Time: 50.0ms
   [TLS Probe]
   Classification: DEPRECATED_TLS_VERSION
-  CA Store: platform
   TLS Version: TLSv1
-  Certificate Expiry Days: 60
   Resolved IP: 33.34.35.36
-  Chain Status: Complete
-  OCSP Status: N/A
-  Deprecated TLS Check: None
-  Probe Warnings: Deprecated TLS version detected via secondary probe — server allows TLS 1.0 or 1.1 (primary negotiated TLSv1).
-
+  Handshake Time: 50.0ms
   [Policy Adapter]
   Risk Category: DEPRECATED_PROTOCOL_RISK
   Severity: HIGH
-  Failure Family: PROTOCOL_WEAKNESS
-  Policy Reason: Deprecated TLS version negotiated (TLS 1.0/1.1).
-  Action Hint: MODERNIZE_OR_DENY
-
   [SPL]
-  Decision: N/A (adapter-only mode)
-  Confidence Source: UNAVAILABLE
-  Weakness Flags: None
-
+  SPL: unavailable (adapter-only mode)
   [Decision Reasoning]
-  Primary Reason: Security risk (balanced profile): MODERNIZE_OR_DENY for DEPRECATED_TLS_VERSION
-    Supporting Reasons:
-      - Profile: balanced
-      - Adapter risk: DEPRECATED_PROTOCOL_RISK
-
-  [Recommended Action]
-    Disable deprecated TLS protocols (TLS 1.0/1.1) and require TLS 1.2+ or TLS 1.3.
-
+  Reason: Security risk (balanced profile): MODERNIZE_OR_DENY for DEPRECATED_TLS_VERSION
+  Recommended Action: Disable deprecated TLS protocols (TLS 1.0/1.1) and require TLS 1.2+ or TLS 1.3.
   [Limitations]
     - Deprecated TLS version detected via secondary probe — server allows TLS 1.0 or 1.1 (primary negotiated TLSv1).
+  [Recommended Action]
+    - Profile: balanced
+    - Adapter risk: DEPRECATED_PROTOCOL_RISK

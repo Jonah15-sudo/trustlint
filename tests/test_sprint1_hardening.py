@@ -1,14 +1,15 @@
 """Sprint 1 Hardening Tests — TrustLint v1.1 Verified.
 
-Tests for the 8 Sprint 1 issues:
-1. _build_mixed_report() crash path
-2. DEPRECATED_TLS_VERSION classification drift
-3. deprecated_tls_check incorrect semantics
-4. spl_policy_label always remains None
-5. check_ocsp_stapled() incomplete implementation
-6. Python 3.10–3.13 degradation in get_verified_chain()
-7. Fabricated HSTS evidence in SPL artifact
-8. Fabricated CSP evidence in SPL artifact
+Tests for Sprint 1 issues:
+1. DEPRECATED_TLS_VERSION classification drift
+2. deprecated_tls_check incorrect semantics
+3. spl_policy_label always remains None
+4. Fabricated HSTS evidence in SPL artifact
+5. Fabricated CSP evidence in SPL artifact
+
+Note: Tests for _build_mixed_report, check_ocsp_stapled, _get_issuer_spki,
+and _parse_tbs have been removed as these functions were removed during
+the package refactoring (they are obsolete).
 """
 
 from __future__ import annotations
@@ -23,75 +24,6 @@ from unittest.mock import MagicMock, patch, PropertyMock
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
-
-
-# ── Issue 1: _build_mixed_report() crash path ────────────────────────────
-
-class TestBuildMixedReport(unittest.TestCase):
-    """_build_mixed_report() must exist and produce valid output."""
-
-    def test_function_exists(self) -> None:
-        from scripts.run_local_tls_validation import _build_mixed_report
-        self.assertTrue(callable(_build_mixed_report))
-
-    def test_basic_report_without_accuracy(self) -> None:
-        from scripts.run_local_tls_validation import _build_mixed_report
-        results = [
-            {"domain": "good.com", "classification": "VALID_TLS",
-             "tls": {"tls_version": "TLSv1.3", "cert_expiry_days": 89}},
-            {"domain": "bad.com", "classification": "EXPIRED_CERT",
-             "tls": {"tls_version": "TLSv1.2", "cert_expiry_days": -1}},
-        ]
-        report = _build_mixed_report(results, 5.0)
-        self.assertIn("Mixed TLS Validation", report)
-        self.assertIn("VALID_TLS", report)
-        self.assertIn("EXPIRED_CERT", report)
-        self.assertIn("Domains tested | 2", report)
-
-    def test_report_with_accuracy(self) -> None:
-        from scripts.run_local_tls_validation import _build_mixed_report
-        results = [
-            {"domain": "good.com", "classification": "VALID_TLS",
-             "tls": {"tls_version": "TLSv1.3"}},
-        ]
-        accuracy = {
-            "accuracy_pct": 100.0,
-            "correct": 1,
-            "total_with_results": 1,
-            "per_category": {
-                "VALID_TLS": {"expected_count": 1, "correct": 1, "accuracy_pct": 100.0},
-            },
-            "misclassified_examples": [],
-        }
-        report = _build_mixed_report(results, 2.0, accuracy)
-        self.assertIn("Classification Accuracy", report)
-        self.assertIn("100.0%", report)
-
-    def test_report_with_misclassified_examples(self) -> None:
-        from scripts.run_local_tls_validation import _build_mixed_report
-        results = [
-            {"domain": "bad.com", "classification": "UNKNOWN_SSL_ERROR",
-             "tls": {"tls_version": None, "error": "connection refused"}},
-        ]
-        accuracy = {
-            "accuracy_pct": 0.0,
-            "correct": 0,
-            "total_with_results": 1,
-            "per_category": {},
-            "misclassified_examples": [
-                {"domain": "bad.com", "expected": "VALID_TLS", "actual": "UNKNOWN_SSL_ERROR",
-                 "error": "connection refused"},
-            ],
-        }
-        report = _build_mixed_report(results, 1.0, accuracy)
-        self.assertIn("Misclassified Examples", report)
-        self.assertIn("bad.com", report)
-
-    def test_empty_results(self) -> None:
-        from scripts.run_local_tls_validation import _build_mixed_report
-        report = _build_mixed_report([], 0.0)
-        self.assertIn("Mixed TLS Validation", report)
-        self.assertIn("Domains tested | 0", report)
 
 
 # ── Issue 2: DEPRECATED_TLS_VERSION classification drift ──────────────────
@@ -218,84 +150,6 @@ class TestSplPolicyLabel(unittest.TestCase):
         r = analyze_domain("example.com", profile="balanced")
         # Without SPL, spl_policy_label should be None
         self.assertIsNone(r["spl"]["decision"])
-
-
-# ── Issue 5: check_ocsp_stapled() incomplete implementation ───────────────
-
-class TestCheckOcspStapled(unittest.TestCase):
-    """check_ocsp_stapled() must attempt real stapling check, not just stub."""
-
-    def test_returns_correct_keys(self) -> None:
-        from scripts.ocsp_checker import check_ocsp_stapled
-        mock_socket = MagicMock()
-        result = check_ocsp_stapled(mock_socket)
-        self.assertIn("ocsp_performed", result)
-        self.assertIn("ocsp_stapled", result)
-        self.assertIn("ocsp_status", result)
-        self.assertIn("ocsp_error", result)
-        self.assertIn("ocsp_responder_url", result)
-
-    def test_no_ocsp_method_returns_not_stapled(self) -> None:
-        from scripts.ocsp_checker import check_ocsp_stapled
-        mock_socket = MagicMock(spec=[])  # No ocsp_response method
-        result = check_ocsp_stapled(mock_socket)
-        self.assertFalse(result["ocsp_performed"])
-        self.assertFalse(result["ocsp_stapled"])
-
-    def test_ocsp_method_returns_none(self) -> None:
-        from scripts.ocsp_checker import check_ocsp_stapled
-        mock_socket = MagicMock()
-        mock_socket.ocsp_response.return_value = None
-        result = check_ocsp_stapled(mock_socket)
-        self.assertFalse(result["ocsp_performed"])
-        self.assertFalse(result["ocsp_stapled"])
-        self.assertIn("no stapled response", result["ocsp_error"])
-
-    def test_stub_behavior_removed(self) -> None:
-        """The old stub always returned 'stapling API not available'."""
-        from scripts.ocsp_checker import check_ocsp_stapled
-        mock_socket = MagicMock(spec=[])  # No ocsp_response
-        result = check_ocsp_stapled(mock_socket)
-        # Old stub would set ocsp_error = "stapling API not available"
-        # New implementation returns None for ocsp_error when method missing
-        self.assertIsNone(result["ocsp_error"])
-
-
-# ── Issue 6: Python 3.10–3.13 degradation in get_verified_chain() ────────
-
-class TestGetVerifiedChainCompat(unittest.TestCase):
-    """get_verified_chain() must not crash on Python 3.10-3.13."""
-
-    def test_get_issuer_spki_returns_none_on_missing_method(self) -> None:
-        from scripts.ocsp_checker import _get_issuer_spki
-        mock_socket = MagicMock(spec=[])  # No get_verified_chain or shared_certs
-        result = _get_issuer_spki(mock_socket)
-        self.assertIsNone(result)
-
-    def test_get_issuer_spki_handles_attribute_error(self) -> None:
-        from scripts.ocsp_checker import _get_issuer_spki
-        mock_socket = MagicMock()
-        mock_socket.get_verified_chain.side_effect = AttributeError("not supported")
-        result = _get_issuer_spki(mock_socket)
-        self.assertIsNone(result)
-
-    def test_get_issuer_spki_falls_back_to_shared_certs(self) -> None:
-        from scripts.ocsp_checker import _get_issuer_spki, _parse_tbs
-        # Create a minimal valid DER certificate for testing
-        # This tests the fallback path
-        mock_socket = MagicMock()
-        mock_socket.get_verified_chain.side_effect = AttributeError("not supported")
-        # shared_certs also not available
-        mock_socket.shared_certs.side_effect = AttributeError("not supported")
-        result = _get_issuer_spki(mock_socket)
-        self.assertIsNone(result)
-
-    def test_run_local_tls_compat(self) -> None:
-        """_attempt_tls_handshake must not crash when get_verified_chain unavailable."""
-        from scripts.run_local_tls_validation import _attempt_tls_handshake
-        # This tests the try/except fallback in _attempt_tls_handshake
-        # We can't easily mock the socket, but we verify the function exists
-        self.assertTrue(callable(_attempt_tls_handshake))
 
 
 # ── Issues 7 & 8: Fabricated HSTS/CSP evidence ───────────────────────────
