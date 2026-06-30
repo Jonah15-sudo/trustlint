@@ -21,6 +21,8 @@ import unittest
 from typing import Any, Dict
 from unittest.mock import MagicMock, patch
 
+import pytest
+
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
@@ -107,6 +109,7 @@ class TestProbeDomainOverrideLogic(unittest.TestCase):
                        "DNS_FAILURE", "TIMEOUT", "CONNECTION_ERROR"),
                       f"Expected WEAK_CIPHER_SUITE or fallback for rc4.badssl.com, got {result.get('classification')}")
 
+    @pytest.mark.network
     def test_static_rsa_override(self) -> None:
         from scripts.run_local_tls_validation import probe_domain
         result = probe_domain("dh2048.badssl.com")

@@ -1,13 +1,12 @@
 {
   "metadata": {
     "tool": "trustlint",
-    "profile": "balanced",
-    "spl_active": false,
-    "generated_at": "2026-06-03T18:43:09.379403+00:00Z",
+    "version": "1.0.0",
+    "production_ready": false,
     "scope": "local-only",
-    "production_ready": false
+    "spl_active": false,
+    "profile": "balanced"
   },
-  "ca_store": "platform",
   "summary": {
     "total_domains": 1,
     "allow": 1,

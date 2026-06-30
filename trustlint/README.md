@@ -1,70 +1,100 @@
-# TrustLint v1.0.0
+# TrustLint
 
-**Production-grade TLS risk analysis CLI and library.**
+[![CI](https://github.com/trustlint/trustlint/actions/workflows/ci.yml/badge.svg)](https://github.com/trustlint/trustlint/actions/workflows/ci.yml)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-Probe domains for TLS configuration weaknesses, classify results against a
-structured risk taxonomy, and receive a deterministic **ALLOW / REVIEW / DENY**
-decision with full reasoning and recommended actions.
+A command-line tool and Python library for analyzing TLS/SSL configurations of domains and assessing risk based on certificate properties, protocol support, and revocation status.
 
 ---
 
-## Features
+## What TrustLint Does
 
-- **20 TLS classifications** covering certificate validity, chain trust, protocol
-  weaknesses, availability, and revocation.
-- **3 security profiles** -- `conservative`, `balanced`, `strict` -- with a documented
-  dispatch table (not a black box).
-- **Concurrent probing** via `--workers N` (thread-pool, thread-safe).
-- **OCSP + CRL revocation checking** using stdlib-only ASN.1 DER parsing.
-- **Deprecated TLS detection** via a secondary TLS 1.1 probe.
-- **3 output formats** -- console, JSON (versioned schema), Markdown.
-- **Zero runtime dependencies** -- pure Python 3.10+ stdlib.
-- **Clean exit codes** for CI/CD pipeline integration.
-- **Health check** -- `--health` flag for Docker and deployment validation.
-- **Structured logging** -- `--verbose`/`--quiet` flags with proper log levels.
-- **Input validation** -- Domain name format validation.
-- **Docker support** -- Container image with HEALTHCHECK.
-- **702 tests** -- Comprehensive test suite (all passing).
+TrustLint connects to a target domain over TLS, inspects the negotiated connection, and classifies the result against a taxonomy of 20 TLS risk categories. It then applies a configurable security profile to produce a deterministic **ALLOW**, **REVIEW**, or **DENY** decision.
+
+**Capabilities:**
+
+- Probe TLS handshake parameters (certificate, chain, protocol version)
+- Detect expired, revoked, self-signed, and wrong-host certificates
+- Check OCSP stapling and CRL revocation status
+- Identify deprecated TLS versions (1.0, 1.1)
+- Classify results into 20 risk categories with severity levels
+- Apply one of three security profiles: `conservative`, `balanced`, or `strict`
+- Output results in console, JSON, or Markdown format
+- Analyze single domains or batch from file
+
+## What TrustLint Does Not Do
+
+- It is **not** a vulnerability scanner or penetration testing tool
+- It does **not** enumerate services, open ports, or perform network mapping
+- It does **not** guarantee the absence of security issues
+- It does **not** replace comprehensive TLS auditing tools
+- It does **not** perform active exploitation or fuzzing
+
+## Security Scope and Limitations
+
+TrustLint operates from the perspective of an external observer performing a TLS handshake. It cannot inspect server-side configuration, internal certificate authorities, or application-layer security.
+
+**Known limitations:**
+
+- OCSP checking is best-effort; results depend on responder availability
+- Deprecated TLS detection depends on the server's negotiation behavior
+- No IPv6 support in the current TLS probing implementation
+- Revocation status may be stale between CRL update intervals
+- SPL Core integration is experimental and should not be relied upon for security decisions
 
 ---
 
 ## Installation
 
+### From source
+
 ```bash
-# From source
+git clone https://github.com/trustlint/trustlint.git
+cd trustlint
 pip install -e .
+```
 
-# With Mozilla CA bundle (certifi)
+### With Mozilla CA bundle
+
+```bash
 pip install -e ".[ca-store]"
+```
 
-# For development (includes pytest)
+### For development
+
+```bash
 pip install -e ".[dev]"
 ```
 
----
-
-## Quick Start
+### From wheel
 
 ```bash
-# Single domain
-trustlint example.com
-
-# Batch from file, strict profile, JSON output
-trustlint domains.txt --profile strict --json-out report.json
-
-# List all registered TLS classifications
-trustlint --list-classifications
-
-# Version info
-trustlint --version
-
-# Health check
-trustlint --health
+pip install trustlint-<version>-py3-none-any.whl
 ```
 
 ---
 
-## CLI Reference
+## CLI Usage
+
+```bash
+# Analyze a single domain
+trustlint example.com
+
+# Analyze multiple domains from a file
+trustlint domains.txt --profile strict --json-out report.json
+
+# List all TLS classifications
+trustlint --list-classifications
+
+# Run health check
+trustlint --health
+
+# Print version
+trustlint --version
+```
+
+### CLI Reference
 
 ```
 trustlint [TARGET] [OPTIONS]
@@ -98,24 +128,14 @@ Utility:
   --version              Print version and exit
 ```
 
----
+### Exit Codes
 
-## Security Profiles
-
-| Classification | Severity | conservative | balanced | strict |
-|---|---|---|---|---|
-| REVOKED_CERT | CRITICAL | DENY | DENY | DENY |
-| WRONG_HOST_CERT | CRITICAL | DENY | DENY | DENY |
-| EXPIRED_CERT | HIGH | REVIEW | REVIEW | **DENY** |
-| SELF_SIGNED_CERT | HIGH | REVIEW | REVIEW | **DENY** |
-| UNTRUSTED_CHAIN | HIGH | REVIEW | REVIEW | **DENY** |
-| DEPRECATED_TLS | HIGH | REVIEW | REVIEW | **DENY** |
-| WILDCARD_CERTIFICATE | LOW | ALLOW | ALLOW | **REVIEW** |
-| MISSING_OCSP_STAPLE | LOW | ALLOW | ALLOW | **REVIEW** |
-| DNS_FAILURE | MEDIUM | REVIEW | REVIEW | REVIEW |
-| VALID_TLS | NONE | **REVIEW** | ALLOW | **REVIEW** |
-
-*Conservative* never auto-ALLOW; *balanced* allows clean VALID_TLS; *strict* denies all HIGH severity.
+| Code | Meaning |
+|------|---------|
+| 0 | All domains returned ALLOW |
+| 1 | One or more domains returned REVIEW (no DENY) |
+| 2 | One or more domains returned DENY |
+| 3 | Fatal error (no domains, file not found, all errors) |
 
 ---
 
@@ -139,7 +159,7 @@ for r in results["results"]:
     print(f"{r['domain']}: {r['final']['decision']}")
 
 # Version info
-print(get_version())  # "1.0.0"
+print(get_version())
 
 # List all classifications
 print(get_classifications())
@@ -147,25 +167,69 @@ print(get_classifications())
 
 ---
 
-## Exit Codes
+## Security Profiles
 
-| Code | Meaning |
-|------|---------|
-| 0 | All domains returned ALLOW |
-| 1 | One or more domains returned REVIEW (no DENY) |
-| 2 | One or more domains returned DENY |
-| 3 | Fatal error (no domains, file not found, all errors) |
+TrustLint applies different decision thresholds based on the selected profile:
+
+| Classification | Severity | conservative | balanced | strict |
+|---|---|---|---|---|
+| REVOKED_CERT | CRITICAL | DENY | DENY | DENY |
+| WRONG_HOST_CERT | CRITICAL | DENY | DENY | DENY |
+| EXPIRED_CERT | HIGH | REVIEW | REVIEW | DENY |
+| SELF_SIGNED_CERT | HIGH | REVIEW | REVIEW | DENY |
+| UNTRUSTED_CHAIN | HIGH | REVIEW | REVIEW | DENY |
+| DEPRECATED_TLS | HIGH | REVIEW | REVIEW | DENY |
+| WILDCARD_CERTIFICATE | LOW | ALLOW | ALLOW | REVIEW |
+| MISSING_OCSP_STAPLE | LOW | ALLOW | ALLOW | REVIEW |
+| DNS_FAILURE | MEDIUM | REVIEW | REVIEW | REVIEW |
+| VALID_TLS | NONE | REVIEW | ALLOW | REVIEW |
+
+- **conservative**: Never auto-allows; everything goes to REVIEW or DENY
+- **balanced**: Allows clean VALID_TLS; reviews or denies based on severity
+- **strict**: Denies all HIGH severity findings and above
 
 ---
 
-## Running Tests
+## Configuration
+
+TrustLint uses safe defaults. No configuration file is required for basic usage.
+
+**Default behavior:**
+
+- Timeout: 10 seconds per handshake
+- Profile: `balanced`
+- CA store: platform default
+- Workers: 1 (sequential probing)
+- Rate limiting: disabled
+
+**Environment variables:**
+
+- `TRUSTLINT_LOG_LEVEL` -- Override log level (DEBUG, INFO, WARNING, ERROR)
+
+---
+
+## Private Target Scanning
+
+By default, TrustLint rejects connections to private, loopback, link-local, multicast, and reserved IP ranges. This prevents accidental scanning of internal infrastructure.
+
+To scan private targets (authorized internal systems only):
 
 ```bash
-pip install -e ".[dev]"
-pytest                          # all tests
-pytest --tb=long -v             # verbose
-pytest tests/test_risk_map.py   # one module
+trustlint internal.example.com --allow-private-targets
 ```
+
+**Use this only on systems you own or are authorized to test.**
+
+---
+
+## OCSP Behavior
+
+OCSP checking is performed on a best-effort basis:
+
+- Results depend on the availability of the certificate's OCSP responder
+- If the responder is unreachable, the OCSP status is reported as unknown
+- OCSP stapling is detected when the server provides a stapled response
+- CRL checking uses DER-encoded CRL data parsed with stdlib ASN.1
 
 ---
 
@@ -184,14 +248,70 @@ docker run --rm trustlint --health
 
 ---
 
-## Version History
+## Development
 
-| Version | Date | Changes |
-|---------|------|---------|
-| 1.0.0 | 2026-06-11 | RC-1 release |
+### Setup
+
+```bash
+git clone https://github.com/trustlint/trustlint.git
+cd trustlint
+pip install -e ".[dev]"
+```
+
+### Running Tests
+
+```bash
+pytest                          # all tests
+pytest --tb=long -v             # verbose output
+pytest tests/test_risk_map.py   # single module
+```
+
+### Project Structure
+
+```
+trustlint/
+├── trustlint/          # Main package
+├── tests/              # Test suite
+├── docs/               # Documentation
+├── frontier/           # Experimental features
+├── experiments/        # Research and validation
+├── reports/            # Generated reports
+├── pyproject.toml      # Project metadata
+├── requirements.txt    # Dependencies
+└── Dockerfile          # Container build
+```
+
+---
+
+## Architecture
+
+See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed design documentation including:
+
+- Module structure and responsibilities
+- Decision flow and risk classification
+- TLS probing implementation
+- Security controls and input validation
+
+---
+
+## Contributing
+
+Contributions are welcome. Please read the existing code style and test patterns before submitting changes.
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes with tests
+4. Run the test suite
+5. Submit a pull request
+
+---
+
+## Security Policy
+
+See [SECURITY.md](SECURITY.md) for vulnerability reporting guidelines.
 
 ---
 
 ## License
 
-MIT
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.

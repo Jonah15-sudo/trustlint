@@ -191,15 +191,10 @@ class TestHealthCheck(unittest.TestCase):
         result = _run_health_check()
         self.assertEqual(result, 0)
 
-    @patch("scripts.spl_tls_analyze.sys")
+    @patch("trustlint.cli.sys")
     def test_health_check_fails_on_old_python(self, mock_sys: MagicMock) -> None:
         from scripts.spl_tls_analyze import _run_health_check
-        # Create a proper mock for version_info with major/minor/micro attributes
-        mock_version_info = MagicMock()
-        mock_version_info.major = 3
-        mock_version_info.minor = 9
-        mock_version_info.micro = 0
-        mock_sys.version_info = mock_version_info
+        mock_sys.version_info = (3, 9, 0, "final", 0)
         mock_sys.version = "3.9.0"
         result = _run_health_check()
         self.assertEqual(result, 1)

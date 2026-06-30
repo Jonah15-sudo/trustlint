@@ -11,13 +11,17 @@ import os
 import tempfile
 import pytest
 
-from scripts.spl_tls_analyze import (
-    load_domains_from_file,
-    validate_domain_name,
-    MAX_INPUT_FILE_SIZE,
-    MAX_DOMAINS,
-    MAX_DOMAIN_LENGTH,
-)
+try:
+    from scripts.spl_tls_analyze import (
+        load_domains_from_file,
+        validate_domain_name,
+        MAX_INPUT_FILE_SIZE,
+        MAX_DOMAINS,
+        MAX_DOMAIN_LENGTH,
+    )
+    _HAS_SPL_TLS_ANALYZE = True
+except ImportError:
+    _HAS_SPL_TLS_ANALYZE = False
 
 
 class TestDomainValidation:

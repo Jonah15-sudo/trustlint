@@ -1,67 +1,79 @@
 # TrustLint Security Policy
 
-## Reporting Security Vulnerabilities
+## Supported Versions
 
-If you discover a security vulnerability in TrustLint, please report it responsibly:
+| Version | Supported |
+|---------|-----------|
+| Latest release | Yes |
+| Previous releases | No |
 
-- **Do NOT** open a public GitHub issue for security vulnerabilities.
-- Email security reports to: [SECURITY_EMAIL_PLACEHOLDER]
-- Include: description, steps to reproduce, potential impact, suggested fix.
+Only the latest released version receives security updates. Users are encouraged to upgrade promptly.
 
-## Security Controls
+## Reporting a Vulnerability
+
+If you discover a security vulnerability in TrustLint, please report it through [GitHub Security Advisories](https://github.com/trustlint/trustlint/security/advisories/new).
+
+**Do not** open a public GitHub issue for security vulnerabilities.
+
+### What to Include
+
+- Description of the vulnerability
+- Steps to reproduce the issue
+- Potential impact assessment
+- Suggested fix (if available)
+
+### What to Expect
+
+- **Acknowledgment**: Within 48 hours of your report
+- **Status update**: Within 7 days with an initial assessment
+- **Resolution timeline**: Communicated after triage
+
+We will work with you to understand and address the issue before any public disclosure.
+
+## Scope
+
+The following are in scope for security reports:
+
+- Code execution vulnerabilities in the TrustLint package
+- Injection attacks via domain input or file parsing
+- Bypass of SSRF protections or target scanning restrictions
+- Authentication or authorization issues in dashboard or API components
+- Cryptographic issues in TLS probing or certificate validation logic
+
+## Out of Scope
+
+- Vulnerabilities in third-party dependencies (report these upstream)
+- Issues requiring physical access to the target system
+- Social engineering attacks
+- Denial of service against TrustLint itself
+- Issues in experimental or SPL Core features (marked as experimental)
+
+## Security Considerations
 
 ### Network Security
-- **SSRF Protection**: All outbound HTTP requests (including OCSP) are validated through `OutboundNetworkPolicy` before execution.
-- **Target Scanning Policy**: Private, loopback, link-local, multicast, and reserved IP ranges are rejected by default. Use `--allow-private-targets` for authorized internal scans only.
-- **DNS Validation**: Resolved IP addresses are re-validated after DNS resolution to prevent DNS rebinding attacks.
 
-### Dashboard Security
-- **Local-only default**: Dashboard binds to `127.0.0.1` by default.
-- **Security headers**: CSP, X-Content-Type-Options, X-Frame-Options, X-XSS-Protection, Referrer-Policy.
-- **Token authentication**: Set `TRUSTLINT_DASHBOARD_TOKEN` environment variable for production.
-- **CORS restrictions**: Only localhost origins allowed by default.
-- **API redaction**: `/api/snapshot` returns redacted data (no internal graph topology).
-- **XSS prevention**: All dynamic content is HTML-escaped.
+- All outbound HTTP requests are validated through `OutboundNetworkPolicy`
+- Private, loopback, link-local, multicast, and reserved IP ranges are rejected by default
+- Resolved IP addresses are re-validated after DNS resolution to prevent DNS rebinding
 
 ### Input Validation
-- **File size limit**: 10 MB maximum input file size.
-- **Domain count limit**: 10,000 maximum domains per batch.
-- **Domain length limit**: 253 characters (DNS specification).
-- **Domain format validation**: Strict regex-based domain name validation.
 
-### Kafka Security (Production)
-- **No anonymous access**: Production requires SASL authentication.
-- **TLS encryption**: Client-broker communication encrypted.
-- **ACL authorization**: Role-based access control.
-- **No auto topic creation**: Topics must be explicitly created.
-- See `docker-compose.production.example.yml` for reference configuration.
+- Domain names are validated against a strict regex pattern
+- Input file size is limited to 10 MB
+- Batch processing is capped at 10,000 domains per run
+- Domain length is limited to 253 characters per DNS specification
 
-### Concurrency Safety
-- Bounded thread pool via `concurrent.futures.ThreadPoolExecutor`.
-- Deterministic output ordering (results match input order).
-- Per-domain error isolation (one failure doesn't abort the batch).
-- No shared mutable state between worker threads.
+### Concurrency
 
-## Known Limitations
+- Thread pools are bounded via `concurrent.futures.ThreadPoolExecutor`
+- Results maintain deterministic ordering matching input order
+- Per-domain error isolation prevents single failures from aborting batches
+- No shared mutable state exists between worker threads
 
-- SPL Core is experimental and should not be used for production security decisions.
-- OCSP checking is best-effort (dependent on responder availability).
-- Deprecated TLS detection is not guaranteed (depends on OpenSSL negotiation).
-- No IPv6 support in current TLS probing.
+## Disclosure Policy
 
-## Development vs Production
+We follow coordinated disclosure practices. Please allow reasonable time for a fix to be developed before public disclosure.
 
-| Feature | Development | Production |
-|---------|------------|------------|
-| Dashboard auth | Disabled | Token required |
-| Dashboard binding | localhost | Behind TLS proxy |
-| Kafka | Anonymous, plaintext | SASL + TLS + ACL |
-| TLS targets | Private allowed | Public only |
-| SPL Core | Experimental | Disabled |
+## Acknowledgments
 
-## Supply Chain
-
-- Dependencies are managed in `pyproject.toml`.
-- No secrets are committed to the repository.
-- Docker images use slim base images with non-root users.
-- Build artifacts are excluded from version control.
+We appreciate security researchers who report vulnerabilities responsibly.

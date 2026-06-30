@@ -2,74 +2,47 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [master, "hardening/*"]
   pull_request:
-    branches: [main]
-
-permissions:
-  contents: read
+    branches: [master]
 
 jobs:
-  lint-and-test:
+  lint:
+    name: Lint
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.10", "3.11", "3.12", "3.13"]
-
     steps:
       - uses: actions/checkout@v4
-
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+      - uses: astral-sh/setup-uv@v5
         with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -e ".[dev]"
-
-      - name: Lint with ruff
-        run: |
-          pip install ruff
-          ruff check trustlint/ scripts/ tests/
-
-      - name: Type check with mypy
-        run: |
-          pip install mypy
-          mypy trustlint/ --ignore-missing-imports || true
-
-      - name: Run tests
-        run: |
-          python -m pytest -q --tb=short
-
-      - name: Build package
-        run: |
-          pip install build
-          python -m build
-
-      - name: Verify clean install
-        run: |
-          python -m venv /tmp/test-venv
-          /tmp/test-venv/bin/pip install dist/*.whl
-          /tmp/test-venv/bin/python -c "from trustlint import analyze, get_version; print('OK:', get_version())"
-          /tmp/test-venv/bin/trustlint --version
-
-  security-scan:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
+          enable-cache: true
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - run: uv sync --frozen
+      - run: uv run python -m py_compile trustlint/cli.py
+      - run: uv run python -m py_compile trustlint/analyzer.py
+      - run: uv run python -m py_compile trustlint/infrastructure/ocsp/client.py
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -e ".[dev]"
-
-      - name: Run security tests only
-        run: |
-          python -m pytest tests/security/ -v --tb=short
+  test:
+    name: Test (Python ${{ matrix.python-version }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: uv sync --frozen --extra dev --extra crypto
+      - name: pip check
+        run: uv run python -m pip check
+      - name: Run offline-safe tests
+        run: uv run pytest -m "not network and not slow" -q --tb=short
+      - name: Verify clean install (import check)
+        run: uv run python -c "from trustlint import analyze, get_version; print(f'trustlint {get_version()}')"

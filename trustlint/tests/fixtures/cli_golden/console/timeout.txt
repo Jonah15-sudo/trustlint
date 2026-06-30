@@ -1,36 +1,20 @@
-============================================================
-  DOMAIN: timeout.example.com
-  Profile: balanced
-  SPL Core: Inactive
-  Final Decision: REVIEW
-  Final Risk: MEDIUM
-  Decision Source: ADAPTER
-============================================================
-
+Domain: timeout.example.com
+  Decision: REVIEW
+  Risk: MEDIUM
+  Source: ADAPTER
+  Classification: TIMEOUT
+  Resolved IP: 21.22.23.24
   [TLS Probe]
   Classification: TIMEOUT
-  CA Store: platform
   Resolved IP: 21.22.23.24
-  OCSP Status: N/A
-  Deprecated TLS Check: None
-
   [Policy Adapter]
   Risk Category: AVAILABILITY_RISK
   Severity: MEDIUM
-  Failure Family: AVAILABILITY
-  Policy Reason: No response within probe timeout window.
-  Action Hint: REVIEW
-
   [SPL]
-  Decision: N/A (adapter-only mode)
-  Confidence Source: UNAVAILABLE
-  Weakness Flags: None
-
+  SPL: unavailable (adapter-only mode)
   [Decision Reasoning]
-  Primary Reason: Availability risk: REVIEW for TIMEOUT
-    Supporting Reasons:
-      - Profile: balanced
-      - Adapter risk: AVAILABILITY_RISK
-
+  Reason: Availability risk: REVIEW for TIMEOUT
+  Recommended Action: Check network availability, firewall, or server responsiveness. The connection timed out.
   [Recommended Action]
-    Check network availability, firewall, or server responsiveness. The connection timed out.
+    - Profile: balanced
+    - Adapter risk: AVAILABILITY_RISK

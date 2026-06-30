@@ -42,11 +42,17 @@ htmlcov/
 coverage.xml
 *.cover
 
+# Type checking
+.mypy_cache/
+
+# Linting
+.ruff_cache/
+
 # OS
 .DS_Store
 Thumbs.db
 
-# Project specific - generated reports and results
+# Generated reports and results
 reports/
 results/
 experiments/*/runs/
@@ -69,7 +75,24 @@ docker-compose.override.yml
 .env
 .env.*
 
-# Lock files (if using pip-tools)
-requirements*.txt
-!requirements.txt
-!requirements-lock.txt
+# Private certificates and keys
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+
+# Databases
+*.sqlite
+*.db
+
+# Logs
+*.log
+
+# Temporary files
+*.bak
+*.tmp
+
+# Node modules (frontend)
+node_modules/

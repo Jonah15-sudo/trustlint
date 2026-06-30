@@ -252,6 +252,8 @@ def analyze_domain(
         warnings.append("Certificate is revoked according to OCSP check.")
     if tls_info.get("ocsp_status") == "unreachable":
         warnings.append("OCSP responder unreachable — revocation status not confirmed.")
+    if tls_info.get("ocsp_status") == "unverified":
+        warnings.append("OCSP response parsed but NOT cryptographically verified — cannot determine revocation status.")
     is_probe_limited = len(warnings) > 0
 
     try:

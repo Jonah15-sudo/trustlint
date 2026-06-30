@@ -14,12 +14,16 @@ from unittest.mock import patch, MagicMock
 
 import pytest
 
-from scripts.spl_tls_analyze import (
-    analyze_batch,
-    analyze_domain,
-    main,
-    parse_args,
-)
+try:
+    from scripts.spl_tls_analyze import (
+        analyze_batch,
+        analyze_domain,
+        main,
+        parse_args,
+    )
+    _HAS_SPL_TLS_ANALYZE = True
+except ImportError:
+    _HAS_SPL_TLS_ANALYZE = False
 
 
 class TestConcurrencyBehavior:

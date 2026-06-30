@@ -14,7 +14,7 @@ import warnings
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Tuple
 
-from infrastructure.ocsp import check_ocsp
+from trustlint.infrastructure.ocsp import check_ocsp
 
 logger = logging.getLogger(__name__)
 
@@ -173,6 +173,11 @@ def _attempt_tls_handshake(domain: str, ip: str, ca_store: str = "platform", tim
         "cert_is_self_signed": None,
         "error_category": None,
         "error": None,
+        "cipher_name": None,
+        "cipher_bits": None,
+        "compression": None,
+        "wildcard_cert": False,
+        "subject_alt_names": [],
     }
 
     t0 = _time.monotonic()
