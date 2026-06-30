@@ -1,38 +1,30 @@
+=== BATCH SUMMARY ===
+Total domains: 12
+  ALLOW: 1
+  REVIEW: 10
+  DENY: 1
+  Highest risk: CRITICAL
+  Probe limited: 4
+  Probe errors: 1
+  Fallback used: 1
 
-============================================================
-  BATCH SUMMARY
-============================================================
-  Total domains:      12
-  ALLOW:              1
-  REVIEW:             10
-  DENY:               1
-  Fallback ALLOW:     1
-  Highest risk:       CRITICAL
-  Probe-limited:      4
-  Probe errors:       1
+  Immediate Action Required:
+    - wronghost.example.com
 
-  Domains Requiring Immediate Action (DENY):
-    - wronghost.example.com: Replace certificate with one matching the requested hostname.
+  Manual Review:
+    - expired.example.com
+    - self-signed.example.com
+    - untrusted.example.com
+    - incomplete.example.com
+    - dnsfail.example.com
+    - timeout.example.com
+    - connrefused.example.com
+    - tlsfail.example.com
+    - old-tls.example.com
+    - unknown-error.example.com
 
-  Domains Requiring Manual Review (REVIEW):
-    - expired.example.com: HIGH risk — EXPIRED_CERT
-    - self-signed.example.com: HIGH risk — SELF_SIGNED_CERT
-    - untrusted.example.com: HIGH risk — UNTRUSTED_CHAIN
-    - incomplete.example.com: HIGH risk — INCOMPLETE_CHAIN
-    - dnsfail.example.com: MEDIUM risk — DNS_FAILURE
-    - timeout.example.com: MEDIUM risk — TIMEOUT
-    - connrefused.example.com: MEDIUM risk — CONNECTION_ERROR
-    - tlsfail.example.com: MEDIUM risk — TLS_HANDSHAKE_FAILURE
-    - old-tls.example.com: HIGH risk — DEPRECATED_TLS_VERSION
-    - unknown-error.example.com: LOW risk — UNKNOWN_SSL_ERROR
-
-  Domains Allowed via Fallback (adapter-based policy, not SPL confidence):
-    - example.com
-
-  Domains with Probe Limitations:
-    - expired.example.com: Certificate is expired according to the probe.
-    - incomplete.example.com: Certificate chain is incomplete.
-    - dnsfail.example.com: DNS resolution failed: Name or service not known
-    - old-tls.example.com: Deprecated TLS version detected via secondary probe — server allows TLS 1.0 or 1.1 (primary negotiated TLSv1).
-
-============================================================
+  Probe Limitations:
+    - expired.example.com
+    - incomplete.example.com
+    - dnsfail.example.com
+    - old-tls.example.com

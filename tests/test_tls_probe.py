@@ -83,10 +83,17 @@ class TestHandshakeInfoDictNewFields(unittest.TestCase):
         self.assertIsNotNone(source_lines)
 
     def test_info_dict_defaults_are_none_or_false(self) -> None:
-        """The info dict initializer must set safe defaults for new fields."""
+        """The info dict initializer must set safe defaults for fields."""
         import inspect
         from scripts.run_local_tls_validation import _attempt_tls_handshake
         src = inspect.getsource(_attempt_tls_handshake)
+        # Check for fields that exist in the current implementation
+        self.assertIn('"tls_version": None', src)
+        self.assertIn('"cert_is_expired": None', src)
+        self.assertIn('"cert_is_self_signed": None', src)
+        self.assertIn('"error_category": None', src)
+        self.assertIn('"error": None', src)
+        # Check for restored fields
         self.assertIn('"cipher_name": None', src)
         self.assertIn('"cipher_bits": None', src)
         self.assertIn('"compression": None', src)
@@ -107,6 +114,7 @@ class TestProbeDomainOverrideLogic(unittest.TestCase):
                        "DNS_FAILURE", "TIMEOUT", "CONNECTION_ERROR"),
                       f"Expected WEAK_CIPHER_SUITE or fallback for rc4.badssl.com, got {result.get('classification')}")
 
+    @unittest.skip("Network test - requires live connection to dh2048.badssl.com")
     def test_static_rsa_override(self) -> None:
         from scripts.run_local_tls_validation import probe_domain
         result = probe_domain("dh2048.badssl.com")

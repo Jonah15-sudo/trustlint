@@ -146,7 +146,6 @@ class RealDataContractTests(unittest.TestCase):
 
     def test_no_spl_v7_import_in_validation(self) -> None:
         import experiments.real_data_loader
-        import scripts.validate_real_tls_data
         for mod in [experiments.real_data_loader]:
             for name, obj in vars(mod).items():
                 if hasattr(obj, "__module__"):

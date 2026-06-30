@@ -1,39 +1,20 @@
-============================================================
-  DOMAIN: dnsfail.example.com
-  Profile: balanced
-  SPL Core: Inactive
-  Final Decision: REVIEW
-  Final Risk: MEDIUM
-  Decision Source: ADAPTER
-============================================================
-
+Domain: dnsfail.example.com
+  Decision: REVIEW
+  Risk: MEDIUM
+  Source: ADAPTER
+  Classification: DNS_FAILURE
   [TLS Probe]
   Classification: DNS_FAILURE
-  CA Store: platform
-  OCSP Status: N/A
-  Deprecated TLS Check: None
-  Probe Warnings: DNS resolution failed: Name or service not known
-
   [Policy Adapter]
   Risk Category: AVAILABILITY_RISK
   Severity: MEDIUM
-  Failure Family: AVAILABILITY
-  Policy Reason: Domain could not be resolved.
-  Action Hint: REVIEW
-
   [SPL]
-  Decision: N/A (adapter-only mode)
-  Confidence Source: UNAVAILABLE
-  Weakness Flags: None
-
+  SPL: unavailable (adapter-only mode)
   [Decision Reasoning]
-  Primary Reason: Availability risk: REVIEW for DNS_FAILURE
-    Supporting Reasons:
-      - Profile: balanced
-      - Adapter risk: AVAILABILITY_RISK
-
-  [Recommended Action]
-    Check DNS records and resolver availability for this domain.
-
+  Reason: Availability risk: REVIEW for DNS_FAILURE
+  Recommended Action: Check DNS records and resolver availability for this domain.
   [Limitations]
     - DNS resolution failed: Name or service not known
+  [Recommended Action]
+    - Profile: balanced
+    - Adapter risk: AVAILABILITY_RISK

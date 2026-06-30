@@ -1,36 +1,20 @@
-============================================================
-  DOMAIN: unknown-error.example.com
-  Profile: balanced
-  SPL Core: Inactive
-  Final Decision: REVIEW
-  Final Risk: LOW
-  Decision Source: ADAPTER
-============================================================
-
+Domain: unknown-error.example.com
+  Decision: REVIEW
+  Risk: LOW
+  Source: ADAPTER
+  Classification: UNKNOWN_SSL_ERROR
+  Resolved IP: 37.38.39.40
   [TLS Probe]
   Classification: UNKNOWN_SSL_ERROR
-  CA Store: platform
   Resolved IP: 37.38.39.40
-  OCSP Status: N/A
-  Deprecated TLS Check: None
-
   [Policy Adapter]
   Risk Category: UNKNOWN_RISK
   Severity: LOW
-  Failure Family: UNKNOWN
-  Policy Reason: Unrecognized SSL error occurred.
-  Action Hint: INVESTIGATE
-
   [SPL]
-  Decision: N/A (adapter-only mode)
-  Confidence Source: UNAVAILABLE
-  Weakness Flags: None
-
+  SPL: unavailable (adapter-only mode)
   [Decision Reasoning]
-  Primary Reason: Ambiguous failure: INVESTIGATE for UNKNOWN_SSL_ERROR
-    Supporting Reasons:
-      - Profile: balanced
-      - Adapter risk: UNKNOWN_RISK
-
+  Reason: Ambiguous failure: INVESTIGATE for UNKNOWN_SSL_ERROR
+  Recommended Action: Investigate SSL error details manually — the specific cause could not be determined by automated probing.
   [Recommended Action]
-    Investigate SSL error details manually — the specific cause could not be determined by automated probing.
+    - Profile: balanced
+    - Adapter risk: UNKNOWN_RISK

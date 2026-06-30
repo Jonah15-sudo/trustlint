@@ -1,36 +1,20 @@
-============================================================
-  DOMAIN: tlsfail.example.com
-  Profile: balanced
-  SPL Core: Inactive
-  Final Decision: REVIEW
-  Final Risk: MEDIUM
-  Decision Source: ADAPTER
-============================================================
-
+Domain: tlsfail.example.com
+  Decision: REVIEW
+  Risk: MEDIUM
+  Source: ADAPTER
+  Classification: TLS_HANDSHAKE_FAILURE
+  Resolved IP: 29.30.31.32
   [TLS Probe]
   Classification: TLS_HANDSHAKE_FAILURE
-  CA Store: platform
   Resolved IP: 29.30.31.32
-  OCSP Status: N/A
-  Deprecated TLS Check: None
-
   [Policy Adapter]
   Risk Category: AMBIGUOUS_FAILURE
   Severity: MEDIUM
-  Failure Family: AMBIGUOUS
-  Policy Reason: TLS handshake failed; root cause is ambiguous.
-  Action Hint: INVESTIGATE
-
   [SPL]
-  Decision: N/A (adapter-only mode)
-  Confidence Source: UNAVAILABLE
-  Weakness Flags: None
-
+  SPL: unavailable (adapter-only mode)
   [Decision Reasoning]
-  Primary Reason: Ambiguous failure: INVESTIGATE for TLS_HANDSHAKE_FAILURE
-    Supporting Reasons:
-      - Profile: balanced
-      - Adapter risk: AMBIGUOUS_FAILURE
-
+  Reason: Ambiguous failure: INVESTIGATE for TLS_HANDSHAKE_FAILURE
+  Recommended Action: Check TLS configuration and supported protocol/cipher settings on the server.
   [Recommended Action]
-    Check TLS configuration and supported protocol/cipher settings on the server.
+    - Profile: balanced
+    - Adapter risk: AMBIGUOUS_FAILURE

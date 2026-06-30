@@ -47,7 +47,10 @@ coverage.xml
 Thumbs.db
 
 # Project specific - generated reports and results
-reports/
+reports/*
+!reports/local_real_validation/
+reports/local_real_validation/*
+!reports/local_real_validation/PHASE6_BASELINE_COMPARISON.md
 results/
 experiments/*/runs/
 

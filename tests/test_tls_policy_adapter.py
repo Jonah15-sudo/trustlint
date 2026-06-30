@@ -583,7 +583,10 @@ class TestPhase65ProbeLimitationAudit(unittest.TestCase):
 
 
 class TestPhase65BaselineSeparation(unittest.TestCase):
-    """Phase 6.5 audit: baselines must be clearly separated."""
+    """Phase 6.5 audit: baselines must be clearly separated.
+
+    These tests verify the deterministic baseline comparison report.
+    """
 
     def test_baseline_comparison_report_exists(self) -> None:
         path = os.path.join(
