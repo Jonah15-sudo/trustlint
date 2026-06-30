@@ -33,7 +33,8 @@ CLI (trustlint.cli:main)
         ├── TLS probe (trustlint.infrastructure.tls_probe)
         │     └── socket + ssl → cipher, version, cert, chain, SAN, compression
         └── OCSP client (trustlint.infrastructure.ocsp.client)
-              └── OCSP staple check (in-memory, no network in offline mode)
+              └── OCSP URL extraction, request construction, response parsing,
+                  timeout/error handling, and protected outbound requests
 ```
 
 ## Explicit Boundary

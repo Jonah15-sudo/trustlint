@@ -19,7 +19,7 @@ TrustLint is a TLS risk analysis tool that inspects certificate validity, trust 
 
 ## Quick Start
 
-See [DEMO_RUNBOOK.md](DEMO_RUNBOOK.md) for a reproducible 5-minute demo.
+See [../docs/DEMO_RUNBOOK.md](../docs/DEMO_RUNBOOK.md) for a reproducible 5-minute demo.
 
 ## Sample Report
 

@@ -7,60 +7,63 @@
 - Python 3.10+
 - TrustLint installed: `pip install -e .[dev]` or `uv sync --extra dev`
 
-## 1. Fixture-Backed Demo (Offline, No Network)
+## 1. Fixture-Backed Verification (Offline, No Network)
 
-This demo uses committed test fixtures. No external host is scanned.
-
-```bash
-# Run the offline fixture-backed analysis
-uv run trustlint --json --quiet tests/fixtures/cli_golden/json/valid_tls.json
-```
-
-> **Note:** The fixture file is a static JSON document containing pre-recorded probe results.
-> Sample output — fixture-backed; no external host was scanned.
-
-### Expected Output
-
-```json
-{
-  "metadata": { "tool": "trustlint", "version": "1.0.0", ... },
-  "summary": { "total_domains": 1, "allow": 1, ... },
-  "results": [
-    {
-      "domain": "example.com",
-      "tls_probe": { "classification": "VALID_TLS", "tls_version": "TLSv1.3", ... },
-      "final": { "decision": "ALLOW", "risk": "NONE", ... }
-    }
-  ]
-}
-```
-
-**What this means:** The certificate is valid, the chain is complete, the protocol is modern (TLSv1.3), and no issues were found. The tool recommends no action.
-
-## 2. Multi-Fixture Demo
-
-Run multiple fixtures to show the range of findings:
+This step runs the deterministic fixture-backed end-to-end test path. Probe results are mocked. No external host is scanned. It proves the analysis/output contract, not a live TLS connection.
 
 ```bash
-uv run trustlint --json --quiet \
-  tests/fixtures/cli_golden/json/valid_tls.json \
-  tests/fixtures/cli_golden/json/expired_cert.json \
-  tests/fixtures/cli_golden/json/deprecated_tls.json \
-  tests/fixtures/cli_golden/json/untrusted_chain.json \
-  tests/fixtures/cli_golden/json/self_signed_cert.json \
-  tests/fixtures/cli_golden/json/incomplete_chain.json
+uv run pytest tests/test_cli_e2e_smoke.py -q
 ```
 
-### Expected Findings Summary
+> **Note:** Sample output — fixture-backed; no external host was scanned.
 
-| Domain | Classification | Risk | Decision | Recommended Action |
-|--------|---------------|------|----------|-------------------|
-| example.com | VALID_TLS | NONE | ALLOW | No action required |
-| expired.example.com | EXPIRED_CERT | HIGH | REVIEW | Renew or replace the certificate |
-| old-tls.example.com | DEPRECATED_TLS_VERSION | HIGH | REVIEW | Disable TLS 1.0/1.1, require TLS 1.2+ |
-| untrusted.example.com | UNTRUSTED_CHAIN | HIGH | REVIEW | Fix the certificate chain |
-| self-signed.example.com | SELF_SIGNED_CERT | HIGH | REVIEW | Use a CA-issued certificate |
-| incomplete.example.com | INCOMPLETE_CHAIN | HIGH | REVIEW | Install missing intermediate certificates |
+### What This Proves
+
+- The CLI produces correct JSON, Markdown, and console output for each classification.
+- The analysis pipeline handles all 20 TLS classification types correctly.
+- The output contract is stable and deterministic.
+
+## 2. Fixture Inspection
+
+You can inspect the recorded fixture output to see what the tool produces for each TLS classification. These are stored sample outputs — inspecting them does not execute a scan.
+
+### JSON Fixtures
+
+```bash
+# View the valid TLS fixture
+cat tests/fixtures/cli_golden/json/valid_tls.json
+
+# View the expired certificate fixture
+cat tests/fixtures/cli_golden/json/expired_cert.json
+
+# View all JSON fixtures
+ls tests/fixtures/cli_golden/json/
+```
+
+### Markdown Fixtures
+
+```bash
+# View the valid TLS fixture in Markdown format
+cat tests/fixtures/cli_golden/markdown/valid_tls.md
+```
+
+### Console Fixtures
+
+```bash
+# View the valid TLS fixture in console format
+cat tests/fixtures/cli_golden/console/valid_tls.txt
+```
+
+### Expected Findings Across Fixtures
+
+| Fixture | Classification | Risk | Decision | Recommended Action |
+|---------|---------------|------|----------|-------------------|
+| valid_tls | VALID_TLS | NONE | ALLOW | No action required |
+| expired_cert | EXPIRED_CERT | HIGH | REVIEW | Renew or replace the certificate |
+| deprecated_tls | DEPRECATED_TLS_VERSION | HIGH | REVIEW | Disable TLS 1.0/1.1, require TLS 1.2+ |
+| untrusted_chain | UNTRUSTED_CHAIN | HIGH | REVIEW | Fix the certificate chain |
+| self_signed_cert | SELF_SIGNED_CERT | HIGH | REVIEW | Use a CA-issued certificate |
+| incomplete_chain | INCOMPLETE_CHAIN | HIGH | REVIEW | Install missing intermediate certificates |
 
 ## 3. Authorized Live Demo (Requires Permission)
 
