@@ -67,7 +67,7 @@ create EvidenceArtifact → ingest() → verify() → compile() → learn() → 
 ```
 - **Status:** NEVER INVOKED from CLI
 - **Location:** `spl_v7/kafka_pipeline.py`, `spl_v7/causal.py`
-- **Only invoked from:** experiment scripts (`run_ofe_experiment.py`, `run_stratified_benchmark.py`, `run_replication.py`), tests
+- **Only invoked from:** experiment scripts (`run_ofe_experiment.py`, `run_replication.py`), tests. Note: `run_stratified_benchmark.py` was planned but never committed.
 - **Reachability from CLI:** Zero — no import or call chain connects CLI to pipeline
 
 #### Path 3: CLI → OFE → SPL (observational only, held)

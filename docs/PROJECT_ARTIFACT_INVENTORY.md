@@ -243,10 +243,10 @@ generate_report, BenchmarkRunResult
 | `run_dogfood_cli.py` | 5,452 B | 🟢 | Dogfood test runner | ❌ | ✅ |
 | `run_frontier_validation.py` | 7,686 B | 🟢 | Frontier validation | ❌ | ✅ |
 | `run_ofe_experiment.py` | 1,627 B | 🟢 | OFE experiment runner | ❌ | ✅ |
-| `run_real_tls_spl_decision_validation.py` | 38,924 B | 🟢 | SPL decision validation | ❌ | ✅ |
+| `run_real_tls_spl_decision_validation.py` | — | 🔴 | SPL decision validation (planned, never committed) | ❌ | ❌ |
 | `run_replication.py` | 3,338 B | 🟢 | Replication study runner | ❌ | ✅ |
-| `run_stratified_benchmark.py` | 35,402 B | 🟢 | Stratified benchmark | ❌ | ✅ |
-| `run_tls_policy_adapter_benchmark.py` | 26,527 B | 🟢 | TLS policy adapter benchmark | ❌ | ✅ |
+| `run_stratified_benchmark.py` | — | 🔴 | Stratified benchmark (planned, never committed) | ❌ | ❌ |
+| `run_tls_policy_adapter_benchmark.py` | — | 🔴 | TLS policy adapter benchmark (planned, never committed) | ❌ | ❌ |
 | `run_weakness_mapper.py` | 2,806 B | 🟢 | Weakness mapper | ❌ | ✅ |
 | `validate_real_tls_data.py` | 6,998 B | 🟢 | Real TLS data validation | ❌ | ✅ |
 
@@ -433,9 +433,9 @@ Fixture files cover: `valid_tls`, `expired_cert`, `self_signed_cert`, `wrong_hos
 | `scripts/run_weakness_mapper.py` | Weakness mapping | `capability_report.json` |
 | `scripts/run_local_tls_validation.py` | Local TLS validation | `reports/local_real_validation/*` |
 | `scripts/run_decision_orchestration_benchmark.py` | Orchestration benchmark | `reports/local_real_validation/DECISION_ORCHESTRATION_*` |
-| `scripts/run_tls_policy_adapter_benchmark.py` | Adapter benchmark | `reports/local_real_validation/TLS_POLICY_ADAPTER_*` |
-| `scripts/run_stratified_benchmark.py` | Stratified benchmark | `reports/local_real_validation/STRATIFIED_BENCHMARK_*` |
-| `scripts/run_real_tls_spl_decision_validation.py` | SPL decision validation | `reports/local_real_validation/SPL_DECISION_VALIDATION_*` |
+| `scripts/run_tls_policy_adapter_benchmark.py` | Adapter benchmark (planned, never committed) | — |
+| `scripts/run_stratified_benchmark.py` | Stratified benchmark (planned, never committed) | — |
+| `scripts/run_real_tls_spl_decision_validation.py` | SPL decision validation (planned, never committed) | — |
 | `scripts/run_dogfood_cli.py` | Dogfood test | `reports/dogfood/*` |
 | `scripts/run_replication.py` | Replication study | `experiments/replication/*` |
 | `scripts/generate_golden_fixtures.ps1` | Golden fixtures | `tests/fixtures/cli_golden/{console,json,markdown}/*` |

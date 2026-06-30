@@ -10,7 +10,7 @@ Phase 6 reported SPL-only conformance at 95.8%. Phase 5 reported 70.3%. Both use
 
 | Aspect | Phase 5 | Phase 6 (as shipped) |
 |---|---|---|
-| **Script** | `run_stratified_benchmark.py` | `run_tls_policy_adapter_benchmark.py` |
+| **Script** | `run_stratified_benchmark.py` (planned, never committed) | `run_tls_policy_adapter_benchmark.py` (planned, never committed) |
 | **Dataset** | 120 benchmark domains | Same 120 benchmark domains |
 | **Training mode** | Holdout (10 stratified splits) | Proxy-trained (full dataset) |
 | **Training function** | `_train_pipeline_with_labels()` — external clean/dirty labels | `_train_pipeline()` — proxy labels from probe classification |
