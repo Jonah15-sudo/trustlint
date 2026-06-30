@@ -93,6 +93,12 @@ class TestHandshakeInfoDictNewFields(unittest.TestCase):
         self.assertIn('"cert_is_self_signed": None', src)
         self.assertIn('"error_category": None', src)
         self.assertIn('"error": None', src)
+        # Check for restored fields
+        self.assertIn('"cipher_name": None', src)
+        self.assertIn('"cipher_bits": None', src)
+        self.assertIn('"compression": None', src)
+        self.assertIn('"wildcard_cert": False', src)
+        self.assertIn('"subject_alt_names": []', src)
 
 
 class TestProbeDomainOverrideLogic(unittest.TestCase):

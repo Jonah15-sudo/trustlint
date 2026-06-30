@@ -173,6 +173,11 @@ def _attempt_tls_handshake(domain: str, ip: str, ca_store: str = "platform", tim
         "cert_is_self_signed": None,
         "error_category": None,
         "error": None,
+        "cipher_name": None,
+        "cipher_bits": None,
+        "compression": None,
+        "wildcard_cert": False,
+        "subject_alt_names": [],
     }
 
     t0 = _time.monotonic()
@@ -181,11 +186,31 @@ def _attempt_tls_handshake(domain: str, ip: str, ca_store: str = "platform", tim
             with context.wrap_socket(sock, server_hostname=domain) as tls:
                 info["handshake_time_ms"] = round((_time.monotonic() - t0) * 1000, 1)
                 info["tls_version"] = tls.version()
+
+                # Extract cipher information
+                cipher = tls.cipher()
+                if cipher:
+                    info["cipher_name"] = cipher[0]
+                    info["cipher_bits"] = cipher[2]
+
+                # Extract compression information
+                info["compression"] = tls.compression()
+
                 cert = tls.getpeercert()
                 if cert:
                     if any(after.startswith("Jan 1 00:00:00 1970") for _, after in cert.get("notAfter", [])):
                         info["cert_is_expired"] = True
                     info["cert_is_self_signed"] = True
+
+                    # Check for wildcard certificate
+                    subject = dict(x[0] for x in cert.get("subject", ()))
+                    common_name = subject.get("commonName", "")
+                    if common_name.startswith("*."):
+                        info["wildcard_cert"] = True
+
+                    # Extract Subject Alternative Names
+                    san_list = cert.get("subjectAltName", ())
+                    info["subject_alt_names"] = [san[1] for san in san_list if san[0] == "DNS"]
     except ssl.SSLCertVerificationError as e:
         info["handshake_time_ms"] = round((_time.monotonic() - t0) * 1000, 1)
         info["error"] = str(e)

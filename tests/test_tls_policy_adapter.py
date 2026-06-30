@@ -585,18 +585,15 @@ class TestPhase65ProbeLimitationAudit(unittest.TestCase):
 class TestPhase65BaselineSeparation(unittest.TestCase):
     """Phase 6.5 audit: baselines must be clearly separated.
 
-    Note: These tests require generated report files and are excluded
-    from the offline-safe suite.
+    These tests verify the deterministic baseline comparison report.
     """
 
-    @unittest.skip("Requires generated report file - not available in CI")
     def test_baseline_comparison_report_exists(self) -> None:
         path = os.path.join(
             PROJECT_ROOT, "reports", "local_real_validation", "PHASE6_BASELINE_COMPARISON.md",
         )
         self.assertTrue(os.path.isfile(path))
 
-    @unittest.skip("Requires generated report file - not available in CI")
     def test_baseline_report_has_all_modes(self) -> None:
         path = os.path.join(
             PROJECT_ROOT, "reports", "local_real_validation", "PHASE6_BASELINE_COMPARISON.md",
@@ -609,7 +606,6 @@ class TestPhase65BaselineSeparation(unittest.TestCase):
         self.assertIn("SPL Holdout", text)
         self.assertIn("SPL Proxy-Trained", text)
 
-    @unittest.skip("Requires generated report file - not available in CI")
     def test_proxy_trained_labeled_not_generalization(self) -> None:
         path = os.path.join(
             PROJECT_ROOT, "reports", "local_real_validation", "PHASE6_BASELINE_COMPARISON.md",
@@ -619,7 +615,6 @@ class TestPhase65BaselineSeparation(unittest.TestCase):
             text = f.read()
         self.assertIn("NOT generalization", text)
 
-    @unittest.skip("Requires generated report file - not available in CI")
     def test_holdout_labeled_as_generalization(self) -> None:
         path = os.path.join(
             PROJECT_ROOT, "reports", "local_real_validation", "PHASE6_BASELINE_COMPARISON.md",
@@ -629,7 +624,6 @@ class TestPhase65BaselineSeparation(unittest.TestCase):
             text = f.read()
         self.assertIn("generalization", text.lower())
 
-    @unittest.skip("Requires generated report file - not available in CI")
     def test_baseline_report_has_category_level(self) -> None:
         path = os.path.join(
             PROJECT_ROOT, "reports", "local_real_validation", "PHASE6_BASELINE_COMPARISON.md",
@@ -642,7 +636,6 @@ class TestPhase65BaselineSeparation(unittest.TestCase):
         self.assertIn("EXPIRED_CERT", text)
         self.assertIn("DEPRECATED_TLS", text)
 
-    @unittest.skip("Requires generated report file - not available in CI")
     def test_category_level_includes_non_valid_tls(self) -> None:
         path = os.path.join(
             PROJECT_ROOT, "reports", "local_real_validation", "PHASE6_BASELINE_COMPARISON.md",

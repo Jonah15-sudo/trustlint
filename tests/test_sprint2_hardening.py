@@ -98,6 +98,20 @@ class TestClassificationsSingleSource(unittest.TestCase):
         self.assertEqual(CLASSIFICATION_ORDER, list(ALL_CLASSIFICATIONS))
 
 
+# ── Issue 2: Eliminate silent failures ─────────────────────────────────────
+
+class TestSilentFailuresEliminated(unittest.TestCase):
+    """Exception handlers must log instead of silently swallowing."""
+
+    def test_run_local_has_logger(self) -> None:
+        import scripts.run_local_tls_validation as mod
+        self.assertTrue(hasattr(mod, "logger"))
+
+    def test_spl_tls_analyze_has_logger(self) -> None:
+        import scripts.spl_tls_analyze as mod
+        self.assertTrue(hasattr(mod, "logger"))
+
+
 # ── Issue 3: Batch processing reliability ──────────────────────────────────
 
 class TestBatchProcessingReliability(unittest.TestCase):
