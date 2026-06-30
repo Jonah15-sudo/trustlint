@@ -26,7 +26,7 @@ jobs:
         run: uv run python -m compileall trustlint scripts -q
 
   test:
-    name: Test (Python ${{ matrix.python-version }})
+    name: Test (${{ matrix.os }}, Python ${{ matrix.python-version }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -41,7 +41,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - run: uv sync --frozen --extra dev
+      - run: uv sync --frozen --extra dev --extra spl-core
       - name: Compile all Python modules
         run: uv run python -m compileall trustlint scripts -q
       - name: Check dependency compatibility
@@ -50,3 +50,46 @@ jobs:
         run: uv run pytest -m "not network and not slow" -q --tb=short
       - name: Verify clean install (import check)
         run: uv run python -c "from trustlint import analyze, get_version; print(f'trustlint {get_version()}')"
+
+  wheel-smoke:
+    name: Wheel smoke test (${{ matrix.os }}, Python ${{ matrix.python-version }})
+    runs-on: ${{ matrix.os }}
+    needs: [lint]
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.12"]
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: uv sync --frozen --extra dev
+      - name: Build wheel and sdist
+        run: uv run python -m build
+      - name: Create clean venv and install wheel
+        run: |
+          python -m venv .wheel-check
+          PY=".wheel-check/Scripts/python"; test -f .wheel-check/bin/python && PY=".wheel-check/bin/python"
+          $PY -m pip install --upgrade pip
+          $PY -m pip install dist/*.whl
+        shell: bash
+      - name: Verify pip check
+        run: |
+          PY=".wheel-check/Scripts/python"; test -f .wheel-check/bin/python && PY=".wheel-check/bin/python"
+          $PY -m pip check
+        shell: bash
+      - name: Verify import path
+        run: |
+          PY=".wheel-check/Scripts/python"; test -f .wheel-check/bin/python && PY=".wheel-check/bin/python"
+          $PY -c "import trustlint; import os; print(os.path.abspath(trustlint.__file__))"
+        shell: bash
+      - name: Verify CLI entry point
+        run: |
+          CLI=".wheel-check/Scripts/trustlint.exe"; test -f .wheel-check/bin/trustlint && CLI=".wheel-check/bin/trustlint"
+          $CLI --help
+        shell: bash

@@ -25,7 +25,7 @@ classifiers = [
 
 [project.optional-dependencies]
 kafka = ["confluent-kafka>=2.5"]
-dev = ["pytest>=8.0"]
+dev = ["pytest>=8.0", "networkx>=3.2", "build>=1.0"]
 ca-store = ["certifi>=2024.0.0"]
 spl-core = [
   "numpy>=1.26",
@@ -36,12 +36,14 @@ spl-core = [
 ]
 
 [project.scripts]
-trustlint = "scripts.spl_tls_analyze:main"
+trustlint = "trustlint.cli:main"
 
 [tool.setuptools]
 packages = [
   "trustlint",
   "trustlint.security",
+  "trustlint.infrastructure",
+  "trustlint.infrastructure.ocsp",
   "decision_orchestrator",
   "scripts",
   "spl_v7",
