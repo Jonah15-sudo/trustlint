@@ -5,7 +5,7 @@
 
 ## Executive Summary
 
-TrustLint analyzed six TLS configurations across certificate validity, trust chain integrity, protocol versions, and cipher suites. Four high-severity findings were identified requiring remediation. One configuration passed all checks.
+TrustLint analyzed six TLS configurations across certificate validity, trust chain integrity, protocol versions, and cipher suites. Five high-severity findings were identified requiring remediation. One configuration passed all checks.
 
 | Metric | Count |
 |--------|-------|

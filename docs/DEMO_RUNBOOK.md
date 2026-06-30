@@ -19,8 +19,7 @@ uv run pytest tests/test_cli_e2e_smoke.py -q
 
 ### What This Proves
 
-- The CLI produces correct JSON, Markdown, and console output for each classification.
-- The analysis pipeline handles all 20 TLS classification types correctly.
+- The fixture-backed smoke suite verifies the committed sample classifications and their JSON, Markdown, and console output contracts.
 - The output contract is stable and deterministic.
 
 ## 2. Fixture Inspection
