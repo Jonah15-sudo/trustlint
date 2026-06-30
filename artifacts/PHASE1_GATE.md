@@ -4,7 +4,7 @@
 
 **Date:** 2026-06-30
 **Branch:** hardening/validation-runner-product-recovery (top of stack)
-**Last CI commit:** e668f40 (new commit pending after TLS probe fixes)
+**Validated commit:** `313a67b`
 
 ## PR Stack
 
@@ -15,7 +15,7 @@
 | #5 | test: remove obsolete benchmark test contracts | hardening/validation-test-contract-cleanup | hardening/test-collection-and-cli-recovery | DRAFT |
 | #6 | feat: add offline SPL validation runner | hardening/validation-runner-product-recovery | hardening/validation-test-contract-cleanup | DRAFT |
 
-## Gate Results (Local Pre-Push Audit)
+## Gate Results
 
 ### 1. uv lock --check
 **Status:** PASS
@@ -118,28 +118,25 @@
 - **Reason:** starlette 1.3.1 TestClient requires httpx2
 - **Status:** Correct dependency, well-maintained, permissive license (BSD-3-Clause)
 
-## CI Run URLs
+## CI Results
 
-- **Last green CI:** https://github.com/Jonah15-sudo/trustlint/actions/runs/28459826477 (commit e668f40)
-- **Status:** SUCCESS
-- **Test Matrix:** Ubuntu and Windows, Python 3.10-3.13
-- **Wheel Smoke:** Pass on Ubuntu and Windows
-- **Note:** New commit required after TLS probe field restoration; CI will re-run on push
+**Run:** https://github.com/Jonah15-sudo/trustlint/actions/runs/28461568647
+**Commit:** `313a67b`
+**Status:** ALL 11 JOBS PASSED
 
-## Working Tree Status
-
-```
-M  .gitignore
-M  artifacts/PHASE1_FAILURE_TRIAGE.md
-M  artifacts/PHASE1_GATE.md
-A  reports/local_real_validation/PHASE6_BASELINE_COMPARISON.md
-M  tests/test_sprint2_hardening.py
-M  tests/test_tls_policy_adapter.py
-M  tests/test_tls_probe.py
-M  trustlint/infrastructure/tls_probe.py
-?? artifacts/DEPENDENCY_REVIEW.md
-?? artifacts/PHASE1_COVERAGE_MAPPING.md
-```
+| Job | Platform | Python | Duration | Conclusion |
+|-----|----------|--------|----------|------------|
+| Lint | ubuntu-latest | — | 7s | SUCCESS |
+| Test matrix | ubuntu-latest | 3.10 | 48s | SUCCESS |
+| Test matrix | ubuntu-latest | 3.11 | 42s | SUCCESS |
+| Test matrix | ubuntu-latest | 3.12 | 41s | SUCCESS |
+| Test matrix | ubuntu-latest | 3.13 | 40s | SUCCESS |
+| Test matrix | windows-latest | 3.10 | 1m3s | SUCCESS |
+| Test matrix | windows-latest | 3.11 | 2m57s | SUCCESS |
+| Test matrix | windows-latest | 3.12 | 1m35s | SUCCESS |
+| Test matrix | windows-latest | 3.13 | 1m18s | SUCCESS |
+| Wheel smoke | ubuntu-latest | 3.12 | 20s | SUCCESS |
+| Wheel smoke | windows-latest | 3.12 | 1m1s | SUCCESS |
 
 ## Unresolved Risks
 
@@ -147,9 +144,9 @@ None. All Phase 1 gates are green.
 
 ## Verdict
 
-**READY FOR CI** (not READY FOR MERGE)
+**READY FOR REVIEW**
 
-All pre-push gates pass:
+All Phase 1 gates pass on the validated commit `313a67b`:
 - uv lock consistent
 - uv sync --frozen succeeds
 - compileall clean
@@ -164,5 +161,4 @@ All pre-push gates pass:
 - Fixture-backed analysis smoke test passes
 - Production path isolation confirmed
 - Default branch integrity confirmed
-
-**Awaiting:** CI re-run on push to confirm GitHub Actions green for the new commit.
+- GitHub Actions: 11/11 jobs green on Ubuntu and Windows
